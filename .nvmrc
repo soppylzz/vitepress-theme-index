@@ -1,0 +1,3 @@
+# Node.js 20 LTS (Iron)
+# Run: `nvm use`, `nvm install`
+lts/iron

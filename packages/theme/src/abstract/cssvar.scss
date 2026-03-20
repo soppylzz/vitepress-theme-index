@@ -1,0 +1,81 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:meta";
+@use "config" as *;
+
+
+@function getCssVarName($keys...) {
+  $name: "--#{$namespace}";
+  @each $key in $keys {
+    @if $key != "" { $name: '#{$name}#{$common-separator}#{$key}'; }
+  }
+  @return $name;
+}
+
+@mixin setCssVar($keys, $value) {
+  #{getCssVarName($keys...)}: #{$value};
+}
+
+@function getCssVar($keys...) {
+  @return var(#{getCssVarName($keys...)});
+}
+
+
+@mixin applyToken($token, $key) {
+  $css-prop: map.get($token, css);
+  $value-map: map.get($token, value);
+
+  @if not map.has-key($value-map, $key) {
+    @error "Token `#{$css-prop}` has no key `#{$key}`.";
+  }
+
+  #{$css-prop}: map.get($value-map, $key);
+}
+
+@function getToken($token, $key) {
+  $css-prop: map.get($token, css);
+  $value-map: map.get($token, value);
+
+  @if not map.has-key($value-map, $key) {
+    @error "Token `#{$css-prop}` has no key `#{$key}`.";
+  }
+
+  @return map.get($value-map, $key)
+}
+
+@function flattenTokenMap($map, $prefix: ()) {
+  $result: ();
+  @each $key, $value in $map {
+    $current-path: list.append($prefix, $key);
+
+    @if meta.type-of($value) == 'map' {
+      $result: map.merge($result, flattenTokenMap($value, $current-path));
+    } @else {
+      $result: map.set($result, $current-path, $value);
+    }
+  }
+  @return $result;
+}
+
+@mixin generateTokenVars($token-map) {
+  $flatten-map: flattenTokenMap($token-map);
+
+  @each $keys, $value in $flatten-map {
+    #{getCssVarName($keys...)}: #{$value};
+  }
+}
+
+@mixin registerTheme($theme-name, $data, $is-default: false) {
+  :root[data-theme="#{$theme-name}"] { @include generateTokenVars($data); }
+  @if $is-default {
+    :root { @include generateTokenVars($data); }
+  }
+}
+
+@mixin scopedThemes($theme-names...) {
+  @each $name in $theme-names {
+    :root[data-theme="#{$name}"] & {
+      @content;
+    }
+  }
+}

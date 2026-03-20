@@ -1,0 +1,27 @@
+{
+  "name": "@vitepress-theme-index/build",
+  "private": true,
+  "author": "soppylzz",
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "build:pipe": "tsup && node ./dist/run.js"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "rimraf": "^6.1.2",
+    "tsup": "^8.5.1"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue-jsx": "^5.1.4",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.3",
+    "rollup": "4.59.0",
+    "rollup-plugin-dts": "^6.3.0",
+    "rollup-plugin-esbuild": "^6.2.1",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}

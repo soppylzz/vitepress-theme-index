@@ -1,0 +1,11 @@
+{
+  "name": "@vitepress-theme-index/node",
+  "private": true,
+  "author": "soppylzz",
+  "packageManager": "pnpm@10.12.4",
+  "main": "index.ts",
+  "module": "index.ts",
+  "peerDependencies": {
+    "vite": "^5.4.21"
+  }
+}

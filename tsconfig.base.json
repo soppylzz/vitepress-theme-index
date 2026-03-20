@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "declarationDir": "dist/types",
+    "strict": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@vitepress-theme-index/shared": ["packages/shared"],
+      "@vitepress-theme-index/shared/*": ["packages/shared/*"],
+      "@vitepress-theme-index/core": ["packages/core"],
+      "@vitepress-theme-index/core/*": ["packages/core/*"],
+      "@vitepress-theme-index/plugin": ["packages/plugin"],
+      "@vitepress-theme-index/plugin/*": ["packages/plugin/*"],
+      "vitepress-theme-index": ["packages/index"]
+    }
+  }
+}

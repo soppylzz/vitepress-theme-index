@@ -1,0 +1,55 @@
+@use "sass:list";
+@use "sass:meta";
+@use 'config' as *;
+
+$B: null !default;
+
+/* BEM Supports */
+@function buildBEMSelector($base, $units, $separator: '', $prefixAmp: false) {
+  $selectors: ();
+  $prefix: "";
+  @if $prefixAmp {
+    $prefix: "&";
+  } @else {
+    $prefix: ".#{$base}";
+  }
+  @each $unit in $units {
+    $selectors: list.append($selectors, "#{$prefix}#{$separator}#{$unit}", comma);
+  }
+  @return $selectors;
+}
+
+/* BEM Mixins */
+@mixin b($block) {
+  $B: "#{$namespace}#{$common-separator}#{$block}" !global;
+  .#{$B} { @content; }
+}
+
+@mixin e($elements...) {
+  $currentSelector: buildBEMSelector($B, $elements, $element-separator, false);
+  @at-root #{$currentSelector} { @content; }
+}
+
+@mixin m($modifiers...) {
+  $currentSelector: buildBEMSelector($B, $modifiers, $modifier-separator, true);
+  @at-root #{$currentSelector} { @content; }
+}
+
+@mixin em($element, $modifiers...) {
+  $base: "#{$B}#{$element-separator}#{$element}";
+  $currentSelector: buildBEMSelector($base, $modifiers, $modifier-separator, false);
+  @at-root #{$currentSelector} { @content; }
+}
+
+@mixin when($states...) {
+  $selectors: ();
+
+  @each $state in $states {
+    $selectors: list.append(
+      $selectors,
+      "&.#{$state-prefix}#{$state}",
+      comma
+    );
+  }
+  @at-root #{$selectors} {@content;}
+}

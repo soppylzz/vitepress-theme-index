@@ -1,0 +1,150 @@
+@use "../abstract" as *;
+@use "sass:map";
+
+/**
+ * GitHub Light Theme
+ * 
+ * Inspired by GitHub's official design system and website color palette.
+ * Carefully crafted for optimal readability and visual hierarchy.
+ * 
+ * Theme structure:
+ * - Color Palette: Raw color definitions from GitHub's design language
+ * - Semantic Color Tokens: Semantic color mappings (applied as CSS variables)
+ */
+
+/* ===== Color Palette ===== */
+$github-light-palette: (
+  /* Neutrals */
+  white: #ffffff,
+  black: #010409,
+  
+  /* Grays - Optimized for light theme */
+  gray-0: #fafbfc,      /* Subtle background tint */
+  gray-1: #f6f8fa,      /* Light background */
+  gray-2: #eaeef2,      /* Lighter borders */
+  gray-3: #d0d7de,      /* Standard border color */
+  gray-4: #afb8c1,      /* Secondary text support */
+  gray-5: #8c959f,      /* Secondary text */
+  gray-6: #57606a,      /* Tertiary text */
+  gray-7: #424a53,      /* Strong text */
+  gray-8: #32383f,      /* Text emphasis */
+  gray-9: #1c2128,      /* Primary text */
+  
+  /* Blues - GitHub Brand */
+  blue-0: #f0f9ff,      /* Very light blue bg */
+  blue-1: #ddf4ff,      /* Light blue bg */
+  blue-2: #b6e3ff,      /* Softer blue */
+  blue-3: #80ccff,      /* Medium light blue */
+  blue-4: #54aeff,      /* Medium blue */
+  blue-5: #0969da,      /* Primary blue - GitHub brand */
+  blue-6: #033d8b,      /* Dark blue */
+  blue-7: #001f3f,      /* Very dark blue */
+  
+  /* Greens - Success state */
+  green-0: #f0fdf4,     /* Very light green bg */
+  green-1: #dafbe1,     /* Light green bg */
+  green-2: #aceebb,     /* Soft green */
+  green-3: #6ee7b7,     /* Medium light green */
+  green-4: #3fb950,     /* Medium green */
+  green-5: #238636,     /* Dark green */
+  green-6: #0f6e3a,     /* Very dark green */
+  
+  /* Reds - Danger state */
+  red-0: #fef2f2,       /* Very light red bg */
+  red-1: #ffebe9,       /* Light red bg */
+  red-2: #ffcecb,       /* Soft red */
+  red-3: #ff8a80,       /* Medium light red */
+  red-4: #da3633,       /* Medium red */
+  red-5: #cf222e,       /* Dark red */
+  red-6: #a40e26,       /* Very dark red */
+  
+  /* Oranges - Warning state */
+  orange-0: #fffbf0,    /* Very light orange bg */
+  orange-1: #fff8c5,    /* Light orange bg */
+  orange-2: #ffd789,    /* Soft orange */
+  orange-3: #ffc53d,    /* Medium light orange */
+  orange-4: #fb8500,    /* Medium orange */
+  orange-5: #bf3600,    /* Dark orange */
+  
+  /* Purples - Links/visited */
+  purple-0: #f5f3ff,    /* Very light purple bg */
+  purple-1: #fbefff,    /* Light purple bg */
+  purple-2: #ecd5ff,    /* Soft purple */
+  purple-3: #d29eed,    /* Medium light purple */
+  purple-4: #a371f7,    /* Medium purple */
+  purple-5: #8957e5,    /* Dark purple */
+  purple-6: #6e40c9,    /* Very dark purple */
+);
+
+/* ===== Semantic Theme Colors ===== */
+$github-light-colors: (
+  primary: (
+    base: map.get($github-light-palette, blue-5),      /* #0969da */
+    hover: map.get($github-light-palette, blue-6),     /* #033d8b */
+    active: map.get($github-light-palette, blue-5),    /* #0969da */
+    disabled: map.get($github-light-palette, gray-3),  /* #d0d7de */
+  ),
+
+  secondary: (
+    base: map.get($github-light-palette, gray-5),      /* #8c959f */
+    hover: map.get($github-light-palette, gray-6),     /* #57606a */
+    active: map.get($github-light-palette, gray-7),    /* #424a53 */
+    disabled: map.get($github-light-palette, gray-2),  /* #eaeef2 */
+  ),
+
+  success: (
+    base: map.get($github-light-palette, green-5),     /* #238636 */
+    hover: map.get($github-light-palette, green-6),    /* #0f6e3a */
+    light: map.get($github-light-palette, green-1),    /* #dafbe1 */
+    lighter: map.get($github-light-palette, green-0),  /* #f0fdf4 */
+  ),
+
+  warning: (
+    base: map.get($github-light-palette, orange-4),    /* #fb8500 */
+    hover: map.get($github-light-palette, orange-5),   /* #bf3600 */
+    light: map.get($github-light-palette, orange-1),   /* #fff8c5 */
+    lighter: map.get($github-light-palette, orange-0), /* #fffbf0 */
+  ),
+
+  danger: (
+    base: map.get($github-light-palette, red-5),       /* #cf222e */
+    hover: map.get($github-light-palette, red-6),      /* #a40e26 */
+    light: map.get($github-light-palette, red-1),      /* #ffebe9 */
+    lighter: map.get($github-light-palette, red-0),    /* #fef2f2 */
+  ),
+
+  info: (
+    base: map.get($github-light-palette, blue-4),      /* #54aeff */
+    hover: map.get($github-light-palette, blue-5),     /* #0969da */
+    light: map.get($github-light-palette, blue-1),     /* #ddf4ff */
+    lighter: map.get($github-light-palette, blue-0),   /* #f0f9ff */
+  ),
+
+  bg: (
+    primary: map.get($github-light-palette, white),           /* #ffffff */
+    secondary: map.get($github-light-palette, gray-0),        /* #fafbfc */
+    tertiary: map.get($github-light-palette, gray-1),         /* #f6f8fa */
+    overlay: rgba(27, 31, 35, 0.85),                          /* Dark overlay with transparency */
+  ),
+
+  text: (
+    primary: map.get($github-light-palette, gray-9),    /* #1c2128 - Primary text */
+    secondary: map.get($github-light-palette, gray-6),   /* #57606a - Secondary text */
+    tertiary: map.get($github-light-palette, gray-5),    /* #8c959f - Tertiary text */
+    disabled: map.get($github-light-palette, gray-4),    /* #afb8c1 - Disabled text */
+    inverse: map.get($github-light-palette, white),      /* #ffffff - Inverse on dark bg */
+  ),
+
+  border: (
+    primary: map.get($github-light-palette, gray-3),    /* #d0d7de - Standard borders */
+    secondary: map.get($github-light-palette, gray-2),   /* #eaeef2 - Light borders */
+    tertiary: map.get($github-light-palette, gray-1),    /* #f6f8fa - Very light borders */
+  ),
+
+  divider: rgba(31, 35, 40, 0.06),                       /* Subtle divider */
+  link: (
+    base: map.get($github-light-palette, blue-5),        /* #0969da */
+    hover: map.get($github-light-palette, blue-6),       /* #033d8b */
+    visited: map.get($github-light-palette, purple-6),   /* #6e40c9 */
+  ),
+);

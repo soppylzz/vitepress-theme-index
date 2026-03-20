@@ -1,0 +1,147 @@
+@use "../abstract" as *;
+@use "sass:map";
+
+/**
+ * iOS Glass Morphism Theme
+ * 
+ * A modern glass morphism theme inspired by iOS design language
+ * with frosted glass effects and soft color palette
+ * 
+ * Theme structure:
+ * - Color Palette: Raw color definitions
+ * - Theme Color Tokens: Semantic color mappings (applied as CSS variables)
+ */
+
+/* ===== Color Palette ===== */
+$glass-light-palette: (
+  white: #ffffff,
+  black: #000000,
+
+  gray-0: #f9f9f9,
+  gray-1: #f2f2f7,
+  gray-2: #e5e5ea,
+  gray-3: #d1d1d6,
+  gray-4: #c7c7cc,
+  gray-5: #b3b3b8,
+  gray-6: #8e8e93,
+  gray-7: #636366,
+  gray-8: #3a3a3c,
+  gray-9: #1c1c1e,
+
+  blue-0: #e8f4fd,
+  blue-1: #d1ebf9,
+  blue-2: #a3d9f5,
+  blue-3: #61bff8,
+  blue-4: #34c7f3,
+  blue-5: #30b0c5,
+  blue-6: #0a84ff,
+  blue-7: #0060f1,
+
+  green-0: #e8f5e9,
+  green-1: #d4edda,
+  green-2: #bae5ba,
+  green-3: #95d5a2,
+  green-4: #52b788,
+  green-5: #2d6a4f,
+
+  red-0: #fce4ec,
+  red-1: #f8bbd0,
+  red-2: #f48fb1,
+  red-3: #ec407a,
+  red-4: #d32f2f,
+  red-5: #c62828,
+
+  orange-0: #ffe0b2,
+  orange-1: #ffcc80,
+  orange-2: #ffb74d,
+  orange-3: #ffa726,
+  orange-4: #ff7043,
+
+  purple-0: #f3e5f5,
+  purple-1: #e1bee7,
+  purple-2: #ce93d8,
+  purple-3: #ba68c8,
+  purple-4: #9575cd,
+  purple-5: #7e57c2,
+);
+
+/* ===== Semantic Theme Colors ===== */
+$glass-light-colors: (
+  primary: (
+    base: map.get($glass-light-palette, blue-6),
+    hover: map.get($glass-light-palette, blue-7),
+    active: map.get($glass-light-palette, blue-6),
+    disabled: rgba(0, 132, 255, 0.5),
+  ),
+
+  secondary: (
+    base:  map.get($glass-light-palette, gray-5),
+    hover: map.get($glass-light-palette, gray-6),
+    active: map.get($glass-light-palette, gray-7),
+    disabled: map.get($glass-light-palette, gray-2),
+  ),
+
+  success: (
+    base: map.get($glass-light-palette, green-4),
+    hover: map.get($glass-light-palette, green-5),
+    light: map.get($glass-light-palette, green-1),
+    lighter: map.get($glass-light-palette, green-0),
+  ),
+
+  warning: (
+    base: map.get($glass-light-palette, orange-3),
+    hover: map.get($glass-light-palette, orange-4),
+    light: map.get($glass-light-palette, orange-1),
+    lighter: map.get($glass-light-palette, orange-0),
+  ),
+
+  danger: (
+    base:  map.get($glass-light-palette, red-4),
+    hover: map.get($glass-light-palette, red-5),
+    light: map.get($glass-light-palette, red-1),
+    lighter: map.get($glass-light-palette, red-0),
+  ),
+
+  info: (
+    base: map.get($glass-light-palette, blue-4),
+    hover: map.get($glass-light-palette, blue-5),
+    light: map.get($glass-light-palette, blue-1),
+    lighter: map.get($glass-light-palette, blue-0),
+  ),
+
+  bg: (
+    primary: map.get($glass-light-palette, white),
+    secondary: map.get($glass-light-palette, gray-0),
+    tertiary: map.get($glass-light-palette, gray-1),
+    overlay: rgba(0, 0, 0, 0.4),
+  ),
+
+  text: (
+    primary: map.get($glass-light-palette, gray-9),
+    secondary: map.get($glass-light-palette, gray-7),
+    tertiary: map.get($glass-light-palette, gray-6),
+    disabled: map.get($glass-light-palette, gray-5),
+    inverse: map.get($glass-light-palette, white),
+  ),
+
+  border: (
+    primary: rgba(0, 0, 0, 0.1),
+    secondary: rgba(0, 0, 0, 0.06),
+    tertiary: rgba(0, 0, 0, 0.04),
+  ),
+
+  divider: rgba(0, 0, 0, 0.08),
+  link: (
+    base:  map.get($glass-light-palette, blue-6),
+    hover: map.get($glass-light-palette, blue-7),
+    visited: map.get($glass-light-palette, purple-5),
+  ),
+
+  /* Special theme token for ios-glass */
+  /* Glass Blur Background (semi-transparent) */
+  bg-glass: (
+    base: rgba(255, 255, 255, 0.72),
+    secondary: rgba(245, 245, 250, 0.6),
+    tertiary: rgba(249, 249, 249, 0.8),
+  )
+);

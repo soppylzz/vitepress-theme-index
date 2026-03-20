@@ -1,0 +1,22 @@
+{
+  "name": "@vitepress-theme-index/eslint",
+  "private": true,
+  "type": "module",
+  "author": "soppylzz",
+  "packageManager": "pnpm@10.12.4",
+  "main": "index.js",
+  "peerDependencies": {
+    "eslint": "^9.39.4"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-vue": "^10.8.0",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.57.1"
+  }
+}
