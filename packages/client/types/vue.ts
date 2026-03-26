@@ -23,14 +23,4 @@ type ToMaybeRefOrGetterState<T, Ks extends keyof T = keyof T> = {
   [K in keyof T]: K extends Ks ? ToMaybeRefOrGetter<T[K]> : T[K];
 };
 
-type HasSlots<Optional extends string = never, Required extends string = never> = {
-  slots: { default: Component } & { [K in Required]: Component } & { [K in Optional]?: Component };
-};
-
-export type {
-  VueReadonly,
-  CustomComputedRef,
-  EmitsTypeFromHooks,
-  ToMaybeRefOrGetterState,
-  HasSlots,
-};
+export type { VueReadonly, CustomComputedRef, EmitsTypeFromHooks, ToMaybeRefOrGetterState };

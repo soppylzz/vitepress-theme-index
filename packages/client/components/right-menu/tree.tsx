@@ -10,6 +10,7 @@ import {
   VtiRMenuText,
 } from "./items";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
+import { omit } from "lodash-unified";
 
 const rightMenuItemMap: Record<MenuItemType, Component | undefined> = {
   "sub-menu": VtiRMenuSubMenu,
@@ -22,23 +23,21 @@ const rightMenuItemMap: Record<MenuItemType, Component | undefined> = {
 
 function renderRightMenu(records?: MenuItemRecord) {
   return Object.entries(records ?? {}).map(([key, ctx]) => {
-    const { type, hooks, ...props } = ctx;
+    const { type, hooks, ...res } = ctx;
     if (ctx.type === "custom") {
       return createVNode(ctx.component, { key });
     }
 
     const comp = rightMenuItemMap[type];
-    if (!comp) {
-      throw new Error(`unknown menu item type: ${type}`);
-    }
+    if (!comp) throw new Error(`unknown menu item type: ${type}`);
 
-    if (hasOwnProperty(props, "children")) {
-      const { children = {}, ...res } = props;
-      return createVNode(comp, { key, ...res, ...hooks }, () =>
-        renderRightMenu(children as MenuItemRecord)
+    const cleanProps = omit(res, "children");
+    if (hasOwnProperty(res, "children")) {
+      return createVNode(comp, { key, ...cleanProps, ...hooks }, () =>
+        renderRightMenu((res?.children ?? {}) as MenuItemRecord)
       );
     }
-    return createVNode(comp, { key, ...props, ...hooks });
+    return createVNode(comp, { key, ...cleanProps, ...hooks });
   });
 }
 

@@ -4,7 +4,7 @@ import type { IconItemEmits, IconItemProps } from "../../types";
 import { useBem, useIcon, useMenuItem } from "../../composables";
 import { useRightMenuProvide } from "../../utils";
 
-const emits = defineEmits</* @vue-ignore */ IconItemEmits>();
+const emits = defineEmits<IconItemEmits>();
 const props = withDefaults(defineProps<IconItemProps>(), { closeOnActivate: true });
 
 const { close } = useRightMenuProvide();

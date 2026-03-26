@@ -6,7 +6,7 @@ import { useBem, useIcon, useMenuItem, useProvidePath, useText } from "../../com
 import { useNavMove } from "../../utils";
 import { RightMenu } from "./menu";
 
-const emits = defineEmits</* @vue-ignore */ SubMenuItemEmits>();
+const emits = defineEmits<SubMenuItemEmits>();
 const props = withDefaults(defineProps<SubMenuItemProps>(), {
   size: "medium",
   activateEvent: "mouseenter",
@@ -81,10 +81,10 @@ const kls = computed(() => ({
       <slot />
     </RightMenu>
     <div ref="button" :class="kls.container" @mouseenter="expandFn" @click.stop="expandFn">
-      <span :class="kls.left"><component :is="useIcon(props.icon)" v-if="props.icon" /></span>
+      <span :class="kls.left"><component :is="useIcon(props?.icon)" v-if="props?.icon" /></span>
       <span :class="kls.text">{{ useText(props.text) }}</span>
       <span :class="kls.expand"
-        ><component :is="useIcon(props.expandIcon)" v-if="props.expandIcon"
+        ><component :is="useIcon(props?.expandIcon)" v-if="props?.expandIcon"
       /></span>
     </div>
   </div>

@@ -7,13 +7,12 @@ import { resolveIndexLocales } from "./resolve";
 import defaultLocales from "./default";
 import { indexI18nKey } from "../../types";
 
-export async function installIndexI18n(ctx: EnhanceAppContext, config: I18NConfig) {
+export async function installI18n(ctx: EnhanceAppContext, config: I18NConfig) {
   const { initialLocale, messages, routes } = await resolveIndexLocales(
     ctx.siteData.value,
     config,
     defaultLocales
   );
-
   const i18n = createI18n({
     legacy: false,
     locale: initialLocale,
@@ -21,14 +20,11 @@ export async function installIndexI18n(ctx: EnhanceAppContext, config: I18NConfi
     globalInjection: true,
     messages,
   });
-
   ctx.app.use(i18n);
-  ctx.app.provide(indexI18nKey, {
-    routes: routes,
-  });
+  ctx.app.provide(indexI18nKey, { routes: routes });
 }
 
-export function setupIndexI18n() {
+export function setupI18n() {
   // Must be called at the top of a `setup` function
   const { locale } = useI18n();
   const { localeIndex } = useData();

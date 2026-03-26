@@ -10,11 +10,7 @@ const ns = useBem("nav-brand");
 
 <template>
   <a v-bind="attr">
-    <slot name="nav-brand-before" />
-    <slot name="nav-brand">
-      <img :src="props.brand" alt="Brand" />
-    </slot>
+    <img :src="props.brand" alt="Brand" />
     <span>{{ useText(props.text) }}</span>
-    <slot name="nav-brand-after" />
   </a>
 </template>

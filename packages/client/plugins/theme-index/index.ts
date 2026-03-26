@@ -1,21 +1,23 @@
 import type { EnhanceAppContext } from "vitepress";
 import indexConfig from "virtual:index-config";
-import type { IndexClientConfig, MenuItemRecord } from "../../types";
-import { installIndexI18n, setupIndexI18n } from "../i18n";
-import { installIndexRightMenu } from "../right-menu";
-import { installIndexIcons } from "../icon";
-import { installIndexTheme } from "./theme";
+import type { IndexClientConfig } from "../../types";
+import { installI18n, setupI18n } from "../i18n";
+import { installRightMenu } from "../right-menu";
+import { installIcons } from "../icon";
+import { installTheme } from "./theme";
+import { installViews } from "../views";
 
 /* =============== main =============== */
-async function installIndex(ctx: EnhanceAppContext, config: IndexClientConfig<MenuItemRecord>) {
-  await installIndexI18n(ctx, indexConfig?.i18n);
-  installIndexRightMenu(ctx, config?.rightMenu);
-  installIndexTheme(ctx, config?.theme);
-  installIndexIcons(ctx);
+async function installIndex(ctx: EnhanceAppContext, config: IndexClientConfig) {
+  installIcons(ctx);
+  installTheme(ctx, config?.theme);
+  await installI18n(ctx, indexConfig?.i18n);
+  installRightMenu(ctx, config?.rightMenu);
+  installViews(ctx, config);
 }
 
 export function setupIndex() {
-  setupIndexI18n();
+  setupI18n();
 }
 
 export { installIndex };

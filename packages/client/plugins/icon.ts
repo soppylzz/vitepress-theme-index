@@ -19,9 +19,9 @@ const vtiIcons = {
   VtiISun,
 };
 
-function installIndexIcons(ctx: EnhanceAppContext) {
+function installIcons(ctx: EnhanceAppContext) {
   Object.entries(vtiIcons).forEach(([name, component]) => {
     ctx.app.component(name, component);
   });
 }
-export { installIndexIcons };
+export { installIcons };

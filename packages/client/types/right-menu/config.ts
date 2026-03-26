@@ -1,5 +1,5 @@
 import type { Component } from "vue";
-import type { BaseProps, EventHooks, EventProps, ExpandHooks, BaseHooks } from "./base";
+import type { BaseProps, EventHooks, EventProps, ExpandHooks } from "./base";
 import type { IndexActivateEvent, IndexIcon, IndexText } from "../global";
 import type { MenuItemAlign, MenuSize, MenuItemType } from "./unit";
 import type { EmitsTypeFromHooks } from "../vue";
@@ -38,14 +38,14 @@ type IconItemHooks = EventHooks;
 type GroupItemHooks = ExpandHooks;
 type SubMenuItemHooks = ExpandHooks;
 
-type GroupItemEmits = EmitsTypeFromHooks<GroupItemHooks>;
-type IconItemEmits = EmitsTypeFromHooks<IconItemHooks>;
-type SubMenuItemEmits = EmitsTypeFromHooks<SubMenuItemHooks>;
-type TextItemEmits = EmitsTypeFromHooks<TextItemHooks>;
+type TextItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<TextItemHooks>;
+type IconItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<IconItemHooks>;
+type GroupItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<GroupItemHooks>;
+type SubMenuItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<SubMenuItemHooks>;
 
 type BuildRMenuConfig<Type extends MenuItemType, Props extends object = never, Hooks = never> = {
   type: Type;
-} & { hooks?: Hooks } & ([Props] extends [never] ? Record<string, never> : Props);
+} & { hooks?: Hooks } & ([Props] extends [never] ? {} : Props);
 
 type HasChildConfig = { children?: MenuItemRecord };
 
@@ -74,9 +74,9 @@ export type {
   GroupItemProps,
   DividerItemProps,
   SubMenuItemProps,
+  TextItemEmits,
   IconItemEmits,
   GroupItemEmits,
-  TextItemEmits,
   SubMenuItemEmits,
   // item config
   TextItemConfig,

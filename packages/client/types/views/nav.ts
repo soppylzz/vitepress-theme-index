@@ -1,20 +1,30 @@
-import type { IndexActivateEvent, IndexResponse, IndexIcon, IndexLink, IndexText } from "../global";
+import type {
+  IndexActivateEvent,
+  IndexResponse,
+  IndexIcon,
+  IndexLink,
+  IndexText,
+  IndexPlacement,
+} from "../global";
 import type { Component } from "vue";
-import type { HasSlots } from "../vue";
+import type { MaybeArray } from "@vitepress-theme-index/shared";
 
-type NavItemShow = IndexResponse | "auto";
-type NavItemType = "brand" | "menu" | "event" | "theme" | "divider" | "space" | "custom";
+type NavItemShow = true | MaybeArray<IndexResponse>;
+type NavItemType = "brand" | "menu" | "button" | "theme" | "divider" | "space" | "custom";
+type NavMenuItemType = "group" | "button";
 
 interface NavBrandProps extends IndexLink {
   text: IndexText;
   brand?: string;
 }
 
-type NavEventProps = (
-  | { text: IndexText; icon?: IndexIcon }
-  | { icon: IndexIcon; tooltip?: IndexText }
-) &
-  IndexLink;
+type NavButtonIconProps = {
+  icon: IndexIcon;
+  tooltip?: IndexText;
+  placement?: Exclude<IndexPlacement, "top">;
+} & IndexLink;
+type NavButtonTextProps = { text: IndexText; icon?: IndexIcon } & IndexLink;
+type NavButtonProps = NavButtonIconProps | NavButtonTextProps;
 
 interface NavThemeProps {
   carousel?: "column" | "row";
@@ -30,48 +40,57 @@ interface NavMenuProps {
 type NavMenuTextProps = IndexLink & { text: IndexText; icon?: IndexIcon };
 type NavMenuGroupProps = { text: IndexText; closeable?: boolean };
 
-type NavMenuTextConfig = NavMenuTextProps & { type: "menu-text" };
+type NavMenuTextConfig = NavMenuTextProps & { type: "button" };
 type NavMenuGroupConfig = NavMenuGroupProps & {
-  type: "menu-group";
+  type: "group";
   children?: NavMenuItemConfig[];
 };
 type NavMenuItemConfig = NavMenuTextConfig | NavMenuGroupConfig;
 
 type BuildNavConfig<T extends NavItemType, Props = never> = ([Props] extends [never]
-  ? Record<string, never>
-  : Props) & {
-  type: T;
-  show?: NavItemShow;
-  match?: string;
-};
+  ? {}
+  : Props) & { type: T } & (
+    | { target: "screen" }
+    | { target?: "header" | "both"; show?: NavItemShow }
+  );
 
 type NavSpaceConfig = BuildNavConfig<"space">;
 type NavDividerConfig = BuildNavConfig<"divider">;
-type NavBrandConfig = BuildNavConfig<"brand", NavBrandProps> &
-  HasSlots<"nav-brand-before" | "nav-brand" | "nav-brand-after">;
-type NavThemeConfig = BuildNavConfig<"theme", NavThemeProps>;
-type NavEventConfig = BuildNavConfig<"event", NavEventProps> & { onActivate?: () => void };
+type NavBrandConfig = BuildNavConfig<"brand", NavBrandProps>;
+type NavButtonConfig = BuildNavConfig<"button", NavButtonProps> & { onActivate?: () => void };
 type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: NavMenuItemConfig[] };
 type NavCustomConfig = BuildNavConfig<"custom"> & { component: Component };
+type NavThemeConfig = BuildNavConfig<"theme", NavThemeProps>;
 
 type NavItemConfig =
+  | NavMenuConfig
   | NavSpaceConfig
   | NavDividerConfig
   // real item config
   | NavBrandConfig
-  | NavThemeConfig
-  | NavEventConfig
-  | NavMenuConfig
-  | NavCustomConfig;
+  | NavButtonConfig
+  | NavCustomConfig
+  | NavThemeConfig; // TODO: wait to realize
 
-type IndexNavConfig =
-  | { i18n: "vue-i18n"; items: NavItemConfig[] }
-  | { i18n?: "vitepress"; items: Record<string, NavItemConfig> };
+type IndexNavConfig = { items: NavItemConfig[] | Record<string, NavItemConfig[]> };
 
 export type {
+  NavItemType,
+  NavMenuItemType,
+  // sub-props
+  NavButtonIconProps,
+  NavButtonTextProps,
+  NavMenuTextProps,
+  NavMenuGroupProps,
   // props
   NavBrandProps,
+  NavButtonProps,
+  NavMenuProps,
   NavThemeProps,
   // config
   IndexNavConfig,
+  NavItemConfig,
+  NavMenuItemConfig,
+  NavCustomConfig,
+  NavMenuConfig,
 };

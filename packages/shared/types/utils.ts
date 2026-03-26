@@ -3,42 +3,39 @@ type MaybeArray<T> = T[] | readonly T[] | T;
 type MaybePromise<T> = T | Promise<T>;
 
 /* =============== recursion helpers =============== */
-type StopRecursion =
+type PrimitiveLike =
   | null
   | string
   | number
   | boolean
   | symbol
   | bigint
+  | any[]
+  | ((...args: any[]) => any)
   | Date
-  | RegExp
-  | ((...args: any[]) => any);
+  | RegExp;
 
-type DeepPartial<T> = T extends StopRecursion | undefined
-  ? T
-  : T extends readonly (infer U)[]
-    ? readonly DeepPartial<U>[]
-    : T extends unknown
-      ? { [K in keyof T]?: DeepPartial<T[K]> }
-      : never;
+type TransformMode = "partial" | "required" | "readonly";
 
-type DeepRequired<T> = T extends StopRecursion
-  ? T
-  : T extends undefined
-    ? never
-    : T extends readonly (infer U)[]
-      ? readonly DeepRequired<U>[]
-      : T extends unknown
-        ? { [K in keyof T]-?: DeepRequired<T[K]> }
-        : never;
+type TransformMethod<
+  T extends object,
+  ORIGIN = PrimitiveLike,
+  MODE extends TransformMode = "partial",
+> = {
+  partial: { [K in keyof T]?: DeepTransform<T[K], ORIGIN, MODE> };
+  required: { [K in keyof T]-?: DeepTransform<T[K], ORIGIN, MODE> };
+  readonly: { readonly [K in keyof T]: DeepTransform<T[K], ORIGIN, MODE> };
+}[MODE];
 
-type DeepReadonly<T> = T extends StopRecursion | undefined
-  ? T
-  : T extends readonly (infer U)[]
-    ? readonly DeepReadonly<U>[]
-    : T extends unknown
-      ? { readonly [K in keyof T]: DeepReadonly<T[K]> }
-      : never;
+type DeepTransform<
+  T,
+  ORIGIN = PrimitiveLike,
+  MODE extends TransformMode = "partial",
+> = T extends ORIGIN ? T : T extends object ? TransformMethod<T, ORIGIN, MODE> : never;
+
+type DeepPartial<T> = DeepTransform<T, PrimitiveLike | undefined>;
+type DeepRequired<T> = DeepTransform<T, PrimitiveLike, "required">;
+type DeepReadonly<T> = DeepTransform<T, PrimitiveLike, "readonly">;
 
 /* =============== merge helpers =============== */
 type WithDefault<T, D> = [T] extends [never] ? D : T;

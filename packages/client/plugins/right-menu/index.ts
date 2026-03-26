@@ -126,7 +126,7 @@ function createIndexRightMenu<Records extends MenuItemRecord = never>(
   };
 }
 
-function installIndexRightMenu<Records extends MenuItemRecord = never>(
+function installRightMenu<Records extends MenuItemRecord = never>(
   ctx: EnhanceAppContext,
   config?: UserIndexRightMenuConfig<Records>
 ) {
@@ -134,4 +134,4 @@ function installIndexRightMenu<Records extends MenuItemRecord = never>(
   ctx.app.use(menu);
 }
 
-export { installIndexRightMenu };
+export { installRightMenu };

@@ -1,27 +1,27 @@
 import type { IndexIcon, IndexLink } from "../../types";
-import { EXTERNAL_URL_RE, indexClientThemeKey } from "../../types";
-import { pascalCase } from "../../utils";
+import { indexNavKey, indexClientThemeKey } from "../../types";
+import { checkExternal, pascalCase } from "../../utils";
 import { isString } from "lodash-unified";
 import { normalizeLink } from "./utils";
-import { computed, inject, toRefs, unref } from "vue";
+import { computed, inject, toRefs } from "vue";
 
 function useIcon(icon: IndexIcon) {
-  return isString(icon)
-    ? icon.startsWith("VtiI") || icon.startsWith("vti-i-")
+  return !isString(icon)
+    ? icon
+    : icon.startsWith("VtiI") || icon.startsWith("vti-i-")
       ? pascalCase(icon)
-      : `VtiI${pascalCase(icon)}`
-    : icon;
+      : `VtiI${pascalCase(icon)}`;
 }
 
 function useLink<T extends IndexLink>(link: T) {
-  const { href, target } = link;
-  const isExternal = !!((href && EXTERNAL_URL_RE.test(href)) || target === "_blank");
+  const { href, target } = toRefs(link);
+  const isExternal = computed(() => !!(checkExternal(href.value) || target.value === "_blank"));
 
-  const attr = {
-    rel: isExternal ? "noreferrer" : undefined,
-    href: href ? normalizeLink(href) : undefined,
-    target: target ?? (isExternal ? "_blank" : undefined),
-  };
+  const attr = computed(() => ({
+    rel: isExternal.value ? "noreferrer" : undefined,
+    href: href.value ? normalizeLink(href.value) : undefined,
+    target: target.value ?? (isExternal.value ? "_blank" : undefined),
+  }));
 
   return { attr, isExternal };
 }
@@ -32,4 +32,10 @@ function useIndexTheme() {
   return ctx;
 }
 
-export { useIndexTheme, useIcon, useLink };
+function useIndexNav() {
+  const ctx = inject(indexNavKey);
+  if (!ctx) throw new Error("useIndexNav must be used within IndexNavProvider");
+  return ctx;
+}
+
+export { useIndexTheme, useIcon, useLink, useIndexNav };

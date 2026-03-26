@@ -4,7 +4,7 @@ import type { TextItemEmits, TextItemProps } from "../../types";
 import { useBem, useIcon, useMenuItem, useText } from "../../composables";
 import { useRightMenuProvide } from "../../utils";
 
-const emits = defineEmits</* @vue-ignore */ TextItemEmits>();
+const emits = defineEmits<TextItemEmits>();
 const props = withDefaults(defineProps<TextItemProps>(), { align: "start", closeOnActivate: true });
 
 const { close } = useRightMenuProvide();

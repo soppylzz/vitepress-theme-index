@@ -1,12 +1,11 @@
-import { EXTERNAL_URL_RE } from "../../types";
 import { useData, withBase } from "vitepress";
-import { getCurrentInstance } from "vue";
+import { checkExternal } from "../../utils";
 
 // refer to vitepress default theme
 function normalizeLink(url: string) {
   if (!url) return url;
 
-  const isExternal = EXTERNAL_URL_RE.test(url);
+  const isExternal = checkExternal(url);
   if (isExternal) return url;
 
   const { site } = useData();

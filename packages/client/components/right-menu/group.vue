@@ -3,7 +3,7 @@ import { computed, ref, useSlots } from "vue";
 import type { GroupItemEmits, GroupItemProps } from "../../types";
 import { useBem, useMenuItem, useProvidePath, useText } from "../../composables";
 
-const emits = defineEmits</* @vue-ignore */ GroupItemEmits>();
+const emits = defineEmits<GroupItemEmits>();
 const props = withDefaults(defineProps<GroupItemProps>(), {
   row: 1,
   column: 4,

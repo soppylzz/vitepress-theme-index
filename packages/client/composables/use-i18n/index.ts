@@ -39,6 +39,7 @@ function useI18n() {
 
   return {
     localeIndex: readonly(localeIndex),
+    localePrefix: computed(() => getPrefix(localeIndex.value)),
     currentRoutes,
     t: translate,
   };
