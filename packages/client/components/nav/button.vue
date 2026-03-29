@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { NavButtonIconProps, NavButtonProps, NavButtonTextProps } from "../../types";
+import type { NavButtonProps } from "../../types";
 import { useBem, useIcon, useLink, useText } from "../../composables";
+import { hasOwnProperty } from "@vitepress-theme-index/shared";
 
 const props = defineProps<NavButtonProps>();
 const ns = useBem("nav-button");
 
 const { attr } = useLink(props);
 
-const isTextMode = (props: NavButtonProps): props is NavButtonTextProps => "text" in props;
-const isIconMode = (props: NavButtonProps): props is NavButtonIconProps => "icon" in props;
+const isTextMode = (props) => hasOwnProperty(props, "text") && !!props.text;
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const isIconMode = (props: NavButtonProps): props is NavButtonIconProps => "icon
       <component :is="useIcon(props.icon)" v-if="props?.icon" />
       <span>{{ useText(props.text) }}</span>
     </a>
-    <template v-if="isIconMode(props)">
+    <template v-else>
       <a v-bind="attr"><component :is="useIcon(props.icon)" /></a>
       <div v-if="props?.tooltip">
         <div><!--  Tooltip Arrow  --></div>

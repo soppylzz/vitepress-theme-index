@@ -9,8 +9,8 @@ const props = defineProps<NavMenuProps>();
   <div>
     <component :is="useIcon(props.icon)" v-if="props?.icon" />
     <span>{{ useText(props.text) }}</span>
-  </div>
-  <div>
-    <slot />
+    <div>
+      <slot />
+    </div>
   </div>
 </template>

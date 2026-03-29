@@ -1,22 +1,43 @@
-import type { UserIndexPluginConfig } from "../types";
-import { createIndexPluginContext } from "./base";
-import { useImportPlugin } from "./import";
-import { useConfigPlugin } from "./config";
-import { useLocalePlugin } from "./locale";
-import type { Plugin } from "vite";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import type { IndexPluginInitConfig, IndexPluginContext } from "../types";
+import { createConfigPlugin } from "./config";
+import type { DeepPartial } from "@vitepress-theme-index/shared";
+import { PLUGIN_PREFIX } from "../const";
+import { createI18nPlugin } from "./i18n";
+import { createAdditionPlugin } from "./addition";
 
-function vitepressThemeIndex(config: UserIndexPluginConfig = {}): Plugin[] {
-  const { ctx, contextPlugin } = createIndexPluginContext(config);
-  const importPlugin = useImportPlugin(ctx);
-  const configPlugin = useConfigPlugin(ctx);
-  const localePlugin = useLocalePlugin(ctx);
+const ctx: IndexPluginContext = {};
+function createPluginContext(): Plugin {
+  return {
+    name: `${PLUGIN_PREFIX}/base`,
+    enforce: "pre",
+    configResolved(config: ResolvedConfig) {
+      ctx.viteConfig = config;
+    },
+    configureServer(server: ViteDevServer) {
+      console.log(ctx.viteServer);
+      ctx.viteServer = server;
+      console.log(ctx.viteServer);
+    },
+  };
+}
 
+function vitepressThemeIndex(config?: DeepPartial<IndexPluginInitConfig>): Plugin[] {
+  const contextPlugin = createPluginContext();
+  const configPlugin = createConfigPlugin(ctx, config);
+  const additionPlugin = createAdditionPlugin(ctx);
+  const i18nPlugin = createI18nPlugin(ctx);
   return [
-    // The order of plugin injection is crucial.
+    /**
+     * ⚠️ Notes:
+     * - This module does not support reactive updates at runtime.
+     * - Make sure to properly manage the lifecycle of `ctx` within Vite.
+     * - The order of plugin injection is crucial.
+     */
     contextPlugin,
-    importPlugin,
     configPlugin,
-    localePlugin,
+    additionPlugin,
+    i18nPlugin,
   ];
 }
 

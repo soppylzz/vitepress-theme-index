@@ -1,5 +1,4 @@
 import type { EnhanceAppContext } from "vitepress";
-import indexConfig from "virtual:index-config";
 import type { IndexClientConfig } from "../../types";
 import { installI18n, setupI18n } from "../i18n";
 import { installRightMenu } from "../right-menu";
@@ -10,10 +9,11 @@ import { installViews } from "../views";
 /* =============== main =============== */
 async function installIndex(ctx: EnhanceAppContext, config: IndexClientConfig) {
   installIcons(ctx);
-  installTheme(ctx, config?.theme);
-  await installI18n(ctx, indexConfig?.i18n);
+  await installI18n(ctx);
+
   installRightMenu(ctx, config?.rightMenu);
-  installViews(ctx, config);
+  installTheme(ctx, config?.theme);
+  await installViews(ctx, config);
 }
 
 export function setupIndex() {

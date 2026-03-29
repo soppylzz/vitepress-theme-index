@@ -12,7 +12,10 @@ function generateExternals(extend: string[] = []) {
     // this project is a tool lib, won't run with 'umd', deps must be externals
     const externals = [...new Set([...peerDependencies, ...dependencies, ...extend])];
     return externals.some(
-      (external_pkg) => external_pkg === id || id.startsWith(`${external_pkg}/`)
+      (external_pkg) =>
+        external_pkg === id ||
+        id.startsWith(`${external_pkg}/`) ||
+        id.startsWith(`${external_pkg}:`)
     );
   };
 }

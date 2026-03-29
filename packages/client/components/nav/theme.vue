@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { NavThemeProps } from "../../types";
-import { useBem, useIndexTheme } from "../../composables";
+import { useBem, useIndex } from "../../composables";
 
 const props = defineProps<NavThemeProps>();
-const { ctx, cycle, set } = useIndexTheme();
+const { theme } = useIndex();
 
 const ns = useBem("nav-theme");
 </script>

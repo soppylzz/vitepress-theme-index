@@ -1,7 +1,7 @@
 import type { Component, VNode } from "vue";
-import { computed, createVNode, defineComponent, vShow, withDirectives } from "vue";
-import { useBem, useI18n, useIndexNav, useIndexTheme } from "../../composables";
-import { isArray, isBoolean, isUndefined, omit } from "lodash-unified";
+import { createVNode, defineComponent, vShow, withDirectives } from "vue";
+import { useBem, useIndex, useViewItems } from "../../composables";
+import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
   IndexResponse,
   NavCustomConfig,
@@ -115,14 +115,12 @@ function renderNavMenu(items?: NavMenuItemConfig[]) {
 const VtiNav = defineComponent({
   name: "VtiNav",
   setup() {
-    const { localeIndex } = useI18n();
-    const { items: raw } = useIndexNav();
-    const items = computed<NavItemConfig[]>(() => {
-      if (raw && isArray(raw)) return raw;
-      return raw?.[localeIndex.value] ?? [];
-    });
+    const {
+      nav,
+      theme: { response },
+    } = useIndex();
+    const items = useViewItems(nav, []);
 
-    const { response } = useIndexTheme();
     return () => {
       const current = response.value;
 

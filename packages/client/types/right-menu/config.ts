@@ -1,7 +1,7 @@
 import type { Component } from "vue";
 import type { BaseProps, EventHooks, EventProps, ExpandHooks } from "./base";
 import type { IndexActivateEvent, IndexIcon, IndexText } from "../global";
-import type { MenuItemAlign, MenuSize, MenuItemType } from "./unit";
+import type { MenuItemAlign, MenuSize } from "./unit";
 import type { EmitsTypeFromHooks } from "../vue";
 
 interface DividerItemProps extends /* @vue-ignore */ BaseProps {
@@ -64,10 +64,12 @@ type MenuItemConfig =
   | GroupItemConfig
   | SubMenuItemConfig
   | CustomItemConfig;
+type MenuItemType = MenuItemConfig["type"];
 
 type MenuItemRecord = { [k: string]: MenuItemConfig };
 
 export type {
+  MenuItemType,
   // item base
   TextItemProps,
   IconItemProps,

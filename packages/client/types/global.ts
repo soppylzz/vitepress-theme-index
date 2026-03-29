@@ -13,7 +13,7 @@ type IndexText = string | ((t?: ComposerTranslation) => string);
 type IndexIcon = string | Component;
 type IndexLink = {
   href?: string;
-  target?: IndexLinkMode;
+  _target?: IndexLinkMode;
 };
 
 export { EXTERNAL_URL_RE };

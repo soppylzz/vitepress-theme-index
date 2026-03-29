@@ -1,75 +1,145 @@
-import { PLUGIN_PREFIX } from "../const";
-import type { IndexPluginContext } from "../types";
-import type { LoadFn } from "../utils";
-import { resolveWatchConfig } from "../utils";
-import { type Plugin } from "vite";
-import type { ResolvedIndexConfig } from "@vitepress-theme-index/shared";
-import { pluginLogger, VIRTUAL_INDEX_CONFIG_PKG } from "@vitepress-theme-index/shared";
+import type {
+  IndexImportPluginConfig,
+  IndexPluginContext,
+  IndexPluginInitConfig,
+  ResolvedIndexPluginConfig,
+  UserIndexPluginConfig,
+  ImportAlias,
+} from "../types";
+import { importAliasEnvs } from "../types";
+import {
+  CONFIG_PATTERN,
+  DEFAULT_IMPORT_CONFIG,
+  DEFAULT_PLUGIN_CONFIG,
+  NODE_EXTENSIONS,
+  PLUGIN_PREFIX,
+  VITE_EXTENSIONS,
+} from "../const";
+import { type Alias, type Plugin, type ViteDevServer } from "vite";
+import { normalizeAlias, ssrRewriteLoadModules } from "../utils";
+import { isAbsolute, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import type { DeepPartial } from "@vitepress-theme-index/shared";
+import { pluginLogger, resolveDefineAble } from "@vitepress-theme-index/shared";
+import fs from "node:fs";
+import { merge } from "lodash-unified";
+import { i18nResolvedId } from "./i18n";
+import { addResolvedId } from "./addition";
 
-export function useConfigPlugin(ctx: IndexPluginContext<LoadFn>): Plugin {
-  let resolvedConfig: ResolvedIndexConfig;
+const PKG_ROOT = resolve(fileURLToPath(import.meta.url), "..", "..", "..");
+const CLIENT_MOD = resolve(PKG_ROOT, "client");
+const NODE_MOD = resolve(PKG_ROOT, "node");
 
-  let _watcherRegistered = false;
-  let debounceTimer: NodeJS.Timeout | null = null;
+const alias: ImportAlias = {};
+function setAlias(key: keyof ImportAlias, value: Alias[] = []) {
+  if (!importAliasEnvs.includes(key)) return;
+  if (key in alias) pluginLogger.warn(`Import ${key} already exists`);
+  alias[key] = value;
+}
 
-  const virtualId = VIRTUAL_INDEX_CONFIG_PKG;
-  const resolvedId = `\0${VIRTUAL_INDEX_CONFIG_PKG}`;
+function isConfigFile(absPath: string, extensions: string[] | readonly string[]) {
+  if (!extensions.some((ext) => absPath.endsWith(ext))) return false;
+  if (!fs.existsSync(absPath)) return false;
 
-  const loadConfig = async () => {
-    if (!ctx.loader) pluginLogger.error("Loader not found in plugin context");
-    try {
-      resolvedConfig = await ctx.loader!.load({ alias: ctx.alias?.node ?? [] });
-    } catch (e) {
-      pluginLogger.error(`Failed to load config: ${e}`);
+  const stat = fs.statSync(absPath);
+  return stat.isFile();
+}
+
+async function loadPluginConfig(
+  ctx: IndexPluginContext,
+  config: Required<IndexImportPluginConfig>,
+  fix: UserIndexPluginConfig = {}
+) {
+  const { dir, file } = config;
+
+  const hasVite = !!ctx.viteServer && !!ctx.viteConfig;
+  const extensions = hasVite ? VITE_EXTENSIONS : NODE_EXTENSIONS;
+
+  function findConfigFile() {
+    if (file) {
+      const absPath = isAbsolute(file) ? file : resolve(process.cwd(), dir, file);
+      return isConfigFile(absPath, extensions) ? absPath : null;
     }
-  };
+    for (const ext of extensions) {
+      const maybeFile = resolve(process.cwd(), dir, `${CONFIG_PATTERN}${ext}`);
+      if (isConfigFile(maybeFile, extensions)) return maybeFile;
+    }
+    return null;
+  }
+
+  let inputConfig: Record<string, any> = {};
+  const filePath = findConfigFile();
+
+  if (filePath) {
+    try {
+      const mod = !hasVite
+        ? await import(/* @vite-ignore */ pathToFileURL(filePath).href)
+        : await ssrRewriteLoadModules(ctx.viteServer!, filePath, {
+            alias: alias?.node ?? [],
+          });
+      inputConfig = await resolveDefineAble<UserIndexPluginConfig>(mod?.default ?? {});
+    } catch {
+      pluginLogger.warn("load config error, use default config instead");
+    }
+  }
+  ctx.plugins = merge(DEFAULT_PLUGIN_CONFIG, fix, inputConfig) as ResolvedIndexPluginConfig;
+  return { filePath };
+}
+
+function resolveImportPluginConfig(
+  input?: Partial<IndexImportPluginConfig>
+): Required<IndexImportPluginConfig> {
+  return { ...input, ...DEFAULT_IMPORT_CONFIG };
+}
+
+export function createConfigPlugin(
+  ctx: IndexPluginContext,
+  config?: DeepPartial<IndexPluginInitConfig>
+): Plugin {
+  const { imports, ...plugins } = config ?? {};
+  const resolved = resolveImportPluginConfig(imports);
+
+  // resolve "vitepress-theme-index" as "vitepress-theme-index/client" default
+  switch (resolved.mode) {
+    case "unify": {
+      setAlias("client", [{ find: /^vitepress-theme-index$/, replacement: CLIENT_MOD }]);
+      setAlias("node", [{ find: /^vitepress-theme-index$/, replacement: NODE_MOD }]);
+      break;
+    }
+    case "normal":
+    default: {
+      setAlias("client", [
+        { find: /^vitepress-theme-index$/, replacement: "vitepress-theme-index/client" },
+      ]);
+    }
+  }
+
+  function invalidateModes(ids: string[], server: ViteDevServer) {
+    ids.forEach((id) => {
+      const mod = server.moduleGraph.getModuleById(id);
+      if (mod) server.moduleGraph.invalidateModule(mod);
+    });
+  }
 
   return {
-    name: `${PLUGIN_PREFIX}/config`,
+    name: `${PLUGIN_PREFIX}/import`,
+    config(config) {
+      config.resolve ||= {};
+      const userAlias = normalizeAlias(config.resolve?.alias);
+      config.resolve.alias = [...userAlias, ...(alias?.client ?? [])];
+    },
     async buildStart() {
-      await loadConfig();
+      const { filePath } = await loadPluginConfig(ctx, resolved);
+      const { viteServer } = ctx;
 
-      const { config, viteServer } = ctx;
+      if (!viteServer) return;
+      viteServer.watcher.add(filePath).on("change", async (file) => {
+        pluginLogger.info(`config file changed: ${file}`);
+        await loadPluginConfig(ctx, resolved);
 
-      // resolve config
-      const filePath = ctx.loader!.filePath;
-      const { watchEnabled, debounceTime } = resolveWatchConfig(config.watch);
-
-      if (watchEnabled && viteServer && filePath && !_watcherRegistered) {
-        _watcherRegistered = true;
-        // watch config file
-        viteServer.watcher.add(filePath).on("change", (changed) => {
-          if (changed !== filePath) return;
-
-          if (debounceTimer) clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(async () => {
-            pluginLogger.info(`Config file changed: ${filePath}`);
-
-            ctx.loader!.reset();
-            await loadConfig();
-
-            const mod = viteServer.moduleGraph.getModuleById(resolvedId);
-            if (mod) {
-              viteServer.moduleGraph.invalidateModule(mod);
-              try {
-                // Reload the virtual module
-                await viteServer.ssrLoadModule(resolvedId);
-                pluginLogger.info(`Config module reloaded`);
-              } catch (e) {
-                pluginLogger.error(`Failed to reload module: ${e}`);
-              }
-            }
-
-            viteServer.ws.send({ type: "full-reload", path: "*" });
-          }, debounceTime);
-        });
-      }
-    },
-    resolveId(id) {
-      return id === virtualId ? resolvedId : undefined;
-    },
-    load(id) {
-      return id === resolvedId ? `export default ${JSON.stringify(resolvedConfig)}` : undefined;
+        invalidateModes([i18nResolvedId, addResolvedId], viteServer);
+        viteServer.ws.send({ type: "full-reload", path: "*" });
+      });
     },
   };
 }

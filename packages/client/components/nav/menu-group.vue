@@ -7,6 +7,8 @@ const ns = useBem("nav-menu-group");
 </script>
 
 <template>
-  <div>{{ useText(props.text) }}</div>
-  <slot />
+  <div>
+    <span>{{ useText(props.text) }}</span>
+    <slot />
+  </div>
 </template>

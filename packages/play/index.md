@@ -1,5 +1,5 @@
 ---
-home: true
+layout: home
 ---
 
-1zw
+中文

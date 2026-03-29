@@ -59,7 +59,7 @@ export default defineConfig([
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }],
+      "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: true }],
 
       // prettier
       "prefer-const": "warn",

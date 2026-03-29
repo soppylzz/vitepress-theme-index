@@ -8,27 +8,23 @@ import type {
 } from "../global";
 import type { Component } from "vue";
 import type { MaybeArray } from "@vitepress-theme-index/shared";
+import type { BuildI18nViewConfig } from "../i18n";
 
 type NavItemShow = true | MaybeArray<IndexResponse>;
-type NavItemType = "brand" | "menu" | "button" | "theme" | "divider" | "space" | "custom";
-type NavMenuItemType = "group" | "button";
-
 interface NavBrandProps extends IndexLink {
   text: IndexText;
   brand?: string;
 }
 
-type NavButtonIconProps = {
-  icon: IndexIcon;
+type NavButtonProps = {
+  text?: IndexText;
+  icon?: IndexIcon;
   tooltip?: IndexText;
   placement?: Exclude<IndexPlacement, "top">;
 } & IndexLink;
-type NavButtonTextProps = { text: IndexText; icon?: IndexIcon } & IndexLink;
-type NavButtonProps = NavButtonIconProps | NavButtonTextProps;
 
 interface NavThemeProps {
   carousel?: "column" | "row";
-  direction?: "reverse" | "in-order";
 }
 
 interface NavMenuProps {
@@ -46,6 +42,7 @@ type NavMenuGroupConfig = NavMenuGroupProps & {
   children?: NavMenuItemConfig[];
 };
 type NavMenuItemConfig = NavMenuTextConfig | NavMenuGroupConfig;
+type NavMenuItemType = NavMenuItemConfig["type"];
 
 type BuildNavConfig<T extends NavItemType, Props = never> = ([Props] extends [never]
   ? {}
@@ -70,16 +67,15 @@ type NavItemConfig =
   | NavBrandConfig
   | NavButtonConfig
   | NavCustomConfig
-  | NavThemeConfig; // TODO: wait to realize
+  | NavThemeConfig;
+type NavItemType = NavItemConfig["type"];
 
-type IndexNavConfig = { items: NavItemConfig[] | Record<string, NavItemConfig[]> };
+type IndexNavConfig = BuildI18nViewConfig<NavItemConfig[]>;
 
 export type {
   NavItemType,
   NavMenuItemType,
   // sub-props
-  NavButtonIconProps,
-  NavButtonTextProps,
   NavMenuTextProps,
   NavMenuGroupProps,
   // props

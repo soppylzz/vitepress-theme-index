@@ -1,5 +1,6 @@
 /* =============== common helpers =============== */
 type MaybeArray<T> = T[] | readonly T[] | T;
+type MaybeRecord<T> = T | Record<string, T>;
 type MaybePromise<T> = T | Promise<T>;
 
 /* =============== recursion helpers =============== */
@@ -46,9 +47,13 @@ type UnionToIntersection<U> = (U extends never ? never : (k: U) => void) extends
   ? I
   : never;
 
+type DefineAble<T> = T | (() => T) | (() => Promise<T>);
+
 export type {
   MaybeArray,
+  MaybeRecord,
   MaybePromise,
+  DefineAble,
   DeepPartial,
   DeepRequired,
   DeepReadonly,

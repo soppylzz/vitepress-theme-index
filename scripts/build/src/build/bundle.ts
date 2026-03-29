@@ -3,7 +3,11 @@ import { builtinModules } from "node:module";
 import { clientRoot, pkgRoot, nodeRoot, projDist, projRoot, sharedRoot } from "../const";
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
-import { VIRTUAL_INDEX_CONFIG_PKG, VIRTUAL_INDEX_LOCALE_PKG } from "@vitepress-theme-index/shared";
+import {
+  VIRTUAL_INDEX_CONFIG_PKG,
+  VIRTUAL_INDEX_I18N_PKG,
+  VIRTUAL_INDEX_ADDITION_PKG,
+} from "@vitepress-theme-index/shared";
 import glob from "fast-glob";
 import type { RollupRewriteImportsOptions } from "../utils";
 import { rewriteImports } from "../utils";
@@ -112,7 +116,8 @@ async function buildClient() {
     name: "@vitepress-theme-index/client",
     input: {
       input: inputs,
-      external: generateExternals([VIRTUAL_INDEX_CONFIG_PKG, VIRTUAL_INDEX_LOCALE_PKG]),
+      // Be careful not to import any other packages related to “virtual”.
+      external: generateExternals(["virtual"]),
       treeshake,
     },
     output: generateOutputs(pkgRoot, ["esm"]),

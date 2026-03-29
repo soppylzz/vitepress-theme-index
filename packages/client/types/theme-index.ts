@@ -1,7 +1,7 @@
 import type { ComputedRef, InjectionKey, Reactive } from "vue";
 import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
 import type { MenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
-import type { IndexNavConfig, IndexSidebarConfig } from "./views";
+import type { IndexNavConfig, IndexSidebarConfig, NavItemConfig, SidebarItemConfig } from "./views";
 import type { IndexResponse } from "./global";
 
 const indexPreset = ["default", "glass"] as const;
@@ -39,6 +39,11 @@ interface IndexClientThemeContext extends DeepRequired<IndexClientThemeConfig> {
 const indexClientThemeKey: InjectionKey<IndexClientThemeContext> =
   Symbol("indexClientThemeContext");
 
+type IndexClientAdditionConfig = DeepPartial<{
+  nav: NavItemConfig[];
+  sidebar: Record<string, SidebarItemConfig[]>;
+}>;
+
 type IndexClientConfig<Records extends MenuItemRecord = MenuItemRecord> = Partial<{
   rightMenu: UserIndexRightMenuConfig<Records>;
   theme: UserIndexClientThemeConfig;
@@ -54,4 +59,5 @@ export type {
   IndexClientThemeConfig,
   IndexClientThemeContext,
   UserIndexClientThemeConfig,
+  IndexClientAdditionConfig,
 };

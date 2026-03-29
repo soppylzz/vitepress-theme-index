@@ -1,4 +1,5 @@
 import type { IndexLink, IndexText, IndexIcon } from "../global";
+import type { BuildI18nViewConfig } from "../i18n";
 
 interface SidebarButton {
   text: IndexText;
@@ -13,9 +14,9 @@ interface SidebarGroup {
 
 type SidebarButtonConfig = { type: "button" } & IndexLink & SidebarButton;
 type SidebarGroupConfig = { type: "group"; children?: SidebarItemConfig[] } & SidebarGroup;
+type SidebarItemType = SidebarItemConfig["type"];
 
 type SidebarItemConfig = SidebarButtonConfig | SidebarGroupConfig;
+type IndexSidebarConfig = BuildI18nViewConfig<Record<string, SidebarItemConfig[]>>;
 
-type IndexSidebarConfig = { items: SidebarItemConfig[] | Record<string, SidebarItemConfig[]> };
-
-export type { IndexSidebarConfig };
+export type { SidebarButton, SidebarGroup, SidebarItemType, SidebarItemConfig, IndexSidebarConfig };

@@ -9,8 +9,8 @@ const { frontmatter } = useData();
 <template>
   <div v-if="frontmatter.layout !== false">
     <VtiNav />
-    <VtiDocs v-if="frontmatter.layout === 'docs'" />
-    <VtiHome />
+    <VtiHome v-if="frontmatter.layout === 'home'" />
+    <VtiDocs v-else />
   </div>
   <Content v-else />
 </template>

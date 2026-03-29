@@ -1,7 +1,3 @@
 import { defineIndex } from "vitepress-theme-index";
 
-export default defineIndex({
-  theme: {
-    preset: "light",
-  },
-});
+export default defineIndex({});

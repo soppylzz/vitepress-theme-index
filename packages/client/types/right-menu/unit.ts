@@ -2,11 +2,9 @@ import type { MaybeArray } from "@vitepress-theme-index/shared";
 
 const menuItemAligns = ["start", "center", "end"] as const;
 const menuItemStates = ["enabled", "disabled"] as const;
-const menuItemTypes = ["text", "icon", "divider", "group", "sub-menu", "custom"] as const;
 
 type MenuItemAlign = (typeof menuItemAligns)[number];
 type MenuItemState = (typeof menuItemStates)[number];
-type MenuItemType = (typeof menuItemTypes)[number];
 
 const menuMode = ["manual", "auto", "mixed"] as const;
 const menuSize = ["small", "medium", "large"] as const;
@@ -29,7 +27,6 @@ type MenuItemNavState = (typeof menuItemNavState)[number];
 export type {
   MenuItemAlign,
   MenuItemState,
-  MenuItemType,
   MenuTrigger,
   MenuSize,
   MenuMode,

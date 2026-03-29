@@ -13,7 +13,9 @@ interface ResolvedLocales {
   messages: LocaleModule;
 }
 
+type BuildI18nViewConfig<T> = T | { i18n: boolean; items: Record<string, T> };
+
 const indexI18nKey: InjectionKey<ResolvedLocaleRoutes> = Symbol("INDEX_I18N_CONTEXT");
 
 export { indexI18nKey };
-export type { LocaleRouteItem, ResolvedLocaleRoutes, ResolvedLocales };
+export type { LocaleRouteItem, ResolvedLocaleRoutes, ResolvedLocales, BuildI18nViewConfig };
