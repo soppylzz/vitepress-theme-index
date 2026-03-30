@@ -31,6 +31,7 @@ async function buildStyles() {
   }
   // copy scss
   await copy(resolve(themeRoot, "src"), resolve(projDist, "theme", "src"));
+  await copy(resolve(themeRoot, "src", "fonts"), resolve(projDist, "theme", "fonts"));
 }
 
 export { buildStyles };

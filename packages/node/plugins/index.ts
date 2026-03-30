@@ -15,9 +15,7 @@ function createPluginContext(): Plugin {
       ctx.viteConfig = config;
     },
     configureServer(server: ViteDevServer) {
-      console.log(ctx.viteServer);
       ctx.viteServer = server;
-      console.log(ctx.viteServer);
     },
   };
 }

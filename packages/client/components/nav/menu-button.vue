@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { NavMenuTextProps } from "../../types";
 import { useBem, useLink, useText } from "../../composables";
 
 const props = defineProps<NavMenuTextProps>();
 const { attr, isExternal } = useLink(props);
 
-const ns = useBem("nav-menu-text");
+const ns = useBem("nav-menu-button");
+
+const kls = computed(() => ({
+  wrap: ns.b(),
+  link: ns.e("link"),
+  external: ns.e("external"),
+}));
 </script>
 
 <template>
-  <div>
-    <a v-bind="attr">{{ useText(props.text) }}</a>
-    <span v-if="isExternal">
+  <div :class="kls.wrap">
+    <a v-bind="attr" :class="kls.link">{{ useText(props.text) }}</a>
+    <span v-if="isExternal" :class="kls.external">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
         <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
         <path

@@ -9,7 +9,7 @@ const ns = useBem("nav-brand");
 </script>
 
 <template>
-  <a v-bind="attr">
+  <a v-bind="attr" :class="ns.b()">
     <img :src="props.brand" alt="Brand" />
     <span>{{ useText(props.text) }}</span>
   </a>

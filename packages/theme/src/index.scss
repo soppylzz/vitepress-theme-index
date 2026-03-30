@@ -1,5 +1,13 @@
 @use "tokens" as *;
+@use "abstract" as *;
 
 @use "right-menu";
+@use "nav";
 
-@include registerAllThemes();
+@include registerTheme("github-light", $github-light-colors, true);
+@include registerTheme("github-dark", $github-dark-colors);
+
+@include registerFontFace("LXGW", "fonts/LXGWWenKaiScreen");
+@include registerFontFace("Monaco", "./fonts/Monaco");
+
+@include registerFonts("LXGW", "LXGW", "Monaco", true);

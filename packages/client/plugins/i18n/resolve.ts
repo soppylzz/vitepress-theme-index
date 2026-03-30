@@ -3,6 +3,7 @@ import type { SiteData } from "vitepress";
 import { merge } from "lodash-unified";
 import type { LocaleRouteItem, ResolvedLocaleRoutes, ResolvedLocales } from "../../types";
 import { mode, data, file } from "virtual:index-i18n";
+import { indexToPrefix } from "../../utils";
 
 function resolveMessage(localeKey: string) {
   if (mode === "mixin") return data[localeKey] ?? {};
@@ -29,7 +30,8 @@ async function resolveIndexLocales(
     const localeConfig = vpLocales[localeIndex];
     routes[localeIndex] = {
       label: localeConfig?.label,
-      link: localeConfig?.link ?? (localeIndex === "root" ? "/" : `/${localeIndex}/`),
+      // outside of setup, can't use useI18n().indexPrefix
+      link: localeConfig?.link ?? indexToPrefix(localeIndex),
     };
   }
 

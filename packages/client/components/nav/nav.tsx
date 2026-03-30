@@ -1,5 +1,5 @@
 import type { Component, VNode } from "vue";
-import { createVNode, defineComponent, vShow, withDirectives } from "vue";
+import { computed, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
 import { useBem, useIndex, useViewItems } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
@@ -21,9 +21,7 @@ import {
 } from "./items";
 import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
 
-const container = useBem("nav-container");
-const screen = useBem("nav-screen");
-
+const ns = useBem("nav");
 const _bems = {
   divider: useBem("nav-divider"),
   space: useBem("nav-space"),
@@ -120,20 +118,28 @@ const VtiNav = defineComponent({
       theme: { response },
     } = useIndex();
     const items = useViewItems(nav, []);
+    const open = ref(false);
 
     return () => {
       const current = response.value;
+      const kls = {
+        wrapper: [ns.b(), ns.m(current)],
+        header: [ns.e("header")],
+        screen: [ns.e("screen"), ns.when("opened", open.value)],
+      };
 
       return (
-        <div class={[container.b(), container.m(current)]}>
-          {
-            /* main container */
-            items.value.map((item, index) =>
-              renderNavItem(index, item, { current, container: "header" })
-            )
-          }
+        <div class={kls.wrapper}>
+          <div class={kls.header}>
+            {
+              /* main container */
+              items.value.map((item, index) =>
+                renderNavItem(index, item, { current, container: "header" })
+              )
+            }
+          </div>
           {withDirectives(
-            <div class={screen.b()}>
+            <div class={kls.screen}>
               {
                 /* screen container */
                 items.value.map((item, index) =>

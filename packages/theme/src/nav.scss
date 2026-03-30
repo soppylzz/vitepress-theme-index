@@ -3,3 +3,383 @@
 @use "./abstract" as *;
 @use "./tokens" as *;
 
+@mixin use-nav-item() {
+  font-size: 1em;
+  @include applyToken($border-radius, "md");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin use-nav-color() {
+  color: getCssVar("text", "primary");
+  background-color: transparent;
+
+  @include when("disabled") {
+    color: getCssVar("text", "disabled");
+    @include applyToken($opacity, "disabled");
+  }
+
+  &:not(.is-disabled) {
+    @include when("selected") {
+      color: getCssVar("text", "inverse");
+      background-color: getCssVar("primary", "base");
+    }
+  }
+}
+
+
+
+@include b("nav") {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box; // width = padding + border + width
+
+  color: getCssVar("text", "primary");
+
+  @include applyToken($padding, "md");
+  @include applyToken($z-index, "nav");
+
+  // TODO: add size support
+  @include applyToken($font-size, "md");
+
+  $header-height: 3em;
+
+  @include m("nav", "computer") {
+    position: fixed;
+    top: 0;
+  }
+  @include m("mobile") {
+    position: relative;
+  }
+
+  @include e("header") {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: $header-height;
+
+    background-color: getCssVar("bg", "primary");
+    border-bottom: 1px solid getCssVar("border", "primary");
+  }
+
+  @include e("screen") {
+    display: none;
+    position: fixed;
+    box-sizing: border-box;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: var(getCssVarName("nav", "header", "instant", "height"), $header-height);
+
+    background-color: getCssVar("bg", "primary");
+
+    @include applyToken($padding, "md");
+
+    @include when("opened") {
+      display: block;
+    }
+  }
+}
+
+@include b("nav-divider") {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  @include applyToken($margin, "sm");
+
+  @include m("computer") {
+    width: 1px;
+    height: 1.5em;
+    background-color: getCssVar("border", "primary");
+  }
+
+  @include m("mobile") {
+    width: 100%;
+    height: 1px;
+    background-color: getCssVar("border", "primary");
+  }
+}
+
+@include b("nav-space") {
+  flex: 1;
+  @include m("mobile") {
+    display: none;
+  }
+}
+
+@include b("nav-brand") {
+  @include use-nav-item();
+  @include use-nav-color();
+
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  @include applyToken($padding, "sm");
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    text-decoration: none;
+    color: inherit;
+
+    img {
+      height: 2em;
+      width: auto;
+    }
+
+    span {
+      font-weight: 600;
+      white-space: nowrap;
+
+      @include when("hidden") {
+        display: none;
+      }
+    }
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// Button component
+@include b("nav-button") {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-shrink: 0;
+
+  @include applyToken($padding, "sm");
+  @include applyToken($border-radius, "md");
+
+  a {
+    @include use-nav-item();
+    @include use-nav-color();
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+
+    @include applyToken($padding, "xs");
+
+    svg {
+      width: 1.2em;
+      height: 1.2em;
+      fill: currentColor;
+    }
+
+    span {
+      white-space: nowrap;
+
+      @include when("hidden") {
+        display: none;
+      }
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  @include e("tooltip") {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: getCssVar("bg", "secondary");
+    border: 1px solid getCssVar("border", "primary");
+    padding: getToken($padding, "xs");
+    margin-top: getToken($margin, "xs");
+    border-radius: getToken($border-radius, "sm");
+    white-space: nowrap;
+    font-size: 0.85em;
+    z-index: 1000;
+
+    @include applyToken($z-index, "tooltip");
+
+    @include e("arrow") {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-bottom: 4px solid getCssVar("bg", "secondary");
+    }
+
+    a:hover & {
+      display: block;
+    }
+  }
+}
+
+// Menu component
+@include b("nav-menu") {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  flex-shrink: 0;
+  position: relative;
+
+  @include applyToken($padding, "sm");
+  @include applyToken($border-radius, "md");
+
+  @include e("trigger") {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    cursor: pointer;
+    @include use-nav-color();
+
+    svg {
+      width: 1.2em;
+      height: 1.2em;
+      fill: currentColor;
+    }
+
+    @include when("expanded") {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  @include e("popup") {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: getCssVar("bg", "primary");
+    border: 1px solid getCssVar("border", "primary");
+    border-radius: getToken($border-radius, "md");
+    min-width: 150px;
+    z-index: 999;
+
+    @include applyToken($z-index, "dropdown");
+
+    @include when("visible") {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+// Menu button and group items
+@include b("nav-menu-button") {
+  @include use-nav-item();
+  @include use-nav-color();
+
+  width: 100%;
+  text-decoration: none;
+  cursor: pointer;
+  gap: 0.5em;
+  justify-content: flex-start;
+
+  @include applyToken($padding, "sm");
+
+  svg {
+    width: 1.2em;
+    height: 1.2em;
+    flex-shrink: 0;
+    fill: currentColor;
+  }
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+@include b("nav-menu-group") {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  @include e("title") {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: getCssVar("text", "secondary");
+
+    @include applyToken($padding, "sm");
+    @include applyToken($margin, "xs");
+
+    @include when("disabled") {
+      color: getCssVar("text", "disabled");
+      @include applyToken($opacity, "disabled");
+    }
+  }
+
+  @include e("button") {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    color: getCssVar("text", "secondary");
+
+    svg {
+      width: 0.5em;
+      fill: currentColor;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    @include when("expanded") {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    @include applyToken($border-radius, "md");
+    @include applyToken($padding, "xs");
+
+    @include when("disabled") {
+      color: getCssVar("text", "disabled");
+      @include applyToken($opacity, "disabled");
+    }
+
+    &:not(.is-disabled) {
+      @include when("selected") {
+        color: getCssVar("text", "inverse");
+        background-color: getCssVar("primary", "base");
+      }
+    }
+  }
+
+  @include e("children") {
+    display: flex;
+    flex-direction: column;
+    gap: getToken($margin, "xs");
+
+    @include applyToken($padding, "xs");
+
+    @include when("hidden") {
+      display: none;
+    }
+  }
+}
+

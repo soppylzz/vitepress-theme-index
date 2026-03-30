@@ -1,12 +1,12 @@
 import { withAdditionIndex } from "vitepress-theme-index";
+import brand from "../.vitepress/assets/brand.png";
 
 export default withAdditionIndex({
   nav: [
-    { type: "brand", text: "VThemeIndex11" },
+    { type: "brand", text: "VTIndex", brand: brand, href: "/" },
     { type: "space" },
-    { type: "button", text: "TextButton" },
-    { type: "button", icon: "github", href: "https://github.com", _target: "_blank" },
-    { type: "divider" },
+    { type: "button", text: "Reference", target: "both", href: "/api/1" },
+    { type: "button", text: "Guide", target: "both", href: "/guide/1" },
     {
       type: "menu",
       text: "Menu",
@@ -15,15 +15,14 @@ export default withAdditionIndex({
         { type: "group", text: "Group", children: [{ type: "button", text: "Button" }] },
       ],
     },
+    { type: "divider" },
+    { type: "button", icon: "github", href: "https://github.com", _target: "_blank" },
   ],
   sidebar: {
-    "/side1": [
-      { type: "button", text: "Sidebar111" },
-      { type: "group", text: "Sidebar1", children: [{ type: "button", text: "Sidebar1" }] },
+    "/api": [
+      { type: "button", text: "API" },
+      { type: "group", text: "Sidebar", children: [{ type: "button", text: "Sidebar" }] },
     ],
-    "/side2": [
-      { type: "button", text: "Sidebar2" },
-      { type: "group", text: "Sidebar2", children: [{ type: "button", text: "Sidebar2" }] },
-    ],
+    "/guide": [{ type: "button", text: "GUIDE" }],
   },
 });

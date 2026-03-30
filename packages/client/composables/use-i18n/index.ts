@@ -5,6 +5,7 @@ import { useData } from "vitepress";
 import { isFunction, isString } from "lodash-unified";
 import type { IndexText, ResolvedLocaleRoutes } from "../../types";
 import { indexI18nKey } from "../../types";
+import { indexToPrefix } from "../../utils";
 
 function useI18n() {
   const { routes } = inject(indexI18nKey)!;
@@ -13,13 +14,10 @@ function useI18n() {
   const { site, localeIndex, hash, page } = useData();
   const translate = (key: string, plural?: number) => t(key, plural);
 
-  // routes generate
-  const getPrefix = (idx: string) => (idx === "root" ? "/" : `/${idx}/`);
-
   const currentRoutes: ComputedRef<ResolvedLocaleRoutes["routes"]> = computed(() => {
     // realize refer to vitepress defaultTheme
     const computedRoutes: ResolvedLocaleRoutes["routes"] = {};
-    const curPrefix = getPrefix(localeIndex.value);
+    const curPrefix = indexToPrefix(localeIndex.value);
     const addExt = !site.value.cleanUrls;
 
     for (const [idx, item] of Object.entries(routes)) {
@@ -31,7 +29,7 @@ function useI18n() {
 
       computedRoutes[idx] = {
         ...item,
-        link: getPrefix(idx) + normRelPath + hash.value,
+        link: indexToPrefix(idx) + normRelPath + hash.value,
       };
     }
     return computedRoutes;
@@ -39,7 +37,7 @@ function useI18n() {
 
   return {
     localeIndex: readonly(localeIndex),
-    localePrefix: computed(() => getPrefix(localeIndex.value)),
+    localePrefix: computed(() => indexToPrefix(localeIndex.value)),
     currentRoutes,
     t: translate,
   };

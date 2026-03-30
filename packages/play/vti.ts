@@ -5,9 +5,8 @@ export default withAdditionIndex({
   nav: [
     { type: "brand", text: "VTIndex", brand: brand, href: "/" },
     { type: "space" },
-    { type: "button", text: "side1", target: "both", href: "/side1/article" },
-    { type: "button", icon: "github", href: "https://github.com", _target: "_blank" },
-    { type: "divider" },
+    { type: "button", text: "参考", target: "both", href: "/api/1" },
+    { type: "button", text: "指南", target: "both", href: "/guide/1" },
     {
       type: "menu",
       text: "菜单",
@@ -16,15 +15,14 @@ export default withAdditionIndex({
         { type: "group", text: "菜单组", children: [{ type: "button", text: "按钮" }] },
       ],
     },
+    { type: "divider" },
+    { type: "button", icon: "github", href: "https://github.com", _target: "_blank" },
   ],
   sidebar: {
-    "/side1": [
-      { type: "button", text: "侧边栏1" },
+    "/api": [
+      { type: "button", text: "参考" },
       { type: "group", text: "侧边栏", children: [{ type: "button", text: "侧边栏" }] },
     ],
-    "/side2": [
-      { type: "button", text: "侧边栏2" },
-      { type: "group", text: "侧边栏", children: [{ type: "button", text: "侧边栏" }] },
-    ],
+    "/guide": [{ type: "button", text: "指南" }],
   },
 });

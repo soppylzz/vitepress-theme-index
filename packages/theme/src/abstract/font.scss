@@ -1,0 +1,81 @@
+@use "cssvar" as *;
+@use "sass:list";
+@use "sass:map";
+@use "sass:meta";
+@use "sass:string";
+
+$formats: (
+  ttf: "truetype",
+  otf: "opentype",
+  woff: "woff",
+  woff2: "woff2"
+);
+
+@function splitFontFilePath($file-path) {
+  @each $ext, $format in $formats {
+    $ext-len: string.length($ext);
+    $file-len: string.length($file-path);
+
+    @if $file-len >= $ext-len + 1 {
+      $dot-suffix: string.slice($file-path, $file-len - $ext-len, $file-len);
+      @if $dot-suffix == "." + $ext {
+        $path: string.slice($file-path, 1, $file-len - $ext-len - 1);
+        @return ($path, $ext, $format);
+      }
+    }
+  }
+
+  @return ($file-path, "ttf", map.get($formats, ttf));
+}
+
+@function normalizeFont($font-group) {
+  @if meta.type-of($font-group) == "list" {
+    @return list.join($font-group, $separator: comma);
+  }
+  @return $font-group;
+}
+
+@mixin registerFontFace(
+  $font-name,
+  $file-path,
+  $font-weight: normal,
+  $font-style: normal
+) {
+  $split: splitFontFilePath($file-path);
+  $path: list.nth($split, 1);
+  $ext: list.nth($split, 2);
+  $format: list.nth($split, 3);
+
+  @font-face {
+    font-family: $font-name;
+    src: url("#{$path}.#{$ext}") format("#{$format}");
+    font-weight: $font-weight;
+    font-style: $font-style;
+    font-display: swap;
+  }
+}
+
+@mixin registerFonts(
+  $group-name,
+  $text-group,
+  $code-group,
+  $is-default: false
+) {
+  $text-norm: normalizeFont($text-group);
+  $code-norm: normalizeFont($code-group);
+
+  :root[font-group="#{$group-name}"] {
+    @include setCssVar(("text", "font-group"), $text-norm);
+    @include setCssVar(("code", "font-group"), $code-norm);
+  }
+
+  @if $is-default {
+    :root {
+      @include setCssVar(("text", "font-group"), $text-norm);
+      @include setCssVar(("code", "font-group"), $code-norm);
+    }
+  }
+
+  body { font-family: getCssVar("text", "font-group"), sans-serif; }
+  pre, code { font-family: getCssVar("code", "font-group"), monospace; }
+}

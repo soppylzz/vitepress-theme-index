@@ -1,8 +1,14 @@
 @use "sass:map";
 @use "sass:list";
-@use "./abstract" as *;
-@use "./tokens" as *;
+@use "_public" as *;
+@use "abstract" as *;
+@use "tokens" as *;
 
+$group-spacing: (
+  small: "xs",
+  medium: "sm",
+  large: "sm",
+);
 
 $size-config: (
   small: (
@@ -35,17 +41,7 @@ $size-config: (
   )
 );
 
-@mixin use-icon() {
-  svg {
-    width: 100%;
-    height: 100%;
-    fill: currentColor;
-    object-fit: contain;
-  }
-}
-
 @mixin use-item() {
-  font-size: 1em;
   @include applyToken($border-radius, "md");
 
   @each $size, $config in $size-config {
@@ -139,15 +135,7 @@ $size-config: (
   }
 }
 
-$group-spacing: (
-  "small": "xs",
-  "medium": "sm",
-  "large": "sm",
-);
-
 @include b("item-group") {
-  font-size: 1em;
-
   @include e("text") {
     font-size: 0.9em;
     display: flex;

@@ -3,6 +3,7 @@ import type { Component } from "vue";
 
 // refer to vitepress default theme
 const EXTERNAL_URL_RE = /^(?:[a-z]+:|\/\/)/i;
+const INTERNAL_ABS_URL_RE = /^(?:[a-z]|\/)/i;
 
 type IndexResponse = "mobile" | "pad" | "computer";
 type IndexLinkMode = "_blank" | "_self";
@@ -16,5 +17,5 @@ type IndexLink = {
   _target?: IndexLinkMode;
 };
 
-export { EXTERNAL_URL_RE };
+export { EXTERNAL_URL_RE, INTERNAL_ABS_URL_RE };
 export type { IndexText, IndexIcon, IndexLink, IndexActivateEvent, IndexResponse, IndexPlacement };

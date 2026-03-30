@@ -1,14 +1,3 @@
 @forward "common";
-
-@use "../abstract" as *;
-@use "github-light" as *;
-@use "github-dark" as *;
-@use "glass-light" as *;
-@use "glass-dark" as *;
-
-@mixin registerAllThemes() {
-  @include registerTheme("github-light", $github-light-colors, true);
-  @include registerTheme("github-dark", $github-dark-colors);
-  @include registerTheme("glass-light", $glass-light-colors);
-  @include registerTheme("glass-dark", $glass-dark-colors);
-}
+@forward "github-light";
+@forward "github-dark";

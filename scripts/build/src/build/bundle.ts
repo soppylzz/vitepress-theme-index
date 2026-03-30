@@ -3,11 +3,6 @@ import { builtinModules } from "node:module";
 import { clientRoot, pkgRoot, nodeRoot, projDist, projRoot, sharedRoot } from "../const";
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
-import {
-  VIRTUAL_INDEX_CONFIG_PKG,
-  VIRTUAL_INDEX_I18N_PKG,
-  VIRTUAL_INDEX_ADDITION_PKG,
-} from "@vitepress-theme-index/shared";
 import glob from "fast-glob";
 import type { RollupRewriteImportsOptions } from "../utils";
 import { rewriteImports } from "../utils";

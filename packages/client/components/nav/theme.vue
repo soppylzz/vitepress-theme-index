@@ -9,12 +9,12 @@ const ns = useBem("nav-theme");
 </script>
 
 <template>
-  <div>
+  <div :class="ns.b()">
     <!-- Wheel Picker -->
-    <div />
+    <div :class="ns.e('wheel')" />
     <!-- Three stage switch button -->
-    <div>
-      <div />
+    <div :class="ns.e('switch')">
+      <div :class="ns.e('indicator')" />
     </div>
   </div>
 </template>

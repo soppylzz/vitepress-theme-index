@@ -5,7 +5,7 @@ import { isObject, isString } from "lodash-unified";
 import { normalizeLink } from "./utils";
 import { computed, inject, toRefs } from "vue";
 import { useI18n } from "../use-i18n";
-import { useRoute } from "vitepress";
+import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
 
 function useIcon(icon: IndexIcon) {
@@ -19,10 +19,11 @@ function useIcon(icon: IndexIcon) {
 function useLink<T extends IndexLink>(link: T) {
   const { href, _target } = toRefs(link);
   const isExternal = computed(() => !!(checkExternal(href.value) || _target.value === "_blank"));
+  const { site } = useData();
 
   const attr = computed(() => ({
     rel: isExternal.value ? "noreferrer" : undefined,
-    href: href.value ? normalizeLink(href.value) : undefined,
+    href: href.value ? normalizeLink(site.value, href.value) : undefined,
     target: _target.value ?? (isExternal.value ? "_blank" : undefined),
   }));
 

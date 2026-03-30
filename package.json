@@ -20,17 +20,18 @@
     "@vitepress-theme-index/node": "workspace:*",
     "@vitepress-theme-index/shared": "workspace:*",
     "@vitepress-theme-index/theme": "workspace:*",
+    "@types/lodash": "^4.17.23",
+    "@types/lodash-es": "^4.17.12",
     "chalk": "^5.6.2",
     "consola": "^3.4.2",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.22",
-    "lodash-unified": "^1.0.3"
+    "lodash-unified": "^1.0.3",
+    "vue-i18n": "^11.2.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
-    "@types/lodash": "^4.17.23",
-    "@types/lodash-es": "^4.17.12",
     "@types/node": "^25.0.3",
     "@vitepress-theme-index/eslint": "workspace:*",
     "eslint": "^9.39.4",
