@@ -4,13 +4,13 @@
 @use "abstract" as *;
 @use "tokens" as *;
 
-$group-spacing: (
+$rm-group-spacing: (
   small: "xs",
   medium: "sm",
   large: "sm",
 );
 
-$size-config: (
+$rm-size-config: (
   small: (
     font-size: "sm",
     font-weight: "light",
@@ -41,10 +41,10 @@ $size-config: (
   )
 );
 
-@mixin use-item() {
+@mixin useRMenuItem() {
   @include applyToken($border-radius, "md");
 
-  @each $size, $config in $size-config {
+  @each $size, $config in $rm-size-config {
     @include m($size) {
       @include applyToken($padding, map.get($config, "padding"));
       @include applyToken($margin, map.get($config, "margin"));
@@ -53,7 +53,7 @@ $size-config: (
   }
 }
 
-@mixin use-color() {
+@mixin useRMenuColor() {
   background-color: transparent;
 
   @include when("disabled") {
@@ -72,8 +72,6 @@ $size-config: (
 @include b("right-menu") {
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  cursor: pointer;
 
   color: getCssVar("text", "primary");
   background-color: getCssVar("bg", "primary");
@@ -86,7 +84,7 @@ $size-config: (
     border-color: getCssVar("primary", "base");
   }
 
-  @each $size, $config in $size-config {
+  @each $size, $config in $rm-size-config {
     @include m($size) {
       min-width: map.get($config, "min-width");
       max-width: map.get($config, "max-width");
@@ -110,14 +108,14 @@ $size-config: (
 
   @each $size in ("small", "medium", "large") {
     @include m($size) {
-      $margin-key: map.get(map.get($size-config, $size), "margin");
+      $margin-key: map.get(map.get($rm-size-config, $size), "margin");
       margin-top: getToken($margin, $margin-key);
     }
   }
 
   @include e("container") {
-    @include use-item();
-    @include use-color();
+    @include useRMenuItem();
+    @include useRMenuColor();
 
     display: flex;
     align-items: center;
@@ -126,12 +124,7 @@ $size-config: (
     width: 2em;
     height: 2em;
 
-    svg {
-      width: 1.2em;
-      height: 1.2em;
-      fill: currentColor;
-      object-fit: contain;
-    }
+    @include useIcon(1.2em);
   }
 }
 
@@ -152,7 +145,7 @@ $size-config: (
     }
   }
 
-  @each $size, $type in $group-spacing {
+  @each $size, $type in $rm-group-spacing {
     @include em("text", $size) {
       padding: getToken($padding, $type);
       margin: getToken($margin, $type);
@@ -181,12 +174,7 @@ $size-config: (
     background-color: transparent;
     color: getCssVar("text", "secondary");
 
-    svg {
-      width: 0.5em;
-      fill: currentColor;
-      object-fit: contain;
-    }
-
+    @include useIcon(0.5em);
     @include when("expanded") {
       svg {
         transform: rotate(180deg);
@@ -195,7 +183,7 @@ $size-config: (
 
     @include applyToken($border-radius, "md");
 
-    @each $size, $type in $group-spacing {
+    @each $size, $type in $rm-group-spacing {
       @include em("button", $size) {
         @include applyToken($margin, $type);
         @include applyToken($padding, $type);
@@ -268,8 +256,8 @@ $divider-spacing: (
 }
 
 @include b("item-text") {
-  @include use-item();
-  @include use-color();
+  @include useRMenuItem();
+  @include useRMenuColor();
 
   display: flex;
   flex-direction: row;
@@ -285,7 +273,7 @@ $divider-spacing: (
     width: 1.2em;
     height: 1.2em;
 
-    @include use-icon();
+    @include useIcon();
   }
 
   @include e("text") {
@@ -301,8 +289,8 @@ $divider-spacing: (
 }
 
 @include b("item-submenu") {
-  @include use-item();
-  @include use-color();
+  @include useRMenuItem();
+  @include useRMenuColor();
 
   display: flex;
   flex-direction: row;
@@ -318,7 +306,7 @@ $divider-spacing: (
     width: 1.2em;
     height: 1.2em;
 
-    @include use-icon();
+    @include useIcon();
   }
 
   @include e("text") {

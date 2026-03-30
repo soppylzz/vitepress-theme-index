@@ -1,7 +1,7 @@
 import type { Component } from "vue";
 import type { BaseProps, EventHooks, EventProps, ExpandHooks } from "./base";
-import type { IndexActivateEvent, IndexIcon, IndexText } from "../global";
-import type { MenuItemAlign, MenuSize } from "./unit";
+import type { IndexActivateEvent, IndexIcon, IndexSize, IndexText } from "../global";
+import type { MenuItemAlign } from "./unit";
 import type { EmitsTypeFromHooks } from "../vue";
 
 interface DividerItemProps extends /* @vue-ignore */ BaseProps {
@@ -23,7 +23,7 @@ interface SubMenuItemProps extends /* @vue-ignore */ EventProps {
   activateEvent?: IndexActivateEvent;
   align?: MenuItemAlign;
   icon?: IndexIcon;
-  size?: MenuSize;
+  size?: IndexSize;
   expandIcon?: IndexIcon;
 }
 interface TextItemProps extends /* @vue-ignore */ EventProps {

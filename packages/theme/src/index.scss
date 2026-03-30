@@ -1,13 +1,46 @@
 @use "tokens" as *;
 @use "abstract" as *;
 
-@use "right-menu";
 @use "nav";
+@use "tooltip";
+@use "right-menu";
+
+@include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");
+@include createFontFace("Monaco", "./fonts/Monaco.ttf");
 
 @include registerTheme("github-light", $github-light-colors, true);
 @include registerTheme("github-dark", $github-dark-colors);
 
-@include registerFontFace("LXGW", "fonts/LXGWWenKaiScreen");
-@include registerFontFace("Monaco", "./fonts/Monaco");
+@include registerFonts("LXGW-MONACO", "LXGW", "Monaco", true);
 
-@include registerFonts("LXGW", "LXGW", "Monaco", true);
+*,
+*::before,
+*::after {
+  // width = padding + border + width
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 320px;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+
+  @include applyToken($z-index, "base");
+
+  // font initial settings
+  @include applyToken($font-size, "md");
+  @include applyToken($font-weight, "normal");
+  @include applyToken($line-height, "normal");
+  @include applyToken($letter-spacing, "normal");
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -16,7 +16,13 @@ export default withAdditionIndex({
       ],
     },
     { type: "divider" },
-    { type: "button", icon: "github", href: "https://github.com", _target: "_blank" },
+    {
+      type: "button",
+      icon: "github",
+      href: "https://github.com",
+      _target: "_blank",
+      tooltip: "1231111",
+    },
   ],
   sidebar: {
     "/api": [

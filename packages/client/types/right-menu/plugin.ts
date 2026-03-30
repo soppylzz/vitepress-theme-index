@@ -2,7 +2,6 @@ import type {
   MenuTrigger,
   MenuMergeOrder,
   MenuMountMode,
-  MenuSize,
   MenuItemState,
   MenuMode,
   MenuMergeMode,
@@ -12,6 +11,7 @@ import type { DeepReadonly, MaybePromise } from "@vitepress-theme-index/shared";
 import type { ComponentInternalInstance, ComputedRef, Reactive, Ref } from "vue";
 import type { CustomComputedRef, VueReadonly } from "../vue";
 import type { EventProps } from "./base";
+import type { IndexSize } from "../global";
 
 /* =============== menu config =============== */
 interface StaticMenuConfig {
@@ -27,7 +27,7 @@ interface BaseMenuConfig {
 }
 
 interface ProvideMenuConfig {
-  size: MenuSize;
+  size: IndexSize;
   state: MenuItemState;
 }
 

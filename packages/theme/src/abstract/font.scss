@@ -35,7 +35,7 @@ $formats: (
   @return $font-group;
 }
 
-@mixin registerFontFace(
+@mixin createFontFace(
   $font-name,
   $file-path,
   $font-weight: normal,
@@ -64,18 +64,19 @@ $formats: (
   $text-norm: normalizeFont($text-group);
   $code-norm: normalizeFont($code-group);
 
-  :root[font-group="#{$group-name}"] {
+  @at-root :root[font-group="#{$group-name}"] {
     @include setCssVar(("text", "font-group"), $text-norm);
     @include setCssVar(("code", "font-group"), $code-norm);
   }
 
   @if $is-default {
-    :root {
+    body { font-family: getCssVar("text", "font-group"), sans-serif; }
+    pre, code { font-family: getCssVar("code", "font-group"), monospace; }
+
+    @at-root :root {
+      font-size: 16px;  // rem support;
       @include setCssVar(("text", "font-group"), $text-norm);
       @include setCssVar(("code", "font-group"), $code-norm);
     }
   }
-
-  body { font-family: getCssVar("text", "font-group"), sans-serif; }
-  pre, code { font-family: getCssVar("code", "font-group"), monospace; }
 }

@@ -1,7 +1,7 @@
-@mixin use-icon() {
+@mixin useIcon($size: 100%) {
   svg {
-    width: 100%;
-    height: 100%;
+    width: $size;
+    height: $size;
     fill: currentColor;
     object-fit: contain;
   }

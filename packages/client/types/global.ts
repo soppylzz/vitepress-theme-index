@@ -9,6 +9,7 @@ type IndexResponse = "mobile" | "pad" | "computer";
 type IndexLinkMode = "_blank" | "_self";
 type IndexActivateEvent = "click" | "mouseenter";
 type IndexPlacement = "top" | "bottom" | "left" | "right";
+type IndexSize = "small" | "medium" | "large";
 
 type IndexText = string | ((t?: ComposerTranslation) => string);
 type IndexIcon = string | Component;
@@ -18,4 +19,12 @@ type IndexLink = {
 };
 
 export { EXTERNAL_URL_RE, INTERNAL_ABS_URL_RE };
-export type { IndexText, IndexIcon, IndexLink, IndexActivateEvent, IndexResponse, IndexPlacement };
+export type {
+  IndexText,
+  IndexIcon,
+  IndexLink,
+  IndexActivateEvent,
+  IndexResponse,
+  IndexPlacement,
+  IndexSize,
+};

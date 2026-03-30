@@ -60,7 +60,7 @@ function renderNavItem(
   let visible = true;
   if (container === "header") {
     if (target === "both" && current === "mobile") {
-      visible = false;
+      visible = false; // both-target mode has auto change process
     } else if (hasOwnProperty(config, "show") && !isUndefined(config?.show)) {
       const show = config?.show ?? true;
       visible = isBoolean(show) ? show : ensureArray(show).includes(current);
@@ -72,7 +72,7 @@ function renderNavItem(
   if (type === "custom") {
     vnode = createVNode((config as NavCustomConfig).component, { key });
   } else if (type === "space" || type === "divider") {
-    const classes = [_bems[type].b(), _bems[type].m(current)];
+    const classes = [_bems[type].b(), _bems[type].m(container)];
     vnode = createVNode("div", { key, class: classes });
   } else {
     const comp = navItemMap[type];
@@ -118,7 +118,7 @@ const VtiNav = defineComponent({
       theme: { response },
     } = useIndex();
     const items = useViewItems(nav, []);
-    const open = ref(false);
+    const open = ref(true);
 
     return () => {
       const current = response.value;

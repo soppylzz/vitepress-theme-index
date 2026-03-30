@@ -139,8 +139,10 @@ $z-index: (
     dropdown: 1000,
     sticky: 1020,
     fixed: 1030,
+    // special
     nav: 1030,
     tooltip: 1070,
+    tooltip-arrow: 1071,
     right-menu: 9999,
   )
 ) !default;

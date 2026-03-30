@@ -1,0 +1,84 @@
+@use "sass:map";
+@use "./abstract" as *;
+@use "./tokens" as *;
+
+$tt-size-config: (
+  small: (
+    font-size: "sm",
+    padding: "md",
+  ),
+  medium: (
+    font-size: "md",
+    padding: "lg",
+  ),
+  large: (
+    font-size: "md",
+    padding: "lg",
+  )
+);
+
+$tt-arrow-size: (
+  small: 0.4em,
+  medium: 0.5em,
+  large: 0.6em,
+);
+
+$tt-arrow-rotate: (
+  top: 45deg,
+  right: 135deg,
+  bottom: 225deg,
+  left: 315deg,
+);
+
+@include b("tooltip") {
+  display: inline-block;
+  position: relative;
+
+  @include e("content") {
+    position: fixed;
+    visibility: hidden;
+    max-width: 200px;
+
+    @include applyToken($z-index, "tooltip");
+    @include applyToken($border-radius, "md");
+
+    background-color: getCssVar("bg", "secondary");
+    border: 1px solid getCssVar("border", "secondary");
+    color: getCssVar("text", "secondary");
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  @each $size, $config in $tt-size-config {
+    @include em("content", $size) {
+      @include applyToken($font-size, map.get($config, "font-size"));
+      @include applyToken($padding, map.get($config, "padding"));
+    }
+  }
+
+  @include e("arrow") {
+    position: fixed;
+    visibility: hidden;
+
+    @include applyToken($z-index, "tooltip-arrow");
+
+    transform: rotate(45deg);
+    background-color: getCssVar("bg", "secondary");
+    border: 1px solid getCssVar("border", "secondary");
+    border-top-color: transparent;
+    border-left-color: transparent;
+  }
+
+  @each $size, $arrow-size in $tt-arrow-size {
+    @include em("arrow", $size) {
+      width: $arrow-size;
+      height: $arrow-size;
+    }
+  }
+  @each $placement, $degree in $tt-arrow-rotate {
+    @include em("arrow", $placement) {
+      transform: rotate($degree);
+    }
+  }
+}
+

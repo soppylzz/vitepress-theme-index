@@ -9,6 +9,7 @@ import type {
 import type { Component } from "vue";
 import type { MaybeArray } from "@vitepress-theme-index/shared";
 import type { BuildI18nViewConfig } from "../i18n";
+import type { TooltipProps } from "../comps/tooltip";
 
 type NavItemShow = true | MaybeArray<IndexResponse>;
 interface NavBrandProps extends IndexLink {
@@ -20,8 +21,8 @@ type NavButtonProps = {
   text?: IndexText;
   icon?: IndexIcon;
   tooltip?: IndexText;
-  placement?: Exclude<IndexPlacement, "top">;
-} & IndexLink;
+} & IndexLink &
+  Omit<TooltipProps, "tooltip" | "placement" | "size">;
 
 interface NavThemeProps {
   carousel?: "column" | "row";
