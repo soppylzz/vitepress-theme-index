@@ -1,77 +1,74 @@
 import type { InjectionKey, Ref } from "vue";
 import { computed, getCurrentInstance, inject, provide, ref } from "vue";
+import type { IndexSize, MenuProps } from "../../types";
 
 interface MenuContext {
   level: number;
-  parentKey: string;
+  size: IndexSize;
   showActivate: boolean;
+  parentKey: string;
   activeKey?: string;
   setActiveKey?: (key: string) => void;
 }
 
 const MenuContextKey: InjectionKey<Ref<MenuContext>> = Symbol("MenuContext");
 
-function createMenuContext(showActivate: boolean) {
-  const activeKey = ref<string>();
-
-  const context = computed<MenuContext>(() => ({
-    level: 0,
-    parentKey: "",
-    activeKey: activeKey.value,
-    setActiveKey: (key: string) => {
-      activeKey.value = key;
-    },
-    showActivate,
-  }));
-
-  return {
-    context,
-    activeKey,
-  };
+function buildMenuKey(parent: string | null, uid: number) {
+  return parent ? `${parent}-${uid}` : `${uid}`;
 }
-function provideMenuContext(showActivate?: boolean) {
-  const uid = getCurrentInstance()!.uid;
-  const parentContext = inject<Ref<MenuContext>>(MenuContextKey, null);
 
-  if (!parentContext) {
-    const { context: root } = createMenuContext(showActivate ?? false);
+function createMenuContext<T extends MenuProps>(props?: T) {
+  const activeKey = ref<string>();
+  const context = computed<MenuContext>(() => {
+    const { showActivate = false, size = "medium" } = props ?? {};
+    return {
+      level: 0,
+      parentKey: "",
+      activeKey: activeKey.value,
+      setActiveKey: (key: string) => {
+        activeKey.value = key;
+      },
+      showActivate,
+      size,
+    };
+  });
+
+  return { context, activeKey };
+}
+function provideMenuContext<T extends MenuProps>(props?: T) {
+  const uid = getCurrentInstance()!.uid;
+  const parent = inject<Ref<MenuContext>>(MenuContextKey, null);
+
+  if (!parent) {
+    const { context: root } = createMenuContext(props);
     provide(MenuContextKey, root);
-    return root;
   }
-  const newParentKey = uid
-    ? parentContext.value?.parentKey
-      ? `${parentContext.value.parentKey}-${uid}`
-      : String(uid)
-    : (parentContext.value?.parentKey ?? "");
 
   const ctx = computed<MenuContext>(() => ({
-    level: (parentContext.value?.level ?? 0) + 1,
-    showActivate: parentContext.value?.showActivate ?? false,
-    activeKey: parentContext.value?.activeKey,
-    setActiveKey: parentContext.value?.setActiveKey,
-    parentKey: newParentKey,
+    ...parent.value,
+    level: (parent.value?.level ?? 0) + 1,
+    parentKey: buildMenuKey(parent.value.parentKey, uid),
   }));
   provide(MenuContextKey, ctx);
-  return ctx;
 }
 
 function useMenuItem() {
-  const instance = getCurrentInstance();
-  const uid = instance?.uid ?? Math.random();
-  const menuContext = inject<Ref<MenuContext>>(MenuContextKey);
+  const uid = getCurrentInstance()!.uid;
+  const ctx = inject<Ref<MenuContext>>(MenuContextKey);
+  if (!ctx) {
+    throw new Error("MenuContextKey is not found");
+  }
 
-  const itemKey = computed(() => {
-    const parentKey = menuContext?.value?.parentKey ?? "";
-    return parentKey ? `${parentKey}-${uid}` : String(uid);
-  });
+  const size = computed(() => ctx?.value?.size ?? "medium");
+  const key = computed(() => buildMenuKey(ctx.value.parentKey, uid));
 
-  const showActivate = computed(() => menuContext?.value?.showActivate ?? false);
+  const showActivate = computed(() => ctx?.value?.showActivate ?? false);
   const isActive = computed(() => {
     if (!showActivate.value) return false;
-    return menuContext?.value?.activeKey === itemKey.value;
+    return ctx?.value?.activeKey === key.value;
   });
 
-  return { itemKey, menuContext, showActivate, isActive };
+  return { key, ctx, isActive, size };
 }
 
 export type { MenuContext };

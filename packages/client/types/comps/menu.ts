@@ -1,6 +1,7 @@
-import type { IndexIcon, IndexLink, IndexText } from "../global";
+import type { IndexIcon, IndexLink, IndexSize, IndexText } from "../global";
 
 interface MenuProps {
+  size?: IndexSize;
   showActivate?: boolean;
 }
 

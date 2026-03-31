@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MenuButtonProps } from "../../types";
-import { useBem, useText, useLink } from "../../composables";
+import { useBem, useText, useLink, useIcon } from "../../composables";
 import { computed, useAttrs } from "vue";
 import { useMenuItem } from "./context";
 
@@ -11,10 +11,10 @@ const { attr } = useLink(props);
 
 const attrs = useAttrs();
 const hasOnActivate = computed(() => "onActivate" in attrs);
-const { itemKey, menuContext, isActive } = useMenuItem();
+const { key, ctx, isActive, size } = useMenuItem();
 
 const handleClick = (e: MouseEvent) => {
-  menuContext.value?.setActiveKey?.(itemKey.value);
+  ctx.value?.setActiveKey?.(key.value);
   if (hasOnActivate.value) {
     emit("onActivate");
     e.preventDefault();
@@ -23,15 +23,13 @@ const handleClick = (e: MouseEvent) => {
 
 const ns = useBem("menu-button");
 const kls = computed(() => ({
-  item: [ns.b(), ns.when("active", isActive.value)],
-  label: ns.e("label"),
-  icon: ns.e("icon"),
+  wrap: [ns.b(), ns.when("active", isActive.value), ns.m(size.value)],
 }));
 </script>
 
 <template>
-  <a v-bind="attr" :class="kls.item" @click="handleClick">
-    <span v-if="props.icon" :class="kls.icon">{{ props.icon }}</span>
-    <span :class="kls.label">{{ useText(props.text) }}</span>
+  <a v-bind="attr" :class="kls.wrap" @click="handleClick">
+    <component :is="useIcon(props?.icon)" v-if="props?.icon" />
+    <span>{{ useText(props.text) }}</span>
   </a>
 </template>

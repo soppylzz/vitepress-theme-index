@@ -2,17 +2,18 @@
 import type { MenuGroupProps } from "../../types";
 import { useBem, useText } from "../../composables";
 import { computed, ref } from "vue";
-import { provideMenuContext } from "./context";
+import { provideMenuContext, useMenuItem } from "./context";
 
-provideMenuContext();
 const props = defineProps<MenuGroupProps>();
+provideMenuContext();
 
+const { size } = useMenuItem();
 const collapsed = ref(props.collapsed ?? false);
 const ns = useBem("menu-group");
 const kls = computed(() => ({
-  wrap: [ns.b(), ns.when("collapsed")],
-  button: [ns.e("button")],
-  children: [ns.e("children")],
+  wrap: [ns.b(), ns.when("collapsed", collapsed.value)],
+  button: [ns.e("button"), ns.em("button", size.value)],
+  children: [ns.e("children"), ns.em("children", size.value)],
 }));
 </script>
 

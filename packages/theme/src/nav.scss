@@ -133,7 +133,7 @@ $header-height: 3.5em;
       color: getCssVar("primary", "base");
     }
 
-    @include useIcon(1.2em);
+    @include useIcon(1.35em);
 
     span {
       flex-shrink: 0;
