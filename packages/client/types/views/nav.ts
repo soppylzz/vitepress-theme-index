@@ -1,53 +1,40 @@
-import type {
-  IndexActivateEvent,
-  IndexResponse,
-  IndexIcon,
-  IndexLink,
-  IndexText,
-  IndexPlacement,
-} from "../global";
+import type { IndexActivateEvent, IndexResponse, IndexIcon, IndexLink, IndexText } from "../global";
 import type { Component } from "vue";
-import type { MaybeArray } from "@vitepress-theme-index/shared";
 import type { BuildI18nViewConfig } from "../i18n";
-import type { TooltipProps } from "../comps/tooltip";
+import type { MenuItemConfig, PopperProps } from "../comps";
+import type { MaybeArray } from "@vitepress-theme-index/shared";
+
+type NavContainer = "header" | "screen";
 
 type NavItemShow = true | MaybeArray<IndexResponse>;
 interface NavBrandProps extends IndexLink {
   text: IndexText;
   brand?: string;
+  container?: NavContainer;
 }
 
 type NavButtonProps = {
   text?: IndexText;
   icon?: IndexIcon;
-  tooltip?: IndexText;
+  container?: NavContainer;
 } & IndexLink &
-  Omit<TooltipProps, "tooltip" | "placement" | "size">;
+  Omit<PopperProps, "placement" | "size" | "mode" | "activateEvent" | "autoPlace">;
 
 interface NavThemeProps {
   carousel?: "column" | "row";
+  container?: NavContainer;
 }
 
 interface NavMenuProps {
   text: IndexText;
   icon?: IndexIcon;
+  container?: NavContainer;
   activateEvent?: IndexActivateEvent;
 }
 
-type NavMenuTextProps = IndexLink & { text: IndexText; icon?: IndexIcon };
-type NavMenuGroupProps = { text: IndexText; closeable?: boolean };
-
-type NavMenuTextConfig = NavMenuTextProps & { type: "button" };
-type NavMenuGroupConfig = NavMenuGroupProps & {
-  type: "group";
-  children?: NavMenuItemConfig[];
-};
-type NavMenuItemConfig = NavMenuTextConfig | NavMenuGroupConfig;
-type NavMenuItemType = NavMenuItemConfig["type"];
-
 type BuildNavConfig<T extends NavItemType, Props = never> = ([Props] extends [never]
   ? {}
-  : Props) & { type: T } & (
+  : Omit<Props, "container">) & { type: T } & (
     | { target: "screen" }
     | { target?: "header" | "both"; show?: NavItemShow }
   );
@@ -56,7 +43,8 @@ type NavSpaceConfig = BuildNavConfig<"space">;
 type NavDividerConfig = BuildNavConfig<"divider">;
 type NavBrandConfig = BuildNavConfig<"brand", NavBrandProps>;
 type NavButtonConfig = BuildNavConfig<"button", NavButtonProps> & { onActivate?: () => void };
-type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: NavMenuItemConfig[] };
+type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: MenuItemConfig[] };
+
 type NavCustomConfig = BuildNavConfig<"custom"> & { component: Component };
 type NavThemeConfig = BuildNavConfig<"theme", NavThemeProps>;
 
@@ -75,10 +63,6 @@ type IndexNavConfig = BuildI18nViewConfig<NavItemConfig[]>;
 
 export type {
   NavItemType,
-  NavMenuItemType,
-  // sub-props
-  NavMenuTextProps,
-  NavMenuGroupProps,
   // props
   NavBrandProps,
   NavButtonProps,
@@ -87,7 +71,6 @@ export type {
   // config
   IndexNavConfig,
   NavItemConfig,
-  NavMenuItemConfig,
   NavCustomConfig,
   NavMenuConfig,
 };

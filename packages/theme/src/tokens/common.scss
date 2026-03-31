@@ -141,8 +141,8 @@ $z-index: (
     fixed: 1030,
     // special
     nav: 1030,
-    tooltip: 1070,
-    tooltip-arrow: 1071,
+    popper: 1070,
+    popper-above: 1080,
     right-menu: 9999,
   )
 ) !default;

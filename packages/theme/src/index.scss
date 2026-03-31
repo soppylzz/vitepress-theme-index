@@ -2,7 +2,7 @@
 @use "abstract" as *;
 
 @use "nav";
-@use "tooltip";
+@use "popper";
 @use "right-menu";
 
 @include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");

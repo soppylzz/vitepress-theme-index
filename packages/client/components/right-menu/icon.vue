@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { IconItemEmits, IconItemProps } from "../../types";
-import { useBem, useIcon, useMenuItem } from "../../composables";
+import type { RMenuIconEmits, RMenuIconProps } from "../../types";
+import { useBem, useIcon, useRMenuItem } from "../../composables";
 import { useRightMenuProvide } from "../../utils";
 
-const emits = defineEmits<IconItemEmits>();
-const props = withDefaults(defineProps<IconItemProps>(), { closeOnActivate: true });
+const emits = defineEmits<RMenuIconEmits>();
+const props = withDefaults(defineProps<RMenuIconProps>(), { closeOnActivate: true });
 
 const { close } = useRightMenuProvide();
-const { render, state, stage, size } = useMenuItem(props, {
+const { render, state, stage, size } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
     emits("onTrigger");
@@ -32,7 +32,7 @@ const activateFn = (evt?: MouseEvent) => {
   }
 };
 
-const ns = useBem("item-icon");
+const ns = useBem("r-menu-icon");
 const kls = computed(() => ({
   block: [ns.b(), ns.m(size.value)],
   container: [ns.e("container"), ns.when(stage.value), ns.when(state.value)],

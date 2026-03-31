@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import { debounce } from "lodash-unified";
-import type { SubMenuItemEmits, SubMenuItemProps } from "../../types";
-import { useBem, useIcon, useMenuItem, useProvidePath, useText } from "../../composables";
+import type { RMenuSubMenuEmits, RMenuSubMenuProps } from "../../types";
+import { useBem, useIcon, useRMenuItem, useProvidePath, useText } from "../../composables";
 import { useNavMove } from "../../utils";
-import { RightMenu } from "./menu";
+import { VtiRightMenu } from "./menu";
 
-const emits = defineEmits<SubMenuItemEmits>();
-const props = withDefaults(defineProps<SubMenuItemProps>(), {
+const emits = defineEmits<RMenuSubMenuEmits>();
+const props = withDefaults(defineProps<RMenuSubMenuProps>(), {
   size: "medium",
   activateEvent: "mouseenter",
 });
@@ -44,7 +44,7 @@ const closeFn = () => {
 useProvidePath({ rect }, { onClose: closeFn });
 
 const { enterChild } = useNavMove();
-const { render, state, size, stage, opened } = useMenuItem(props, {
+const { render, state, size, stage, opened } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
     emits("onTrigger");
@@ -66,7 +66,7 @@ watch(opened, (val) => {
   }
 });
 
-const ns = useBem("item-submenu");
+const ns = useBem("r-menu-submenu");
 const kls = computed(() => ({
   container: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
   left: ns.e("left-icon"),
@@ -77,9 +77,9 @@ const kls = computed(() => ({
 
 <template>
   <div v-show="render">
-    <RightMenu :trigger="props.trigger" :show="show && opened" :coords="coords">
+    <VtiRightMenu :trigger="props.trigger" :show="show && opened" :coords="coords">
       <slot />
-    </RightMenu>
+    </VtiRightMenu>
     <div ref="button" :class="kls.container" @mouseenter="expandFn" @click.stop="expandFn">
       <span :class="kls.left"><component :is="useIcon(props?.icon)" v-if="props?.icon" /></span>
       <span :class="kls.text">{{ useText(props.text) }}</span>

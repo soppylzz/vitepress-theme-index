@@ -21,6 +21,6 @@ const kls = computed(() => ({
       <component :is="useIcon(props.icon)" v-if="props?.icon" />
       <span>{{ useText(props.text) }}</span>
     </div>
-    <div :class="kls.popup"><slot /></div>
+    <!--    <div :class="kls.popup"><slot /></div>-->
   </div>
 </template>

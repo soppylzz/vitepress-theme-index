@@ -1,24 +1,24 @@
 import type { Component } from "vue";
-import type { BaseProps, EventHooks, EventProps, ExpandHooks } from "./base";
+import type { RMenuBaseProps, RMenuEventHooks, RMenuEventProps, RMenuExpandHooks } from "./base";
 import type { IndexActivateEvent, IndexIcon, IndexSize, IndexText } from "../global";
 import type { MenuItemAlign } from "./unit";
 import type { EmitsTypeFromHooks } from "../vue";
 
-interface DividerItemProps extends /* @vue-ignore */ BaseProps {
+interface RMenuDividerProps extends /* @vue-ignore */ RMenuBaseProps {
   text?: IndexText;
   align?: MenuItemAlign;
 }
-interface GroupItemProps extends /* @vue-ignore */ EventProps {
+interface RMenuGroupProps extends /* @vue-ignore */ RMenuEventProps {
   mode: "component" | "icon";
   text?: IndexText;
   row?: number;
   column?: number;
 }
-interface IconItemProps extends /* @vue-ignore */ EventProps {
+interface RMenuIconProps extends /* @vue-ignore */ RMenuEventProps {
   icon: IndexIcon;
   closeOnActivate?: boolean;
 }
-interface SubMenuItemProps extends /* @vue-ignore */ EventProps {
+interface RMenuSubMenuProps extends /* @vue-ignore */ RMenuEventProps {
   text: IndexText;
   activateEvent?: IndexActivateEvent;
   align?: MenuItemAlign;
@@ -26,69 +26,70 @@ interface SubMenuItemProps extends /* @vue-ignore */ EventProps {
   size?: IndexSize;
   expandIcon?: IndexIcon;
 }
-interface TextItemProps extends /* @vue-ignore */ EventProps {
+interface RMenuTextProps extends /* @vue-ignore */ RMenuEventProps {
   text: IndexText;
   icon?: IndexIcon;
   align?: MenuItemAlign;
   closeOnActivate?: boolean;
 }
 
-type TextItemHooks = EventHooks;
-type IconItemHooks = EventHooks;
-type GroupItemHooks = ExpandHooks;
-type SubMenuItemHooks = ExpandHooks;
+type RMenuTextHooks = RMenuEventHooks;
+type RMenuIconHooks = RMenuEventHooks;
+type RMenuGroupHooks = RMenuExpandHooks;
+type RMenuSubMenuHooks = RMenuExpandHooks;
 
-type TextItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<TextItemHooks>;
-type IconItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<IconItemHooks>;
-type GroupItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<GroupItemHooks>;
-type SubMenuItemEmits = /* @vue-ignore */ EmitsTypeFromHooks<SubMenuItemHooks>;
+type RMenuTextEmits = /* @vue-ignore */ EmitsTypeFromHooks<RMenuTextHooks>;
+type RMenuIconEmits = /* @vue-ignore */ EmitsTypeFromHooks<RMenuIconHooks>;
+type RMenuGroupEmits = /* @vue-ignore */ EmitsTypeFromHooks<RMenuGroupHooks>;
+type RMenuSubMenuEmits = /* @vue-ignore */ EmitsTypeFromHooks<RMenuSubMenuHooks>;
 
-type BuildRMenuConfig<Type extends MenuItemType, Props extends object = never, Hooks = never> = {
+type BuildRMenuConfig<Type extends RMenuItemType, Props extends object = never, Hooks = never> = {
   type: Type;
 } & { hooks?: Hooks } & ([Props] extends [never] ? {} : Props);
 
-type HasChildConfig = { children?: MenuItemRecord };
+type HasChildConfig = { children?: RMenuItemRecord };
 
-type TextItemConfig = BuildRMenuConfig<"text", TextItemProps, TextItemHooks>;
-type IconItemConfig = BuildRMenuConfig<"icon", IconItemProps, IconItemHooks>;
-type DividerItemConfig = BuildRMenuConfig<"divider", DividerItemProps>;
-type GroupItemConfig = BuildRMenuConfig<"group", GroupItemProps, GroupItemHooks> & HasChildConfig;
-type SubMenuItemConfig = BuildRMenuConfig<"sub-menu", SubMenuItemProps, SubMenuItemHooks> &
+type RMenuTextConfig = BuildRMenuConfig<"text", RMenuTextProps, RMenuTextHooks>;
+type RMenuIconConfig = BuildRMenuConfig<"icon", RMenuIconProps, RMenuIconHooks>;
+type RMenuDividerConfig = BuildRMenuConfig<"divider", RMenuDividerProps>;
+type RMenuGroupConfig = BuildRMenuConfig<"group", RMenuGroupProps, RMenuGroupHooks> &
+  HasChildConfig;
+type RMenuSubMenuConfig = BuildRMenuConfig<"sub-menu", RMenuSubMenuProps, RMenuSubMenuHooks> &
   HasChildConfig;
 
-type CustomItemConfig = BuildRMenuConfig<"custom"> & { component: Component };
-type MenuItemConfig =
-  | TextItemConfig
-  | IconItemConfig
-  | DividerItemConfig
-  | GroupItemConfig
-  | SubMenuItemConfig
-  | CustomItemConfig;
-type MenuItemType = MenuItemConfig["type"];
+type RMenuCustomConfig = BuildRMenuConfig<"custom"> & { component: Component };
+type RMenuItemConfig =
+  | RMenuTextConfig
+  | RMenuIconConfig
+  | RMenuDividerConfig
+  | RMenuGroupConfig
+  | RMenuSubMenuConfig
+  | RMenuCustomConfig;
+type RMenuItemType = RMenuItemConfig["type"];
 
-type MenuItemRecord = { [k: string]: MenuItemConfig };
+type RMenuItemRecord = { [k: string]: RMenuItemConfig };
 
 export type {
-  MenuItemType,
+  RMenuItemType,
   // item base
-  TextItemProps,
-  IconItemProps,
-  GroupItemProps,
-  DividerItemProps,
-  SubMenuItemProps,
-  TextItemEmits,
-  IconItemEmits,
-  GroupItemEmits,
-  SubMenuItemEmits,
+  RMenuTextProps,
+  RMenuIconProps,
+  RMenuGroupProps,
+  RMenuDividerProps,
+  RMenuSubMenuProps,
+  RMenuTextEmits,
+  RMenuIconEmits,
+  RMenuGroupEmits,
+  RMenuSubMenuEmits,
   // item config
-  TextItemConfig,
-  IconItemConfig,
-  DividerItemConfig,
-  GroupItemConfig,
-  SubMenuItemConfig,
-  CustomItemConfig,
+  RMenuTextConfig,
+  RMenuIconConfig,
+  RMenuDividerConfig,
+  RMenuGroupConfig,
+  RMenuSubMenuConfig,
+  RMenuCustomConfig,
   // other
-  MenuItemConfig,
-  MenuItemRecord,
+  RMenuItemConfig,
+  RMenuItemRecord,
   HasChildConfig,
 };

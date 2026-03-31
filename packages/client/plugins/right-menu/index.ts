@@ -3,7 +3,7 @@ import type {
   IndexMenuContextConfig,
   MenuDynamicContext,
   MenuDynamicKey,
-  MenuItemRecord,
+  RMenuItemRecord,
   ProvideMenuConfig,
   UserIndexRightMenuConfig,
   ResolvedIndexRightMenuConfig,
@@ -45,7 +45,7 @@ function useBaseSetup(app: App) {
 
 function useManualModeSetup(
   app: App,
-  config: ResolvedIndexRightMenuConfig<MenuItemRecord>,
+  config: ResolvedIndexRightMenuConfig<RMenuItemRecord>,
   base: ReturnType<typeof useBaseSetup>
 ) {
   const { menuNav, baseProps, baseHooks } = base;
@@ -61,7 +61,7 @@ function useManualModeSetup(
 
 function useDynamicModeSetup(
   app: App,
-  config: ResolvedIndexRightMenuConfig<MenuItemRecord>,
+  config: ResolvedIndexRightMenuConfig<RMenuItemRecord>,
   base: ReturnType<typeof useBaseSetup>
 ) {
   const { mode, trigger } = config;
@@ -112,7 +112,7 @@ function useDynamicModeSetup(
 }
 
 /* =============== plugin =============== */
-function createIndexRightMenu<Records extends MenuItemRecord = never>(
+function createIndexRightMenu<Records extends RMenuItemRecord = never>(
   config?: UserIndexRightMenuConfig<Records>
 ) {
   const resolved = resolveIndexMenuConfig(config);
@@ -126,7 +126,7 @@ function createIndexRightMenu<Records extends MenuItemRecord = never>(
   };
 }
 
-function installRightMenu<Records extends MenuItemRecord = never>(
+function installRightMenu<Records extends RMenuItemRecord = never>(
   ctx: EnhanceAppContext,
   config?: UserIndexRightMenuConfig<Records>
 ) {

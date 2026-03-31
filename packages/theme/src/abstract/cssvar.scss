@@ -20,18 +20,6 @@
   @return var(#{getCssVarName($keys...)});
 }
 
-
-@mixin applyToken($token, $key) {
-  $css-prop: map.get($token, css);
-  $value-map: map.get($token, value);
-
-  @if not map.has-key($value-map, $key) {
-    @error "Token `#{$css-prop}` has no key `#{$key}`.";
-  }
-
-  #{$css-prop}: map.get($value-map, $key);
-}
-
 @function getToken($token, $key) {
   $css-prop: map.get($token, css);
   $value-map: map.get($token, value);
@@ -41,6 +29,11 @@
   }
 
   @return map.get($value-map, $key)
+}
+
+@mixin applyToken($token, $key) {
+  $css-prop: map.get($token, css);
+  #{$css-prop}: getToken($token, $key);
 }
 
 @function flattenTokenMap($map, $prefix: ()) {

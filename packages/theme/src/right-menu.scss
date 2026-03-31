@@ -101,7 +101,7 @@ $rm-size-config: (
   }
 }
 
-@include b("item-icon") {
+@include b("r-menu-icon") {
   position: relative;
   display: flex;
   justify-content: center;
@@ -128,7 +128,7 @@ $rm-size-config: (
   }
 }
 
-@include b("item-group") {
+@include b("r-menu-group") {
   @include e("text") {
     font-size: 0.9em;
     display: flex;
@@ -211,7 +211,7 @@ $divider-spacing: (
   "large": "sm",
 );
 
-@include b("item-divider") {
+@include b("r-menu-divider") {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -255,7 +255,7 @@ $divider-spacing: (
   }
 }
 
-@include b("item-text") {
+@include b("r-menu-text") {
   @include useRMenuItem();
   @include useRMenuColor();
 
@@ -288,7 +288,7 @@ $divider-spacing: (
   }
 }
 
-@include b("item-submenu") {
+@include b("r-menu-submenu") {
   @include useRMenuItem();
   @include useRMenuColor();
 

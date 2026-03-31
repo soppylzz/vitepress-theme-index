@@ -2,7 +2,7 @@ import { getCurrentInstance, inject, onMounted, onUnmounted } from "vue";
 import type {
   IndexMenuContextConfig,
   IndexMenuGlobalContext,
-  MenuItemRecord,
+  RMenuItemRecord,
   MenuMode,
 } from "../../types";
 
@@ -13,14 +13,14 @@ type IndexMenuCustomRecords = never;
 
 function useIndexRightMenu<
   Mode extends MenuMode,
-  Record extends MenuItemRecord = IndexMenuCustomRecords,
+  Record extends RMenuItemRecord = IndexMenuCustomRecords,
 >() {
   const ctx = inject(indexRightMenuGlobalKey);
   if (!ctx) throw new Error("IndexMenuGlobalContext not be provided");
   return ctx as IndexMenuGlobalContext<Record, Mode>;
 }
 
-function defineDynamicMenu<Records extends MenuItemRecord>(
+function defineDynamicMenu<Records extends RMenuItemRecord>(
   record: Partial<IndexMenuContextConfig<Records>>
 ) {
   const ctx = useIndexRightMenu();

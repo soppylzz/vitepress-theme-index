@@ -2,14 +2,14 @@
 @use "./abstract" as *;
 @use "./tokens" as *;
 
-$tt-size-config: (
+$pop-size-config: (
   small: (
     font-size: "sm",
-    padding: "md",
+    padding: "sm",
   ),
   medium: (
     font-size: "md",
-    padding: "lg",
+    padding: "md",
   ),
   large: (
     font-size: "md",
@@ -17,54 +17,54 @@ $tt-size-config: (
   )
 );
 
-$tt-arrow-size: (
+$pop-arrow-size: (
   small: 0.4em,
   medium: 0.5em,
   large: 0.6em,
 );
 
-$tt-arrow-rotate: (
-  top: 45deg,
-  right: 135deg,
-  bottom: 225deg,
-  left: 315deg,
-);
-
-@include b("tooltip") {
+@include b("popper") {
   // ignore in dom flow
   display: contents;
 
   @include e("trigger") {
     display: inline-flex;
+    cursor: pointer;
   }
 
   @include e("content") {
     position: fixed;
     visibility: hidden;
-    max-width: 200px;
 
-    @include applyToken($z-index, "tooltip");
+    @include applyToken($z-index, "popper");
     @include applyToken($border-radius, "md");
 
     background-color: getCssVar("bg", "secondary");
     border: 1px solid getCssVar("border", "secondary");
     color: getCssVar("text", "secondary");
-    white-space: pre-wrap;
     word-wrap: break-word;
   }
 
-  @each $size, $config in $tt-size-config {
+  @each $size, $config in $pop-size-config {
     @include em("content", $size) {
       @include applyToken($font-size, map.get($config, "font-size"));
       @include applyToken($padding, map.get($config, "padding"));
     }
   }
 
+  @include em("content", "block") {
+    padding-inline: 0;
+  }
+
+  @include em("content", "block") {
+    padding-inline: 0;
+  }
+
   @include e("arrow") {
     position: fixed;
     visibility: hidden;
 
-    @include applyToken($z-index, "tooltip-arrow");
+    @include applyToken($z-index, "popper-above");
 
     transform: rotate(45deg);
     background-color: getCssVar("bg", "secondary");
@@ -73,16 +73,18 @@ $tt-arrow-rotate: (
     border-left-color: transparent;
   }
 
-  @each $size, $arrow-size in $tt-arrow-size {
+  @each $size, $arrow-size in $pop-arrow-size {
     @include em("arrow", $size) {
       width: $arrow-size;
       height: $arrow-size;
     }
   }
-  @each $placement, $degree in $tt-arrow-rotate {
+
+  @each $placement, $degree in (top: 45deg, right: 135deg, bottom: 225deg, left: 315deg) {
     @include em("arrow", $placement) {
       transform: rotate($degree);
     }
   }
 }
+
 

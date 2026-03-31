@@ -1,7 +1,7 @@
 import type { PropType, Component } from "vue";
 import { createVNode, defineComponent } from "vue";
-import type { MenuItemRecord, MenuItemType } from "../../types";
-import { RightMenu, rightMenuProps } from "./menu";
+import type { RMenuItemRecord, RMenuItemType } from "../../types";
+import { VtiRightMenu, rightMenuProps } from "./menu";
 import {
   VtiRMenuDivider,
   VtiRMenuGroup,
@@ -12,7 +12,7 @@ import {
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
 import { omit } from "lodash-unified";
 
-const rightMenuItemMap: Record<MenuItemType, Component | undefined> = {
+const rightMenuItemMap: Record<RMenuItemType, Component | undefined> = {
   "sub-menu": VtiRMenuSubMenu,
   divider: VtiRMenuDivider,
   group: VtiRMenuGroup,
@@ -21,7 +21,7 @@ const rightMenuItemMap: Record<MenuItemType, Component | undefined> = {
   custom: undefined,
 };
 
-function renderRightMenu(records?: MenuItemRecord) {
+function renderRightMenu(records?: RMenuItemRecord) {
   return Object.entries(records ?? {}).map(([key, ctx]) => {
     const { type, hooks, ...res } = ctx;
     if (ctx.type === "custom") {
@@ -34,7 +34,7 @@ function renderRightMenu(records?: MenuItemRecord) {
     const cleanProps = omit(res, "children");
     if (hasOwnProperty(res, "children")) {
       return createVNode(comp, { key, ...cleanProps, ...hooks }, () =>
-        renderRightMenu((res?.children ?? {}) as MenuItemRecord)
+        renderRightMenu((res?.children ?? {}) as RMenuItemRecord)
       );
     }
     return createVNode(comp, { key, ...cleanProps, ...hooks });
@@ -45,7 +45,7 @@ const VtiRMenuTree = defineComponent({
   name: "VtiRMenuTree",
   props: {
     ctx: {
-      type: Object as PropType<MenuItemRecord>,
+      type: Object as PropType<RMenuItemRecord>,
       default: () => ({}),
     },
     ...rightMenuProps,
@@ -53,7 +53,7 @@ const VtiRMenuTree = defineComponent({
   setup(props) {
     return () => {
       const { ctx = {}, ...menu } = props;
-      return <RightMenu {...menu}>{{ default: () => renderRightMenu(ctx) }}</RightMenu>;
+      return <VtiRightMenu {...menu}>{{ default: () => renderRightMenu(ctx) }}</VtiRightMenu>;
     };
   },
 });

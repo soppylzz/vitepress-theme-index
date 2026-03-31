@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { TextItemEmits, TextItemProps } from "../../types";
-import { useBem, useIcon, useMenuItem, useText } from "../../composables";
+import type { RMenuTextEmits, RMenuTextProps } from "../../types";
+import { useBem, useIcon, useRMenuItem, useText } from "../../composables";
 import { useRightMenuProvide } from "../../utils";
 
-const emits = defineEmits<TextItemEmits>();
-const props = withDefaults(defineProps<TextItemProps>(), { align: "start", closeOnActivate: true });
+const emits = defineEmits<RMenuTextEmits>();
+const props = withDefaults(defineProps<RMenuTextProps>(), {
+  align: "start",
+  closeOnActivate: true,
+});
 
 const { close } = useRightMenuProvide();
-const { render, state, stage, size } = useMenuItem(props, {
+const { render, state, stage, size } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
     emits("onTrigger");
@@ -33,7 +36,7 @@ const activateFn = (evt?: MouseEvent) => {
   }
 };
 
-const ns = useBem("item-text");
+const ns = useBem("r-menu-text");
 const kls = computed(() => ({
   container: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
   icon: ns.e("icon"),

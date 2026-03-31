@@ -1,4 +1,4 @@
-import type { MenuItemRecord } from "./config";
+import type { RMenuItemRecord } from "./config";
 import type { DeepReadonly, WithDefault } from "@vitepress-theme-index/shared";
 import type {
   BaseMenuConfig,
@@ -68,9 +68,12 @@ const defaultMenuItemRecord = {
     },
   },
   text2: { type: "text", icon: "angle-left", text: "按键" },
-} as const satisfies DeepReadonly<MenuItemRecord>;
+} as const satisfies DeepReadonly<RMenuItemRecord>;
 
-type WithDefaultMenuRecord<T extends MenuItemRecord> = WithDefault<T, typeof defaultMenuItemRecord>;
+type WithDefaultMenuRecord<T extends RMenuItemRecord> = WithDefault<
+  T,
+  typeof defaultMenuItemRecord
+>;
 
 export {
   navSeparator,

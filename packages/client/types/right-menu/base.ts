@@ -1,29 +1,29 @@
 import type { MenuItemState, MenuTrigger } from "./unit";
 
 /* =============== props =============== */
-interface BaseProps {
+interface RMenuBaseProps {
   trigger?: MenuTrigger;
 }
 
-interface EventProps extends BaseProps {
+interface RMenuEventProps extends RMenuBaseProps {
   state?: MenuItemState;
   selectable?: boolean;
 }
 
 /* =============== hooks =============== */
-interface BaseHooks {
+interface RMenuBaseHooks {
   onTrigger?: () => void;
 }
 
-interface EventHooks extends BaseHooks {
+interface RMenuEventHooks extends RMenuBaseHooks {
   onActivateBefore?: (evt?: MouseEvent | KeyboardEvent) => boolean | void;
   onActivate?: (evt?: MouseEvent | KeyboardEvent) => void;
 
   onSelect?: (key?: string) => void;
 }
 
-interface ExpandHooks extends EventHooks {
+interface RMenuExpandHooks extends RMenuEventHooks {
   onDeactivate?: () => void;
 }
 
-export type { BaseProps, BaseHooks, EventProps, EventHooks, ExpandHooks };
+export type { RMenuBaseProps, RMenuBaseHooks, RMenuEventProps, RMenuEventHooks, RMenuExpandHooks };

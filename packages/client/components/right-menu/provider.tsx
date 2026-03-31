@@ -3,8 +3,8 @@ import { defineComponent, renderSlot } from "vue";
 import type { ProvideMenuConfig } from "../../types";
 import { provideRightMenuContext } from "../../utils";
 
-const RightMenuProvider = defineComponent({
-  name: "VtiRightMenuProvider",
+const VtiRMenuProvider = defineComponent({
+  name: "VtiRMenuProvider",
   props: {
     config: {
       type: Object as PropType<ProvideMenuConfig>,
@@ -22,4 +22,4 @@ const RightMenuProvider = defineComponent({
   },
 });
 
-export { RightMenuProvider };
+export { VtiRMenuProvider };

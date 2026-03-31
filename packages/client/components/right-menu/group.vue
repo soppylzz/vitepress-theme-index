@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, useSlots } from "vue";
-import type { GroupItemEmits, GroupItemProps } from "../../types";
-import { useBem, useMenuItem, useProvidePath, useText } from "../../composables";
+import type { RMenuGroupEmits, RMenuGroupProps } from "../../types";
+import { useBem, useRMenuItem, useProvidePath, useText } from "../../composables";
 
-const emits = defineEmits<GroupItemEmits>();
-const props = withDefaults(defineProps<GroupItemProps>(), {
+const emits = defineEmits<RMenuGroupEmits>();
+const props = withDefaults(defineProps<RMenuGroupProps>(), {
   row: 1,
   column: 4,
 });
 
 useProvidePath();
 
-const { render, state, stage, size, enter, leave } = useMenuItem(props, {
+const { render, state, stage, size, enter, leave } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
     emits("onTrigger");
@@ -47,7 +47,7 @@ const _slots = computed(() => {
   return show.value ? _default : _default.slice(0, props?.row);
 });
 
-const ns = useBem("item-group");
+const ns = useBem("r-menu-group");
 const kls = computed(() => ({
   block: ns.b(),
   text: [ns.e("text"), ns.em("text", size.value), ns.when(state.value)],

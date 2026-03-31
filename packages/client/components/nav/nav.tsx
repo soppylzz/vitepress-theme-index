@@ -1,13 +1,5 @@
 import type { Component, VNode } from "vue";
-import {
-  watchEffect,
-  computed,
-  ref,
-  createVNode,
-  defineComponent,
-  vShow,
-  withDirectives,
-} from "vue";
+import { watchEffect, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
 import { useBem, useIndex, useViewItems } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
@@ -16,18 +8,10 @@ import type {
   NavItemConfig,
   NavItemType,
   NavMenuConfig,
-  NavMenuItemConfig,
-  NavMenuItemType,
 } from "../../types";
-import {
-  VtiNavBrand,
-  VtiNavButton,
-  VtiNavMenu,
-  VtiNavMenuButton,
-  VtiNavMenuGroup,
-  VtiNavTheme,
-} from "./items";
+import { VtiNavBrand, VtiNavButton, VtiNavMenu, VtiNavTheme } from "./items";
 import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
+import { renderMenuItems } from "../menu";
 
 const ns = useBem("nav");
 const _bems = {
@@ -43,11 +27,6 @@ const navItemMap: Record<NavItemType, Component | undefined> = {
   divider: undefined,
   space: undefined,
   custom: undefined,
-};
-
-const navMenuItemMap: Record<NavMenuItemType, Component> = {
-  button: VtiNavMenuButton,
-  group: VtiNavMenuGroup,
 };
 
 interface NavItemRenderContext {
@@ -78,43 +57,27 @@ function renderNavItem(
   let vnode: VNode | null = null;
   const { type, target: _tgt, ...res } = config;
   if (type === "custom") {
-    vnode = createVNode((config as NavCustomConfig).component, { key });
+    vnode = createVNode((config as NavCustomConfig).component, { key, container });
   } else if (type === "space" || type === "divider") {
     const classes = [_bems[type].b(), _bems[type].m(container)];
-    vnode = createVNode("div", { key, class: classes });
+    vnode = createVNode("div", { key, class: classes, container });
   } else {
     const comp = navItemMap[type];
     if (!comp) throw new Error(`unknown nav item type: ${type}`);
 
     const cleanProps = omit(res, ["children", "show"]);
     if (type === "menu") {
-      vnode = createVNode(comp, { key, ...cleanProps }, () =>
-        renderNavMenu((config as NavMenuConfig)?.children)
+      vnode = createVNode(comp, { key, ...cleanProps, container }, () =>
+        renderMenuItems((config as NavMenuConfig)?.children, "vti-nav")
       );
     } else {
-      vnode = createVNode(comp, { key, ...cleanProps });
+      vnode = createVNode(comp, { key, ...cleanProps, container });
     }
   }
   if (!vnode) return null;
 
   if (container === "screen") return vnode;
   return withDirectives(vnode, [[vShow, visible]]);
-}
-
-function renderNavMenu(items?: NavMenuItemConfig[]) {
-  return (items ?? []).map((item, index) => {
-    const { type, ...res } = item;
-    const comp = navMenuItemMap[type];
-    if (!comp) throw new Error(`unknown nav menu item type: ${type}`);
-
-    const cleanProps = omit(res, "children");
-    if (hasOwnProperty(res, "children")) {
-      return createVNode(comp, { index, ...cleanProps }, () =>
-        renderNavMenu((res?.children ?? []) as NavMenuItemConfig[])
-      );
-    }
-    return createVNode(comp, { index, ...cleanProps });
-  });
 }
 
 // TODO: add slots transmit later

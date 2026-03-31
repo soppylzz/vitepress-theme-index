@@ -2,7 +2,7 @@ import type { PropType } from "vue";
 import { defineComponent, nextTick, reactive, ref, vShow, watch, withDirectives } from "vue";
 import type { MenuItemState, MenuTrigger } from "../../types";
 import { useRightMenuProvide } from "../../utils";
-import { useBem, useMenuItem, useProvidePath } from "../../composables";
+import { useBem, useRMenuItem, useProvidePath } from "../../composables";
 import { useRightMenu } from "./use-menu";
 
 const rightMenuProps = {
@@ -21,7 +21,7 @@ const rightMenuProps = {
   },
 };
 
-const RightMenu = defineComponent({
+const VtiRightMenu = defineComponent({
   name: "VtiRightMenu",
   props: rightMenuProps,
   setup(props, { slots }) {
@@ -73,7 +73,7 @@ const RightMenu = defineComponent({
       render: finalRender,
       size,
       state,
-    } = useMenuItem(props, { render, state: () => props.state });
+    } = useRMenuItem(props, { render, state: () => props.state });
 
     useRightMenu(finalRender);
     useProvidePath({ rect, state });
@@ -91,4 +91,4 @@ const RightMenu = defineComponent({
   },
 });
 
-export { RightMenu, rightMenuProps };
+export { VtiRightMenu, rightMenuProps };

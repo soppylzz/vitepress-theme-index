@@ -6,11 +6,11 @@ import type {
   MenuMode,
   MenuMergeMode,
 } from "./unit";
-import type { MenuItemRecord } from "./config";
+import type { RMenuItemRecord } from "./config";
 import type { DeepReadonly, MaybePromise } from "@vitepress-theme-index/shared";
 import type { ComponentInternalInstance, ComputedRef, Reactive, Ref } from "vue";
 import type { CustomComputedRef, VueReadonly } from "../vue";
-import type { EventProps } from "./base";
+import type { RMenuEventProps } from "./base";
 import type { IndexSize } from "../global";
 
 /* =============== menu config =============== */
@@ -40,13 +40,13 @@ const staticMenuConfigKeys: readonly (keyof StaticMenuConfig)[] = [
 const baseMenuConfigKeys: readonly (keyof BaseMenuConfig)[] = ["order", "merge"] as const;
 const provideMenuConfigKeys: readonly (keyof ProvideMenuConfig)[] = ["state", "size"] as const;
 
-type IndexMenuContextConfig<Records extends MenuItemRecord = MenuItemRecord> = BaseMenuConfig &
+type IndexMenuContextConfig<Records extends RMenuItemRecord = RMenuItemRecord> = BaseMenuConfig &
   ProvideMenuConfig & { record: DeepReadonly<Records> };
 
-type UserIndexRightMenuConfig<Records extends MenuItemRecord> = Partial<
+type UserIndexRightMenuConfig<Records extends RMenuItemRecord> = Partial<
   StaticMenuConfig & IndexMenuContextConfig<Records>
 >;
-type ResolvedIndexRightMenuConfig<Records extends MenuItemRecord> = Required<
+type ResolvedIndexRightMenuConfig<Records extends RMenuItemRecord> = Required<
   UserIndexRightMenuConfig<Records>
 >;
 
@@ -54,7 +54,7 @@ type ResolvedIndexRightMenuConfig<Records extends MenuItemRecord> = Required<
 type MenuDynamicKey = HTMLElement | ComponentInternalInstance;
 type WithContext<Config> = Config & { ctx: Reactive<Config>; reset(): void };
 
-type MenuDynamicContext<Records extends MenuItemRecord = MenuItemRecord> = WithContext<
+type MenuDynamicContext<Records extends RMenuItemRecord = RMenuItemRecord> = WithContext<
   Partial<IndexMenuContextConfig<Records>>
 >;
 
@@ -68,7 +68,7 @@ type IndexMenuProvideContext = {
   ctx: ComputedRef<IndexMenuProvide>;
 };
 
-type MenuNavItem = Pick<EventProps, "selectable"> & {
+type MenuNavItem = Pick<RMenuEventProps, "selectable"> & {
   el: HTMLElement | null;
   render: boolean;
   onEnter?: (e: KeyboardEvent) => MaybePromise<void>;
@@ -102,7 +102,7 @@ type CachedComputedRef<Key, Value> = CustomComputedRef<
   }
 >;
 
-type MenuGlobalDynamicContext<Records extends MenuItemRecord = MenuItemRecord> = WithContext<
+type MenuGlobalDynamicContext<Records extends RMenuItemRecord = RMenuItemRecord> = WithContext<
   Required<IndexMenuContextConfig<Records>>
 > & {
   mode: "mixed" | "auto";
@@ -110,7 +110,7 @@ type MenuGlobalDynamicContext<Records extends MenuItemRecord = MenuItemRecord> =
 };
 
 type IndexMenuGlobalContext<
-  Records extends MenuItemRecord = MenuItemRecord,
+  Records extends RMenuItemRecord = RMenuItemRecord,
   Mode extends MenuMode = MenuMode,
 > = {
   auto: MenuGlobalDynamicContext<Records>;

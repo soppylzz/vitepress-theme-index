@@ -1,6 +1,6 @@
 import type { ComputedRef, InjectionKey, Reactive } from "vue";
 import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
-import type { MenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
+import type { RMenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
 import type { IndexNavConfig, IndexSidebarConfig, NavItemConfig, SidebarItemConfig } from "./views";
 import type { IndexResponse } from "./global";
 
@@ -44,7 +44,7 @@ type IndexClientAdditionConfig = DeepPartial<{
   sidebar: Record<string, SidebarItemConfig[]>;
 }>;
 
-type IndexClientConfig<Records extends MenuItemRecord = MenuItemRecord> = Partial<{
+type IndexClientConfig<Records extends RMenuItemRecord = RMenuItemRecord> = Partial<{
   rightMenu: UserIndexRightMenuConfig<Records>;
   theme: UserIndexClientThemeConfig;
   nav: IndexNavConfig;

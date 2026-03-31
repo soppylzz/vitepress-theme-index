@@ -3,21 +3,21 @@ import type { NavButtonProps } from "../../types";
 import { useBem, useIcon, useLink, useText } from "../../composables";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
 import { computed, useAttrs } from "vue";
-import Tooltip from "../tooltip.vue";
+import { VtiPopper } from "../public";
 
 const attrs = useAttrs();
 const hasOnActivate = computed(() => "onActivate" in attrs);
 
 const emit = defineEmits<{ (e: "onActivate"): void }>();
 const props = withDefaults(defineProps<NavButtonProps>(), {
-  tooltipDelay: 300,
+  delay: 300,
 });
 
 const { attr } = useLink(props);
 
 const isTextMode = (props: any) => hasOwnProperty(props, "text") && !!props.text;
 const hasTooltip = (props: any) =>
-  hasOwnProperty(props, "tooltip") && !!useText(props.tooltip)?.trim();
+  hasOwnProperty(props, "content") && !!useText(props.content)?.trim();
 
 const handleClick = (e: MouseEvent) => {
   if (hasOnActivate.value) {
@@ -40,16 +40,17 @@ const kls = computed(() => ({
       <span>{{ useText(props.text) }}</span>
     </a>
     <template v-else>
-      <a v-if="hasTooltip(props)" v-bind="attr" :class="kls.link" @click="handleClick">
-        <Tooltip
-          size="small"
-          placement="bottom"
-          :tooltip="useText(props.tooltip) || ''"
-          :tooltip-delay="props.tooltipDelay"
-        >
+      <VtiPopper
+        v-if="hasTooltip(props)"
+        size="small"
+        placement="bottom"
+        :content="props.content"
+        :delay="props.delay"
+      >
+        <a v-bind="attr" :class="kls.link" @click="handleClick">
           <component :is="useIcon(props.icon)" />
-        </Tooltip>
-      </a>
+        </a>
+      </VtiPopper>
       <a v-else v-bind="attr" :class="kls.link" @click="handleClick">
         <component :is="useIcon(props.icon)" />
       </a>

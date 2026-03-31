@@ -9,11 +9,11 @@ import {
   watchEffect,
 } from "vue";
 import type {
-  EventHooks,
+  RMenuEventHooks,
   MenuNavItem,
   MenuItemNavState,
   ToMaybeRefOrGetterState,
-  BaseProps,
+  RMenuBaseProps,
   MenuItemState,
 } from "../../types";
 import { navSeparator } from "../../types";
@@ -26,13 +26,13 @@ import {
 } from "../../utils";
 
 type MenuNavOption = Parameters<typeof useTrigger>[1] &
-  Pick<EventHooks, "onSelect"> &
+  Pick<RMenuEventHooks, "onSelect"> &
   Omit<ToMaybeRefOrGetterState<Partial<MenuNavItem>, "render" | "selectable">, "el"> & {
     autoRegister?: boolean;
     state?: MaybeRefOrGetter<MenuItemState>;
   };
 
-function useMenuItem(props?: Partial<BaseProps>, option?: MenuNavOption) {
+function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
   const ins = getCurrentInstance()!;
 
   const {
@@ -132,4 +132,4 @@ function useProvidePath(...[provides, hooks, _]: Parameters<typeof provideRightM
   );
 }
 
-export { useMenuItem, useProvidePath };
+export { useRMenuItem, useProvidePath };
