@@ -61,13 +61,15 @@ const calculatePosition = async () => {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  const arrowGap = (arrowRect.width - 2 * borderWidth) / 2;
   const { placement } = props;
+  const arrowGap = (arrowRect.width - 2 * borderWidth) / 2;
+  const centerX = triggerRect.left + triggerRect.width / 2;
+  const centerY = triggerRect.top + triggerRect.height / 2;
 
   if (["top", "bottom"].includes(placement)) {
-    const left = triggerRect.left + triggerRect.width / 2 - contentRect.width / 2;
+    const left = centerX - contentRect.width / 2 - borderWidth;
     tooltipStyle.left = `${Math.max(0, Math.min(left, vw - contentRect.width))}px`;
-    arrowStyle.left = `${triggerRect.left + triggerRect.width / 2 - arrowRect.width / 2}px`;
+    arrowStyle.left = `${centerX - arrowRect.width / 2 + borderWidth}px`;
 
     if (placement === "bottom") {
       tooltipStyle.top = `${triggerRect.bottom - borderWidth + 2 * arrowGap}px`;
@@ -77,9 +79,9 @@ const calculatePosition = async () => {
       arrowStyle.top = `${triggerRect.top - arrowRect.height + borderWidth - arrowGap}px`;
     }
   } else {
-    const top = triggerRect.top + triggerRect.height / 2 - contentRect.height / 2;
+    const top = centerY - contentRect.height / 2 - borderWidth;
     tooltipStyle.top = `${Math.max(0, Math.min(top, vh - contentRect.height))}px`;
-    arrowStyle.top = `${triggerRect.top + triggerRect.height / 2 - arrowRect.height / 2}px`;
+    arrowStyle.top = `${centerY - arrowRect.height / 2 + borderWidth}px`;
 
     if (placement === "right") {
       tooltipStyle.left = `${triggerRect.right - borderWidth + arrowGap + arrowGap}px`;
@@ -89,7 +91,6 @@ const calculatePosition = async () => {
       arrowStyle.left = `${triggerRect.left + borderWidth - arrowRect.width + arrowGap}px`;
     }
   }
-
   tooltipStyle.visibility = "visible";
   arrowStyle.visibility = "visible";
 };
@@ -110,7 +111,9 @@ const kls = computed(() => ({
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
-    <slot name="default" />
+    <span :class="kls.trigger">
+      <slot name="default" />
+    </span>
     <div
       v-if="$slots.content || props.tooltip"
       ref="contentRef"

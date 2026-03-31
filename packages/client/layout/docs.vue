@@ -4,7 +4,7 @@ import { Content } from "vitepress";
 </script>
 
 <template>
-  <div>
+  <div class="test">
     <VtiSidebar />
     <div>
       <div>
@@ -21,3 +21,9 @@ import { Content } from "vitepress";
     <VtiAside />
   </div>
 </template>
+
+<style scoped>
+.test {
+  height: 200vh;
+}
+</style>

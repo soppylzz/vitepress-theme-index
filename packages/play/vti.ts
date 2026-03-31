@@ -21,7 +21,7 @@ export default withAdditionIndex({
       icon: "github",
       href: "https://github.com",
       _target: "_blank",
-      tooltip: "1231111",
+      tooltip: "Github",
     },
   ],
   sidebar: {

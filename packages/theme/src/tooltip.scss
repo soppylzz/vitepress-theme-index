@@ -31,8 +31,12 @@ $tt-arrow-rotate: (
 );
 
 @include b("tooltip") {
-  display: inline-block;
-  position: relative;
+  // ignore in dom flow
+  display: contents;
+
+  @include e("trigger") {
+    display: inline-flex;
+  }
 
   @include e("content") {
     position: fixed;

@@ -35,24 +35,21 @@ const kls = computed(() => ({
 
 <template>
   <div :class="kls.wrap">
-    <template v-if="isTextMode(props)">
-      <a v-bind="attr" :class="kls.link" @click="handleClick">
-        <component :is="useIcon(props.icon)" v-if="props?.icon" />
-        <span>{{ useText(props.text) }}</span>
-      </a>
-    </template>
+    <a v-if="isTextMode(props)" v-bind="attr" :class="kls.link" @click="handleClick">
+      <component :is="useIcon(props.icon)" v-if="props?.icon" />
+      <span>{{ useText(props.text) }}</span>
+    </a>
     <template v-else>
-      <Tooltip
-        v-if="hasTooltip(props)"
-        size="small"
-        placement="bottom"
-        :tooltip="useText(props.tooltip) || ''"
-        :tooltip-delay="props.tooltipDelay"
-      >
-        <a v-bind="attr" :class="kls.link" @click="handleClick">
+      <a v-if="hasTooltip(props)" v-bind="attr" :class="kls.link" @click="handleClick">
+        <Tooltip
+          size="small"
+          placement="bottom"
+          :tooltip="useText(props.tooltip) || ''"
+          :tooltip-delay="props.tooltipDelay"
+        >
           <component :is="useIcon(props.icon)" />
-        </a>
-      </Tooltip>
+        </Tooltip>
+      </a>
       <a v-else v-bind="attr" :class="kls.link" @click="handleClick">
         <component :is="useIcon(props.icon)" />
       </a>

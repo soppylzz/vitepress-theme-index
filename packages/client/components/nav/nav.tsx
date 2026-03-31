@@ -1,5 +1,13 @@
 import type { Component, VNode } from "vue";
-import { computed, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
+import {
+  watchEffect,
+  computed,
+  ref,
+  createVNode,
+  defineComponent,
+  vShow,
+  withDirectives,
+} from "vue";
 import { useBem, useIndex, useViewItems } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
@@ -119,6 +127,19 @@ const VtiNav = defineComponent({
     } = useIndex();
     const items = useViewItems(nav, []);
     const open = ref(true);
+
+    let originalOverflow = "";
+    watchEffect((onCleanup) => {
+      if (open.value && response.value === "mobile") {
+        originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = originalOverflow || "";
+      }
+      onCleanup(() => {
+        document.body.style.overflow = originalOverflow || "";
+      });
+    });
 
     return () => {
       const current = response.value;
