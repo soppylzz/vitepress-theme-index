@@ -8,7 +8,7 @@ $font-size: (
     md: 1rem,
     lg: 1.125rem,
     xl: 1.25rem,
-    2xl: 1.5rem,
+    "2xl": 1.5rem,
   ),
 ) !default;
 
@@ -47,14 +47,14 @@ $spacing: (
   css: "gap",
   value: (
     0: 0,
-    xs: 0.125rem,
-    sm: 0.25rem,
-    md: 0.375rem,
-    lg: 0.5rem,
-    xl: 1rem,
-    2xl: 1.25rem,
-    3xl: 1.5rem,
-    4xl: 1.875rem,
+    "xs": 0.125rem,
+    "sm": 0.25rem,
+    "md": 0.375rem,
+    "lg": 0.5rem,
+    "xl": 1rem,
+    "2xl": 1.25rem,
+    "3xl": 1.5rem,
+    "4xl": 1.875rem,
   )
 ) !default;
 
@@ -77,25 +77,25 @@ $border-radius: (
   css: "border-radius",
   value: (
     none: 0,
-    xs: 0.25rem,
-    sm: 0.375rem,
-    md: 0.5rem,
-    lg: 0.75rem,
-    xl: 1rem,
-    2xl: 1.25rem,
-    full: 9999px,
+    "xs": 0.25rem,
+    "sm": 0.375rem,
+    "md": 0.5rem,
+    "lg": 0.75rem,
+    "xl": 1rem,
+    "2xl": 1.25rem,
+    "full": 9999px,
   )
 ) !default;
 
 $border-width: (
   css: "border-width",
   value: (
-    none: 0,
-    xs: 0.5px,
-    sm: 1px,
-    md: 2px,
-    lg: 3px,
-    xl: 4px,
+    "none": 0,
+    "xs": 0.5px,
+    "sm": 1px,
+    "md": 2px,
+    "lg": 3px,
+    "xl": 4px,
   )
 ) !default;
 

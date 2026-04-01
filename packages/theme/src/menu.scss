@@ -3,10 +3,10 @@
 @use "./tokens" as *;
 @use "public" as *;
 
-$menu-font-config: (
-  small: (font-size: "sm", line-height: "tight",),
-  medium: (font-size: "md", line-height: "normal",),
-  large: (font-size: "lg", line-height: "normal",)
+$menu-config: (
+  small: (font-size: "sm", line-height: "normal", min-weight: 200px),
+  medium: (font-size: "md", line-height: "normal", min-weight: 250px),
+  large: (font-size: "lg", line-height: "loose", min-weight: 30px),
 );
 
 $menu-button-config: (
@@ -28,10 +28,11 @@ $menu-group-config: (
   color: getCssVar("text", "primary");
   @include applyToken($border-radius, "md");
 
-  @each $size, $config in $menu-font-config {
+  @each $size, $config in $menu-config {
     @include m($size) {
       @include applyToken($font-size, map.get($config, "font-size"));
       @include applyToken($line-height, map.get($config, "line-height"));
+      min-width: map.get($config, "min-weight");
       padding-inline: 0;
     }
   }

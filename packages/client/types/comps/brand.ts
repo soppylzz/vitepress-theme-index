@@ -1,10 +1,10 @@
 import type { IndexLink, IndexSize, IndexText } from "../global";
 
-interface BrandProps extends Partial<IndexLink> {
+interface BrandProps extends IndexLink {
   text: IndexText;
   brand?: string;
   size?: IndexSize;
-  direction?: "row" | "column";
+  direction?: "row" | "column" | "row-reverse" | "column-reverse";
 }
 
 export type { BrandProps };
