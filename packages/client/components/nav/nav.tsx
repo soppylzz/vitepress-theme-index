@@ -1,10 +1,11 @@
 import type { Component, VNode } from "vue";
-import { watchEffect, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
-import { useBem, useIndex, useViewItems } from "../../composables";
+import { watch, watchEffect, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
+import { useBem, useIndex, useMaybeI18nData } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
   IndexResponse,
   MenuItemConfig,
+  NavContainer,
   NavCustomConfig,
   NavItemConfig,
   NavItemType,
@@ -13,29 +14,27 @@ import { VtiNavButton, VtiNavMenu, VtiNavSwitch, VtiNavTheme } from "./items";
 import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
 import { renderMenuItems } from "../menu";
 import { VtiBrand } from "../public";
+import { useRoute } from "vitepress";
 
 const ns = useBem("nav");
 const bems = {
   divider: useBem("nav-divider"),
   space: useBem("nav-space"),
 };
+
+interface NavRenderContext {
+  current: IndexResponse;
+  container: NavContainer;
+}
 const navItemMap: Record<NavItemType, Component | undefined> = {
   button: VtiNavButton,
   menu: VtiNavMenu,
-  theme: VtiNavTheme,
   divider: undefined,
   space: undefined,
   custom: undefined,
 };
 
-type NavItemContainer = "header" | "screen";
-
-interface NavItemRenderContext {
-  current: IndexResponse;
-  container: NavItemContainer;
-}
-
-function computeVisible(config: NavItemConfig, ctx: NavItemRenderContext) {
+function computeVisible(config: NavItemConfig, ctx: NavRenderContext) {
   const { container, current } = ctx;
   const target = config?.target || "header";
 
@@ -49,15 +48,21 @@ function computeVisible(config: NavItemConfig, ctx: NavItemRenderContext) {
   return true;
 }
 
-function checkRender(config: NavItemConfig, container: NavItemContainer) {
+function checkRender(config: NavItemConfig, container: NavContainer) {
   const target = config?.target || "header";
   return target === container || target === "both";
+}
+
+function checkIconButton(config: NavItemConfig) {
+  if (config.type !== "button") return false;
+  const buttonConfig = config as NavItemConfig & { text?: any };
+  return !hasOwnProperty(buttonConfig, "text") || !buttonConfig.text;
 }
 
 function renderContentByType(
   key: number | string,
   config: NavItemConfig,
-  ctx: NavItemRenderContext
+  ctx: NavRenderContext
 ): VNode | null {
   const { container } = ctx;
   const { type, ...res } = config;
@@ -87,7 +92,7 @@ function renderContentByType(
 function renderNavItem(
   key: number | string,
   config: NavItemConfig,
-  ctx: NavItemRenderContext
+  ctx: NavRenderContext
 ): VNode | null {
   if (!checkRender(config, ctx.container)) return null;
   const vnode = renderContentByType(key, config, ctx);
@@ -105,8 +110,8 @@ const VtiNav = defineComponent({
       site,
       theme: { response },
     } = useIndex();
-    const items = useViewItems(nav, []);
-    const siteRef = useViewItems(site, undefined);
+    const itemsRef = useMaybeI18nData(nav, []);
+    const siteRef = useMaybeI18nData(site, undefined);
 
     const open = ref(false);
 
@@ -123,13 +128,32 @@ const VtiNav = defineComponent({
       });
     });
 
+    const route = useRoute();
+    watch(
+      route,
+      () => {
+        open.value = false;
+      },
+      { immediate: true }
+    );
+
     return () => {
       const current = response.value;
+
       const kls = {
         wrapper: [ns.b(), ns.m(current)],
-        header: [ns.e("header")],
-        screen: [ns.e("screen"), ns.when("opened", open.value)],
+        header: [ns.e("header"), ns.em("header", current)],
+        screen: [ns.e("screen")],
+        screenItems: [ns.e("screen-items")],
+        screenIcons: [ns.e("screen-icons")],
       };
+
+      const screenItems = itemsRef.value
+        .filter((item) => checkRender(item, "screen"))
+        .filter((item) => !checkIconButton(item));
+      const screenIcons = itemsRef.value
+        .filter((item) => checkRender(item, "screen"))
+        .filter((item) => checkIconButton(item));
 
       return (
         <div class={kls.wrapper}>
@@ -137,7 +161,7 @@ const VtiNav = defineComponent({
             {<VtiBrand text={siteRef.value.siteName} brand={siteRef.value.brand} size={"medium"} />}
             {
               /* header container */
-              items.value
+              itemsRef.value
                 .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
                 .filter((item) => !!item)
             }
@@ -151,13 +175,26 @@ const VtiNav = defineComponent({
             /* screen container */
             withDirectives(
               <div class={kls.screen}>
-                {items.value
-                  .map((item, index) =>
-                    renderNavItem(index, item, { current, container: "screen" })
-                  )
-                  .filter((item) => !!item)}
+                {/* Normal items (with text buttons, menus, etc.) */}
+                <div class={kls.screenItems}>
+                  {screenItems
+                    .map((item, index) =>
+                      renderNavItem(index, item, { current, container: "screen" })
+                    )
+                    .filter((item) => !!item)}
+                </div>
+                {/* Icon only buttons */}
+                {screenIcons.length > 0 && (
+                  <div class={kls.screenIcons}>
+                    {screenIcons
+                      .map((item, index) =>
+                        renderNavItem(index, item, { current, container: "screen" })
+                      )
+                      .filter((item) => !!item)}
+                  </div>
+                )}
               </div>,
-              [[vShow, response.value === "mobile"]]
+              [[vShow, response.value === "mobile" && open.value]]
             )
           }
         </div>

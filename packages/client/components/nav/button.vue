@@ -4,6 +4,7 @@ import { useBem, useIcon, useLink, useText } from "../../composables";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
 import { computed, useAttrs } from "vue";
 import { VtiPopper } from "../public";
+import { useRoute } from "vitepress";
 
 const attrs = useAttrs();
 const hasOnActivate = computed(() => "onActivate" in attrs);
@@ -18,6 +19,7 @@ const { attr } = useLink(props);
 const isTextMode = (props: any) => hasOwnProperty(props, "text") && !!props.text;
 const hasTooltip = (props: any) =>
   hasOwnProperty(props, "content") && !!useText(props.content)?.trim();
+const isIconButton = computed(() => !!props?.icon && !props.text);
 
 const handleClick = (e: MouseEvent) => {
   if (hasOnActivate.value) {
@@ -26,10 +28,18 @@ const handleClick = (e: MouseEvent) => {
   }
 };
 
+const route = useRoute();
+const isActive = computed(() => !hasOnActivate.value && route.path.startsWith(attr.value.href));
+
 const ns = useBem("nav-button");
 const kls = computed(() => ({
-  wrap: [ns.b()],
-  link: ns.e("link"),
+  wrap: ns.b(),
+  link: [
+    ns.e("link"),
+    ns.em("link", props.container),
+    ns.when("icon", isIconButton.value),
+    ns.when("active", isActive.value),
+  ],
 }));
 </script>
 

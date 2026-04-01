@@ -14,7 +14,7 @@
 @include registerTheme("github-light", $github-light-colors, true);
 @include registerTheme("github-dark", $github-dark-colors);
 
-@include registerFonts("TEST", "ArkPixel", "ArkPixel", true);
+@include registerFonts("TEST", "LXGW", "Monaco", true);
 
 *,
 *::before,

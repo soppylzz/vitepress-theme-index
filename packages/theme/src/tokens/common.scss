@@ -3,11 +3,11 @@
 $font-size: (
   css: "font-size",
   value: (
-    xs: 0.75rem,
-    sm: 0.875rem,
-    md: 1rem,
-    lg: 1.125rem,
-    xl: 1.25rem,
+    "xs": 0.75rem,
+    "sm": 0.875rem,
+    "md": 1rem,
+    "lg": 1.125rem,
+    "xl": 1.25rem,
     "2xl": 1.5rem,
   ),
 ) !default;
@@ -15,31 +15,31 @@ $font-size: (
 $font-weight: (
   css: "font-weight",
   value: (
-    light: 400,
-    normal: 500,
-    medium: 600,
-    semibold: 700,
-    bold: 900,
+    "light": 400,
+    "normal": 500,
+    "medium": 600,
+    "semibold": 700,
+    "bold": 900,
   )
 ) !default;
 
 $line-height: (
   css: "line-height",
   value: (
-    tight: 1.2,
-    normal: 1.5,
-    relaxed: 1.75,
-    loose: 2,
+    "tight": 1.2,
+    "normal": 1.5,
+    "relaxed": 1.75,
+    "loose": 2,
   )
 ) !default;
 
 $letter-spacing: (
   css: "letter-spacing",
   value: (
-    tight: -0.02em,
-    normal: 0,
-    relaxed: 0.02em,
-    wide: 0.05em,
+    "tight": -0.02em,
+    "normal": 0,
+    "relaxed": 0.02em,
+    "wide": 0.05em,
   )
 ) !default;
 
@@ -53,8 +53,8 @@ $spacing: (
     "lg": 0.5rem,
     "xl": 1rem,
     "2xl": 1.25rem,
-    "3xl": 1.5rem,
-    "4xl": 1.875rem,
+    "3xl": 2rem,
+    "4xl": 4rem,
   )
 ) !default;
 
@@ -102,47 +102,47 @@ $border-width: (
 $transition: (
   css: "transition",
   value: (
-    instant: "0ms",
-    fast: "150ms cubic-bezier(0.4, 0, 0.2, 1)",
-    base: "250ms cubic-bezier(0.4, 0, 0.2, 1)",
-    slow: "350ms cubic-bezier(0.4, 0, 0.2, 1)",
-    slower: "500ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "instant": "0ms",
+    "fast": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "base": "250ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "slow": "350ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "slower": "500ms cubic-bezier(0.4, 0, 0.2, 1)",
   )
 ) !default;
 
 $duration: (
   css: "animation-duration",
   value: (
-    instant: "0ms",
-    fast: "150ms",
-    base: "250ms",
-    slow: "350ms",
-    slower: "500ms",
+    "instant": "0ms",
+    "fast": "150ms",
+    'base': "250ms",
+    "slow": "350ms",
+    'slower': "500ms",
   )
 ) !default;
 
 $opacity: (
   css: "opacity",
   value: (
-    disabled: 0.5,
-    readonly: 0.65,
-    hover: 0.85,
-    active: 1,
+    "disabled": 0.5,
+    "readonly": 0.65,
+    "hover": 0.85,
+    "active": 1,
   )
 ) !default;
 
 $z-index: (
   css: "z-index",
   value: (
-    hide: -1,
-    base: 0,
-    dropdown: 1000,
-    sticky: 1020,
-    fixed: 1030,
+    "hide": -1,
+    "base": 0,
+    "dropdown": 1000,
+    "sticky": 1020,
+    "fixed": 1030,
     // special
-    nav: 1030,
-    popper: 1070,
-    popper-above: 1080,
-    right-menu: 9999,
+    "nav": 1030,
+    "popper": 1070,
+    "popper-above": 1080,
+    "right-menu": 9999,
   )
 ) !default;

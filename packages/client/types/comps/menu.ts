@@ -3,6 +3,7 @@ import type { IndexIcon, IndexLink, IndexSize, IndexText } from "../global";
 interface MenuProps {
   size?: IndexSize;
   showActivate?: boolean;
+  isCollapsed?: boolean;
 }
 
 type MenuButtonProps = { text: IndexText; icon?: IndexIcon } & IndexLink;

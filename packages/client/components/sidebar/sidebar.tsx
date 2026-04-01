@@ -1,6 +1,6 @@
 import type { Component } from "vue";
 import { createVNode, defineComponent } from "vue";
-import { useIndex, useViewItemsWithRoute } from "../../composables";
+import { useIndex, useMaybeI18nDataWithRoute } from "../../composables";
 import type { SidebarItemConfig, SidebarItemType } from "../../types";
 import { VtiSidebarButton, VtiSidebarGroup } from "./items";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -33,7 +33,7 @@ const VtiSidebar = defineComponent({
       sidebar,
       theme: { response },
     } = useIndex();
-    const items = useViewItemsWithRoute(sidebar, {});
+    const items = useMaybeI18nDataWithRoute(sidebar, {});
 
     return () => (
       <div>

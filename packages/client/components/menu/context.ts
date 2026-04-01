@@ -6,6 +6,7 @@ interface MenuContext {
   level: number;
   size: IndexSize;
   showActivate: boolean;
+  isCollapsed: boolean;
   parentKey: string;
   activeKey?: string;
   setActiveKey?: (key: string) => void;
@@ -20,7 +21,7 @@ function buildMenuKey(parent: string | null, uid: number) {
 function createMenuContext<T extends MenuProps>(props?: T) {
   const activeKey = ref<string>();
   const context = computed<MenuContext>(() => {
-    const { showActivate = false, size = "medium" } = props ?? {};
+    const { showActivate = false, size = "medium", isCollapsed = false } = props ?? {};
     return {
       level: 0,
       parentKey: "",
@@ -29,6 +30,7 @@ function createMenuContext<T extends MenuProps>(props?: T) {
         activeKey.value = key;
       },
       showActivate,
+      isCollapsed,
       size,
     };
   });
@@ -45,11 +47,15 @@ function provideMenuContext<T extends MenuProps>(props?: T) {
     return;
   }
 
-  const ctx = computed<MenuContext>(() => ({
-    ...parent.value,
-    level: (parent.value?.level ?? 0) + 1,
-    parentKey: buildMenuKey(parent.value.parentKey, uid),
-  }));
+  const ctx = computed<MenuContext>(() => {
+    const parentCtx = parent.value;
+    return {
+      ...parentCtx,
+      level: (parentCtx?.level ?? 0) + 1,
+      parentKey: buildMenuKey(parentCtx.parentKey, uid),
+      isCollapsed: parentCtx.isCollapsed,
+    };
+  });
   provide(MenuContextKey, ctx);
 }
 

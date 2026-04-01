@@ -45,7 +45,7 @@ function useIndex() {
   return { theme, nav, sidebar, site };
 }
 
-function useViewItems<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
+function useMaybeI18nData<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
   const { localeIndex } = useI18n(); // 你的国际化 hook
 
   return computed<T>(() => {
@@ -57,11 +57,11 @@ function useViewItems<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
   });
 }
 
-function useViewItemsWithRoute<T>(
+function useMaybeI18nDataWithRoute<T>(
   raw: BuildI18nViewConfig<Record<string, T>>,
   defaultVal: Record<string, T>
 ) {
-  const withRoute = useViewItems(raw, defaultVal);
+  const withRoute = useMaybeI18nData(raw, defaultVal);
   const route = useRoute();
 
   return computed(() => {
@@ -71,4 +71,4 @@ function useViewItemsWithRoute<T>(
   });
 }
 
-export { useIcon, useLink, useIndex, useViewItems, useViewItemsWithRoute };
+export { useIcon, useLink, useIndex, useMaybeI18nData, useMaybeI18nDataWithRoute };

@@ -4,22 +4,28 @@ import { useBem, useText } from "../../composables";
 import { computed, ref } from "vue";
 import { provideMenuContext, useMenuItem } from "./context";
 
-const props = defineProps<MenuGroupProps>();
+const props = withDefaults(defineProps<MenuGroupProps>(), { collapsed: false });
 provideMenuContext();
 
-const { size } = useMenuItem();
-const collapsed = ref(props.collapsed ?? false);
+const { size, ctx } = useMenuItem();
+const isExpanded = ref(props.collapsed ? !ctx.value.isCollapsed : true);
+
 const ns = useBem("menu-group");
 const kls = computed(() => ({
-  wrap: [ns.b(), ns.when("collapsed", collapsed.value)],
+  wrap: [ns.b(), ns.when("collapsed", props.collapsed && !isExpanded.value)],
   button: [ns.e("button"), ns.em("button", size.value)],
-  children: [ns.e("children"), ns.em("children", size.value)],
+  children: ns.em("children", size.value),
+  header: ns.em("header", size.value),
 }));
+
+const toggleExpanded = () => {
+  isExpanded.value = !isExpanded.value;
+};
 </script>
 
 <template>
   <div :class="kls.wrap">
-    <div :class="kls.button" @click="() => (collapsed = !collapsed)">
+    <div v-if="props.collapsed" :class="kls.button" @click="toggleExpanded">
       <span>{{ useText(props.text) }}</span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
         <!--! Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc. -->
@@ -28,7 +34,10 @@ const kls = computed(() => ({
         />
       </svg>
     </div>
-    <div v-if="!collapsed" :class="kls.children">
+    <div v-else :class="kls.header">
+      <span>{{ useText(props.text) }}</span>
+    </div>
+    <div v-if="!props.collapsed || isExpanded" :class="kls.children">
       <slot />
     </div>
   </div>

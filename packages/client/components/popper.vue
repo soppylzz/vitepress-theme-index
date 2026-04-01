@@ -77,8 +77,8 @@ const calculatePosition = async () => {
   const arrowRect = arrowEl.getBoundingClientRect();
 
   const borderWidth = parseFloat(getComputedStyle(arrowEl).borderWidth) || 0;
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
 
   let placement = props.placement;
   const arrowGap = (arrowRect.width - 2 * borderWidth) / 2;

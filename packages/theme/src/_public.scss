@@ -6,3 +6,21 @@
     object-fit: contain;
   }
 }
+
+@mixin useOneLine() {
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin useLink() {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+@mixin useUnselect() {
+  user-select: none;
+  -webkit-user-select: none;
+}

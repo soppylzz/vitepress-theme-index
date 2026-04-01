@@ -16,7 +16,6 @@ type NavButtonProps = {
 
 interface NavThemeProps {
   carousel?: "column" | "row";
-  container?: NavContainer;
 }
 
 interface NavMenuProps {
@@ -39,22 +38,20 @@ type NavButtonConfig = BuildNavConfig<"button", NavButtonProps> & { onActivate?:
 type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: MenuItemConfig[] };
 
 type NavCustomConfig = BuildNavConfig<"custom"> & { component: Component };
-type NavThemeConfig = BuildNavConfig<"theme", NavThemeProps>;
 
 type NavItemConfig =
   | NavMenuConfig
   | NavSpaceConfig
   | NavDividerConfig
-  // real item config
   | NavButtonConfig
-  | NavCustomConfig
-  | NavThemeConfig;
+  | NavCustomConfig;
 type NavItemType = NavItemConfig["type"];
 
 type IndexNavConfig = BuildI18nViewConfig<NavItemConfig[]>;
 
 export type {
   NavItemType,
+  NavContainer,
   // props
   NavButtonProps,
   NavMenuProps,

@@ -4,7 +4,11 @@ import { useBem } from "../../composables";
 import { provideMenuContext } from "./context";
 import { computed } from "vue";
 
-const props = withDefaults(defineProps<MenuProps>(), { size: "medium", showActivate: false });
+const props = withDefaults(defineProps<MenuProps>(), {
+  size: "medium",
+  showActivate: false,
+  isCollapsed: false,
+});
 provideMenuContext(props);
 
 const ns = useBem("menu");

@@ -4,9 +4,9 @@
 @use "public" as *;
 
 $menu-config: (
-  small: (font-size: "sm", line-height: "normal", min-weight: 200px),
-  medium: (font-size: "md", line-height: "normal", min-weight: 250px),
-  large: (font-size: "lg", line-height: "loose", min-weight: 30px),
+  small: (font-size: "sm", line-height: "tight", min-weight: 180px),
+  medium: (font-size: "sm", line-height: "normal", min-weight: 230px),
+  large: (font-size: "md", line-height: "relaxed", min-weight: 280px),
 );
 
 $menu-button-config: (
