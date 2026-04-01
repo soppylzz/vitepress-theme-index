@@ -7,12 +7,6 @@ import type { MaybeArray } from "@vitepress-theme-index/shared";
 type NavContainer = "header" | "screen";
 
 type NavItemShow = true | MaybeArray<IndexResponse>;
-interface NavBrandProps extends IndexLink {
-  text: IndexText;
-  brand?: string;
-  container?: NavContainer;
-}
-
 type NavButtonProps = {
   text?: IndexText;
   icon?: IndexIcon;
@@ -41,7 +35,6 @@ type BuildNavConfig<T extends NavItemType, Props = never> = ([Props] extends [ne
 
 type NavSpaceConfig = BuildNavConfig<"space">;
 type NavDividerConfig = BuildNavConfig<"divider">;
-type NavBrandConfig = BuildNavConfig<"brand", NavBrandProps>;
 type NavButtonConfig = BuildNavConfig<"button", NavButtonProps> & { onActivate?: () => void };
 type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: MenuItemConfig[] };
 
@@ -53,7 +46,6 @@ type NavItemConfig =
   | NavSpaceConfig
   | NavDividerConfig
   // real item config
-  | NavBrandConfig
   | NavButtonConfig
   | NavCustomConfig
   | NavThemeConfig;
@@ -64,7 +56,6 @@ type IndexNavConfig = BuildI18nViewConfig<NavItemConfig[]>;
 export type {
   NavItemType,
   // props
-  NavBrandProps,
   NavButtonProps,
   NavMenuProps,
   NavThemeProps,

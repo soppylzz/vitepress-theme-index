@@ -3,6 +3,7 @@ import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
 import type { RMenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
 import type { IndexNavConfig, IndexSidebarConfig, NavItemConfig, SidebarItemConfig } from "./views";
 import type { IndexResponse } from "./global";
+import type { BuildI18nViewConfig } from "./i18n";
 
 const indexPreset = ["default", "glass"] as const;
 const indexThemeMode = ["auto", "light", "dark"] as const;
@@ -22,6 +23,12 @@ interface IndexClientThemeConfig {
   };
 }
 
+interface SiteConfig {
+  brand: string;
+  siteName: string;
+}
+type IndexSiteConfig = BuildI18nViewConfig<SiteConfig>;
+
 type UserIndexClientThemeConfig = DeepPartial<
   Omit<IndexClientThemeConfig, "breakPoint"> & { breakPoint: number | [number, number] }
 >;
@@ -39,7 +46,9 @@ interface IndexClientThemeContext extends DeepRequired<IndexClientThemeConfig> {
 const indexClientThemeKey: InjectionKey<IndexClientThemeContext> =
   Symbol("indexClientThemeContext");
 
+type AdditionType = keyof IndexClientAdditionConfig;
 type IndexClientAdditionConfig = DeepPartial<{
+  site: SiteConfig;
   nav: NavItemConfig[];
   sidebar: Record<string, SidebarItemConfig[]>;
 }>;
@@ -47,6 +56,7 @@ type IndexClientAdditionConfig = DeepPartial<{
 type IndexClientConfig<Records extends RMenuItemRecord = RMenuItemRecord> = Partial<{
   rightMenu: UserIndexRightMenuConfig<Records>;
   theme: UserIndexClientThemeConfig;
+  site: IndexSiteConfig;
   nav: IndexNavConfig;
   sidebar: IndexSidebarConfig;
 }>;
@@ -55,6 +65,9 @@ export { indexPreset, indexThemeMode, indexClientThemeKey };
 export type {
   IndexPreset,
   IndexThemeMode,
+  AdditionType,
+  SiteConfig,
+  IndexSiteConfig,
   IndexClientConfig,
   IndexClientThemeConfig,
   IndexClientThemeContext,

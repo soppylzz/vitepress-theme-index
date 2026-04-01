@@ -1,9 +1,9 @@
 import { withAdditionIndex } from "vitepress-theme-index";
-import brand from "../.vitepress/assets/brand.png";
+import brand from "../.vitepress/assets/brand.svg";
 
 export default withAdditionIndex({
+  site: { brand, siteName: "theme-idx" },
   nav: [
-    { type: "brand", text: "VTIndex", brand: brand, href: "/" },
     { type: "space" },
     { type: "button", text: "Reference", target: "both", href: "/api/1" },
     { type: "button", text: "Guide", target: "both", href: "/guide/1" },

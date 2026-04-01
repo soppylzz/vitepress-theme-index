@@ -1,21 +1,22 @@
 import { withAdditionIndex } from "vitepress-theme-index";
-import brand from "./.vitepress/assets/brand.png";
+import brand from "./.vitepress/assets/brand.svg";
 
 export default withAdditionIndex({
+  site: { brand, siteName: "禁书目录" },
   nav: [
-    { type: "brand", text: "VTIndex", brand: brand, href: "/" },
     { type: "space" },
     { type: "button", text: "参考", target: "both", href: "/api/1" },
     { type: "button", text: "指南", target: "both", href: "/guide/1" },
     {
       type: "menu",
-      text: "菜单",
+      text: "方舟",
+      target: "both",
       children: [
         { type: "button", text: "按钮" },
         { type: "group", text: "菜单组", children: [{ type: "button", text: "按钮" }] },
       ],
     },
-    { type: "divider" },
+    { type: "divider", show: ["pad", "computer"] },
     {
       type: "button",
       icon: "github",

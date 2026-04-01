@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { NavBrandProps } from "../../types";
-import { useBem, useLink, useText } from "../../composables";
+import type { BrandProps } from "../types";
+import { useBem, useLink, useText } from "../composables";
 import { computed } from "vue";
 
-const props = defineProps<NavBrandProps>();
+const props = defineProps<BrandProps>();
 
-const { attr } = useLink(props);
-const ns = useBem("nav-brand");
+const { attr } = useLink({ href: "/" });
+const ns = useBem("brand");
 const kls = computed(() => ({
   wrap: ns.b(),
   text: ns.e("text"),

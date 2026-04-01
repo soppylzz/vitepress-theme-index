@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { VtiSidebar, VtiAside } from "../components";
 import { Content } from "vitepress";
+import { ref } from "vue";
+
+const switch_ = ref(true);
 </script>
 
 <template>
@@ -9,9 +12,7 @@ import { Content } from "vitepress";
     <div>
       <div>
         <!--  Docs SubNav  -->
-
         <div />
-
         <!--  Docs Header  -->
         <div />
         <!--  Docs Content  -->

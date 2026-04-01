@@ -1,0 +1,36 @@
+@use "abstract" as *;
+@use "tokens" as *;
+
+@include b("brand") {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+  flex-shrink: 0;
+
+  color: inherit;
+  text-decoration: none;
+
+  @include applyToken($gap, "lg");
+  @include applyToken($font-weight, "medium");
+
+  &:hover {
+    color: getCssVar("primary", "base");
+  }
+
+  @include e("logo") {
+    position: relative;
+    flex-shrink: 0;
+    height: 1.5em;
+    width: auto;
+  }
+
+  @include e("text") {
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1.5em;
+    vertical-align: top;
+  }
+}

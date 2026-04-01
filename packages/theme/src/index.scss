@@ -3,15 +3,17 @@
 
 @use "nav";
 @use "popper";
+@use "menu";
 @use "right-menu";
 
-@include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");
 @include createFontFace("Monaco", "./fonts/Monaco.ttf");
+@include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");
+@include createFontFace("ArkPixel", "./fonts/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 
 @include registerTheme("github-light", $github-light-colors, true);
 @include registerTheme("github-dark", $github-dark-colors);
 
-@include registerFonts("LXGW-MONACO", "LXGW", "Monaco", true);
+@include registerFonts("TEST", "ArkPixel", "ArkPixel", true);
 
 *,
 *::before,

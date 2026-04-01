@@ -42,6 +42,7 @@ function provideMenuContext<T extends MenuProps>(props?: T) {
   if (!parent) {
     const { context: root } = createMenuContext(props);
     provide(MenuContextKey, root);
+    return;
   }
 
   const ctx = computed<MenuContext>(() => ({

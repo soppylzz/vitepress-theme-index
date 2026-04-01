@@ -1,6 +1,6 @@
 import type { EnhanceAppContext, SiteData } from "vitepress";
-import type { IndexClientConfig, IndexClientAdditionConfig } from "../types";
-import { indexSidebarKey, indexNavKey } from "../types";
+import type { IndexClientConfig, IndexClientAdditionConfig, AdditionType } from "../types";
+import { indexSiteKey, IndexSiteConfig, indexSidebarKey, indexNavKey } from "../types";
 import { isEmpty, isFunction } from "lodash-unified";
 import { configs } from "virtual:index-addition";
 
@@ -30,29 +30,35 @@ async function collectLocalConfigs(site: SiteData) {
   return Object.entries(result);
 }
 
-type ViewTypes = "nav" | "sidebar";
-async function installViews(
+async function installAdditions(
   { siteData, app }: EnhanceAppContext,
-  configs?: Pick<IndexClientConfig, ViewTypes>
+  configs?: Pick<IndexClientConfig, AdditionType>
 ) {
   const configEntries = await collectLocalConfigs(siteData.value);
-  const collectI18nItems = <T extends ViewTypes>(field: T) => {
+
+  const collectI18nItems = <T extends AdditionType>(field: T) => {
+    const arrKeys = ["nav"];
     return Object.fromEntries(
       configEntries.map(([locale, config]) => [
         locale,
-        config?.[field] ?? ((field === "nav" ? [] : {}) as IndexClientAdditionConfig[T]),
+        config?.[field] ?? ((arrKeys.includes(field) ? [] : {}) as IndexClientAdditionConfig[T]),
       ])
     );
   };
 
-  const nav = isEmpty(configs?.nav) ? { items: collectI18nItems("nav"), i18n: true } : configs.nav;
+  const makeAddition = <T extends AdditionType>(key: T) => {
+    const value = configs?.[key];
+    return isEmpty(value) ? { items: collectI18nItems(key), i18n: true } : value;
+  };
 
-  const sidebar = isEmpty(configs?.sidebar)
-    ? { items: collectI18nItems("sidebar"), i18n: true }
-    : configs.sidebar;
-
-  app.provide(indexNavKey, nav);
-  app.provide(indexSidebarKey, sidebar);
+  const installMap = [
+    [indexNavKey, makeAddition("nav")],
+    [indexSiteKey, makeAddition("site")],
+    [indexSidebarKey, makeAddition("sidebar")],
+  ];
+  installMap.forEach(([key, val]) => {
+    app.provide(key, val);
+  });
 }
 
-export { installViews };
+export { installAdditions };

@@ -4,23 +4,22 @@ import { useBem, useIndex, useViewItems } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
   IndexResponse,
+  MenuItemConfig,
   NavCustomConfig,
   NavItemConfig,
   NavItemType,
-  NavMenuConfig,
 } from "../../types";
-import { VtiNavBrand, VtiNavButton, VtiNavMenu, VtiNavTheme } from "./items";
+import { VtiNavButton, VtiNavMenu, VtiNavSwitch, VtiNavTheme } from "./items";
 import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
 import { renderMenuItems } from "../menu";
+import { VtiBrand } from "../public";
 
 const ns = useBem("nav");
-const _bems = {
+const bems = {
   divider: useBem("nav-divider"),
   space: useBem("nav-space"),
 };
-
 const navItemMap: Record<NavItemType, Component | undefined> = {
-  brand: VtiNavBrand,
   button: VtiNavButton,
   menu: VtiNavMenu,
   theme: VtiNavTheme,
@@ -29,9 +28,60 @@ const navItemMap: Record<NavItemType, Component | undefined> = {
   custom: undefined,
 };
 
+type NavItemContainer = "header" | "screen";
+
 interface NavItemRenderContext {
-  container: "header" | "screen";
   current: IndexResponse;
+  container: NavItemContainer;
+}
+
+function computeVisible(config: NavItemConfig, ctx: NavItemRenderContext) {
+  const { container, current } = ctx;
+  const target = config?.target || "header";
+
+  if (container === "header") {
+    if (target === "both" && current === "mobile") return false;
+    if (hasOwnProperty(config, "show") && !isUndefined(config?.show)) {
+      const show = config?.show ?? true;
+      return isBoolean(show) ? show : ensureArray(show).includes(current);
+    }
+  }
+  return true;
+}
+
+function checkRender(config: NavItemConfig, container: NavItemContainer) {
+  const target = config?.target || "header";
+  return target === container || target === "both";
+}
+
+function renderContentByType(
+  key: number | string,
+  config: NavItemConfig,
+  ctx: NavItemRenderContext
+): VNode | null {
+  const { container } = ctx;
+  const { type, ...res } = config;
+
+  switch (type) {
+    case "custom":
+      return createVNode((config as NavCustomConfig).component, { key, container });
+    case "divider":
+    case "space": {
+      const itemNs = bems[type];
+      return createVNode("div", { key, class: [itemNs.b(), itemNs.m(container)], container });
+    }
+    default: {
+      const comp = navItemMap[type];
+      if (!comp) throw new Error(`unknown nav item type: ${type}`);
+      const cleanProps = omit(res, ["children", "show"]);
+      if (type === "menu") {
+        return createVNode(comp, { key, ...cleanProps, container }, () =>
+          renderMenuItems((config?.children ?? []) as MenuItemConfig[], "vti-nav")
+        );
+      }
+      return createVNode(comp, { key, ...cleanProps, container });
+    }
+  }
 }
 
 function renderNavItem(
@@ -39,57 +89,26 @@ function renderNavItem(
   config: NavItemConfig,
   ctx: NavItemRenderContext
 ): VNode | null {
-  const { container, current } = ctx;
-  const target = config?.target || "header";
+  if (!checkRender(config, ctx.container)) return null;
+  const vnode = renderContentByType(key, config, ctx);
+  if (ctx.container === "screen") return vnode;
 
-  if (container !== target && target !== "both") return null;
-
-  let visible = true;
-  if (container === "header") {
-    if (target === "both" && current === "mobile") {
-      visible = false; // both-target mode has auto change process
-    } else if (hasOwnProperty(config, "show") && !isUndefined(config?.show)) {
-      const show = config?.show ?? true;
-      visible = isBoolean(show) ? show : ensureArray(show).includes(current);
-    }
-  }
-
-  let vnode: VNode | null = null;
-  const { type, target: _tgt, ...res } = config;
-  if (type === "custom") {
-    vnode = createVNode((config as NavCustomConfig).component, { key, container });
-  } else if (type === "space" || type === "divider") {
-    const classes = [_bems[type].b(), _bems[type].m(container)];
-    vnode = createVNode("div", { key, class: classes, container });
-  } else {
-    const comp = navItemMap[type];
-    if (!comp) throw new Error(`unknown nav item type: ${type}`);
-
-    const cleanProps = omit(res, ["children", "show"]);
-    if (type === "menu") {
-      vnode = createVNode(comp, { key, ...cleanProps, container }, () =>
-        renderMenuItems((config as NavMenuConfig)?.children, "vti-nav")
-      );
-    } else {
-      vnode = createVNode(comp, { key, ...cleanProps, container });
-    }
-  }
-  if (!vnode) return null;
-
-  if (container === "screen") return vnode;
+  const visible = computeVisible(config, ctx);
   return withDirectives(vnode, [[vShow, visible]]);
 }
 
-// TODO: add slots transmit later
 const VtiNav = defineComponent({
   name: "VtiNav",
   setup() {
     const {
       nav,
+      site,
       theme: { response },
     } = useIndex();
     const items = useViewItems(nav, []);
-    const open = ref(true);
+    const siteRef = useViewItems(site, undefined);
+
+    const open = ref(false);
 
     let originalOverflow = "";
     watchEffect((onCleanup) => {
@@ -115,24 +134,32 @@ const VtiNav = defineComponent({
       return (
         <div class={kls.wrapper}>
           <div class={kls.header}>
+            {<VtiBrand text={siteRef.value.siteName} brand={siteRef.value.brand} size={"medium"} />}
             {
-              /* main container */
-              items.value.map((item, index) =>
-                renderNavItem(index, item, { current, container: "header" })
-              )
+              /* header container */
+              items.value
+                .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
+                .filter((item) => !!item)
             }
+            {withDirectives(
+              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" }),
+              [[vShow, current === "mobile"]]
+            )}
+            {withDirectives(<VtiNavSwitch v-model={open.value} />, [[vShow, current === "mobile"]])}
           </div>
-          {withDirectives(
-            <div class={kls.screen}>
-              {
-                /* screen container */
-                items.value.map((item, index) =>
-                  renderNavItem(index, item, { current, container: "screen" })
-                )
-              }
-            </div>,
-            [[vShow, response.value === "mobile"]]
-          )}
+          {
+            /* screen container */
+            withDirectives(
+              <div class={kls.screen}>
+                {items.value
+                  .map((item, index) =>
+                    renderNavItem(index, item, { current, container: "screen" })
+                  )
+                  .filter((item) => !!item)}
+              </div>,
+              [[vShow, response.value === "mobile"]]
+            )
+          }
         </div>
       );
     };

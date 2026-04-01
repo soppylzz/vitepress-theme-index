@@ -25,8 +25,6 @@ const styles = reactive({
   arrow: { left: "0px", top: "0px", visibility: "hidden" },
 });
 
-const isMouseTrigger = computed(() => props.activateEvent === "mouseenter");
-
 const showPopper = async () => {
   isVisible.value = true;
   await nextTick();
@@ -42,22 +40,21 @@ const hidePopper = () => {
 const showPopperDelayed = debounce(showPopper, props.delay);
 const hidePopperDelayed = debounce(hidePopper, props.delay);
 
-const handleVisibility = (show: boolean) => {
-  if (!isMouseTrigger.value) return;
-  if (show) {
-    hidePopperDelayed.cancel();
+const handleMouseenter = () => {
+  hidePopperDelayed.cancel();
+  if (props.activateEvent === "mouseenter") {
     showPopperDelayed();
-  } else {
-    showPopperDelayed.cancel();
-    hidePopperDelayed();
   }
+};
+
+const handleMouseleave = () => {
+  showPopperDelayed.cancel();
+  hidePopperDelayed();
 };
 
 const handleClick = async () => {
   if (props.activateEvent === "click") {
-    if (isVisible.value) {
-      hidePopper();
-    } else {
+    if (!isVisible.value) {
       await showPopper();
     }
   }
@@ -148,8 +145,8 @@ const kls = computed(() => ({
   <div
     ref="wrapRef"
     :class="kls.wrap"
-    @mouseenter="handleVisibility(true)"
-    @mouseleave="handleVisibility(false)"
+    @mouseenter="handleMouseenter"
+    @mouseleave="handleMouseleave"
     @click="handleClick"
   >
     <span :class="kls.trigger">

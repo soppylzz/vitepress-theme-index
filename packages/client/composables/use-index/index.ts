@@ -1,9 +1,9 @@
 import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
-import { indexSidebarKey, indexNavKey, indexClientThemeKey } from "../../types";
+import { indexSiteKey, indexSidebarKey, indexNavKey, indexClientThemeKey } from "../../types";
 import { checkExternal, pascalCase } from "../../utils";
 import { isObject, isString } from "lodash-unified";
 import { normalizeLink } from "./utils";
-import { computed, inject, toRefs } from "vue";
+import { computed, inject, toRefs, unref } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -17,29 +17,32 @@ function useIcon(icon: IndexIcon) {
 }
 
 function useLink<T extends IndexLink>(link: T) {
-  const { href, _target } = toRefs(link);
-  const isExternal = computed(() => !!(checkExternal(href.value) || _target.value === "_blank"));
   const { site } = useData();
+  const rawLink = computed(() => unref(link));
+
+  const isExternal = computed(
+    () => !!(checkExternal(rawLink.value.href) || rawLink.value._target === "_blank")
+  );
 
   const attr = computed(() => ({
+    href: rawLink.value.href ? normalizeLink(site.value, rawLink.value.href) : undefined,
+    target: rawLink.value._target ?? (isExternal.value ? "_blank" : undefined),
     rel: isExternal.value ? "noreferrer" : undefined,
-    href: href.value ? normalizeLink(site.value, href.value) : undefined,
-    target: _target.value ?? (isExternal.value ? "_blank" : undefined),
   }));
 
   return { attr, isExternal };
 }
 
 function useIndex() {
-  const theme = inject(indexClientThemeKey);
   const nav = inject(indexNavKey);
+  const theme = inject(indexClientThemeKey);
   const sidebar = inject(indexSidebarKey);
+  const site = inject(indexSiteKey);
 
-  if (!theme) throw new Error("useIndex must be used in layout");
-  if (!nav) throw new Error("useIndexNav missing");
-  if (!sidebar) throw new Error("useIndexSidebar missing");
-
-  return { theme, nav, sidebar };
+  if (!nav || !sidebar || !theme || !site) {
+    throw new Error("unable to find Index data");
+  }
+  return { theme, nav, sidebar, site };
 }
 
 function useViewItems<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
