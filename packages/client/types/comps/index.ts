@@ -1,3 +1,3 @@
 export * from "./popper";
 export * from "./menu";
-export * from "./brand";
+export * from "./drawer";

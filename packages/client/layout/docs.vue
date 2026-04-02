@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import { VtiSidebar, VtiAside } from "../components";
+import { VtiSidebar, VtiSubNav, VtiDocsCard, VtiDocsPage, VtiToc } from "../components";
 import { Content } from "vitepress";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useBem } from "../composables";
 
-const switch_ = ref(true);
+const menu = ref(false);
+
+const ns = useBem("docs");
+const kls = computed(() => ({
+  wrap: ns.b(),
+  main: ns.e("main"),
+  content: ns.e("content"),
+  aside: ns.e("aside"),
+}));
 </script>
 
 <template>
-  <div class="test">
-    <VtiSidebar />
-    <div>
-      <div>
-        <!--  Docs SubNav  -->
-        <div />
-        <!--  Docs Header  -->
-        <div />
-        <!--  Docs Content  -->
+  <div :class="kls.wrap">
+    <VtiSidebar v-model="menu" />
+    <div :class="kls.main">
+      <VtiSubNav v-model="menu">
+        <VtiToc size="large" />
+      </VtiSubNav>
+      <div :class="kls.content">
         <Content />
-        <!--  Docs Footer  -->
-        <div />
       </div>
+      <VtiDocsCard />
+      <VtiDocsPage />
     </div>
-    <VtiAside />
+    <div :class="kls.aside">
+      <VtiToc size="small" />
+    </div>
   </div>
 </template>
-
-<style scoped>
-.test {
-  height: 200vh;
-}
-</style>

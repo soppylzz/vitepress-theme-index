@@ -1,7 +1,7 @@
-import type { IndexActivateEvent, IndexResponse, IndexIcon, IndexLink, IndexText } from "../global";
+import type { IndexActivateEvent, IndexResponse, IndexIcon, IndexLink, IndexText } from "./global";
 import type { Component } from "vue";
-import type { BuildI18nViewConfig } from "../i18n";
-import type { MenuItemConfig, PopperProps } from "../comps";
+import type { BuildI18nViewConfig } from "./i18n";
+import type { MenuItemConfig, PopperProps } from "./comps";
 import type { MaybeArray } from "@vitepress-theme-index/shared";
 
 type NavContainer = "header" | "screen";

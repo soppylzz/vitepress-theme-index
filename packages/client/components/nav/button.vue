@@ -1,35 +1,31 @@
 <script setup lang="ts">
 import type { NavButtonProps } from "../../types";
-import { useBem, useIcon, useLink, useText } from "../../composables";
+import { useAttrsExist, useBem, useIcon, useLink, useText } from "../../composables";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
-import { computed, useAttrs } from "vue";
+import { computed } from "vue";
 import { VtiPopper } from "../public";
 import { useRoute } from "vitepress";
 
-const attrs = useAttrs();
-const hasOnActivate = computed(() => "onActivate" in attrs);
-
 const emit = defineEmits<{ (e: "onActivate"): void }>();
-const props = withDefaults(defineProps<NavButtonProps>(), {
-  delay: 300,
-});
+const props = withDefaults(defineProps<NavButtonProps>(), { delay: 300 });
 
+const { existed: hasActivate } = useAttrsExist("onActivate");
+const route = useRoute();
 const { attr } = useLink(props);
 
-const isTextMode = (props: any) => hasOwnProperty(props, "text") && !!props.text;
-const hasTooltip = (props: any) =>
-  hasOwnProperty(props, "content") && !!useText(props.content)?.trim();
-const isIconButton = computed(() => !!props?.icon && !props.text);
+const isIcon = computed(() => !!props?.icon && !props.text);
+const isText = computed(() => hasOwnProperty(props, "text") && !!props.text);
+const isActive = computed(() => !hasActivate.value && route.path.startsWith(attr.value.href));
+const hasTooltip = computed(
+  () => hasOwnProperty(props, "content") && !!useText(props.content)?.trim()
+);
 
 const handleClick = (e: MouseEvent) => {
-  if (hasOnActivate.value) {
+  if (hasActivate.value) {
     emit("onActivate");
     e.preventDefault();
   }
 };
-
-const route = useRoute();
-const isActive = computed(() => !hasOnActivate.value && route.path.startsWith(attr.value.href));
 
 const ns = useBem("nav-button");
 const kls = computed(() => ({
@@ -37,7 +33,7 @@ const kls = computed(() => ({
   link: [
     ns.e("link"),
     ns.em("link", props.container),
-    ns.when("icon", isIconButton.value),
+    ns.when("icon", isIcon.value),
     ns.when("active", isActive.value),
   ],
 }));
@@ -45,13 +41,13 @@ const kls = computed(() => ({
 
 <template>
   <div :class="kls.wrap">
-    <a v-if="isTextMode(props)" v-bind="attr" :class="kls.link" @click="handleClick">
+    <a v-if="isText" v-bind="attr" :class="kls.link" @click="handleClick">
       <component :is="useIcon(props.icon)" v-if="props?.icon" />
       <span>{{ useText(props.text) }}</span>
     </a>
     <template v-else>
       <VtiPopper
-        v-if="hasTooltip(props)"
+        v-if="hasTooltip"
         size="small"
         placement="bottom"
         :content="props.content"

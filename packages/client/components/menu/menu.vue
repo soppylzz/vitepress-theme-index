@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { MenuProps } from "../../types";
 import { useBem } from "../../composables";
-import { provideMenuContext } from "./context";
 import { computed } from "vue";
+import { provideMenuContext } from "../context";
 
 const props = withDefaults(defineProps<MenuProps>(), {
   size: "medium",
+  collapsed: false,
   showActivate: false,
-  isCollapsed: false,
 });
 provideMenuContext(props);
 

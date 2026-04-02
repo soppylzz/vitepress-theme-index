@@ -1,4 +1,4 @@
-import type { IndexLink, IndexSize, IndexText } from "../global";
+import type { IndexLink, IndexSize, IndexText } from "./global";
 
 interface BrandProps extends IndexLink {
   text: IndexText;

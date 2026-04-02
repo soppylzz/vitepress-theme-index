@@ -19,7 +19,7 @@ export default withAdditionIndex({
           type: "group",
           text: "菜单组",
           children: [{ type: "button", text: "菜单组" }],
-          collapsed: false,
+          collapsable: true,
         },
       ],
     },
@@ -37,6 +37,12 @@ export default withAdditionIndex({
     "/api": [
       { type: "button", text: "参考" },
       { type: "group", text: "侧边栏", children: [{ type: "button", text: "侧边栏" }] },
+      {
+        type: "group",
+        text: "侧边栏",
+        children: [{ type: "button", text: "侧边栏" }],
+        collapsable: true,
+      },
     ],
     "/guide": [{ type: "button", text: "指南" }],
   },

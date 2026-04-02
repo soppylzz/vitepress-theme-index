@@ -10,10 +10,10 @@ import type {
   NavItemConfig,
   NavItemType,
 } from "../../types";
-import { VtiNavButton, VtiNavMenu, VtiNavSwitch, VtiNavTheme } from "./items";
+import { VtiNavButton, VtiNavMenu, VtiNavSwitch } from "./items";
 import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
 import { renderMenuItems } from "../menu";
-import { VtiBrand } from "../public";
+import VtiBrand from "../brand.vue";
 import { useRoute } from "vitepress";
 
 const ns = useBem("nav");
@@ -105,11 +105,9 @@ function renderNavItem(
 const VtiNav = defineComponent({
   name: "VtiNav",
   setup() {
-    const {
-      nav,
-      site,
-      theme: { response },
-    } = useIndex();
+    const { response } = useIndex().theme;
+    const { nav, site } = useIndex();
+
     const itemsRef = useMaybeI18nData(nav, []);
     const siteRef = useMaybeI18nData(site, undefined);
 

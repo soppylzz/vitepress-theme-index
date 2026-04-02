@@ -10,9 +10,9 @@ import { default as VtiMenuDivider } from "./divider.vue";
 import { default as VtiMenu } from "./menu.vue";
 
 const menuItemMap: Record<MenuItemType, Component> = {
+  divider: VtiMenuDivider,
   button: VtiMenuButton,
   group: VtiMenuGroup,
-  divider: VtiMenuDivider,
 };
 
 function renderMenuItems(items: MenuItemConfig[], prefix: string) {

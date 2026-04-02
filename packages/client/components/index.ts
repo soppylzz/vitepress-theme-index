@@ -5,3 +5,6 @@ export * from "./right-menu";
 export * from "./sidebar";
 export * from "./nav";
 export * from "./docs";
+export * from "./toc";
+export { default as VtiBrand } from "./brand.vue";
+export { default as VtiSubNav } from "./sub-nav.vue";

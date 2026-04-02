@@ -1,9 +1,10 @@
-import type { ComputedRef, InjectionKey, Reactive } from "vue";
+import type { ComputedRef, Reactive } from "vue";
 import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
 import type { RMenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
-import type { IndexNavConfig, IndexSidebarConfig, NavItemConfig, SidebarItemConfig } from "./views";
+import type { IndexNavConfig, NavItemConfig } from "./nav";
 import type { IndexResponse } from "./global";
 import type { BuildI18nViewConfig } from "./i18n";
+import type { MenuItemConfig } from "./comps";
 
 const indexPreset = ["default", "glass"] as const;
 const indexThemeMode = ["auto", "light", "dark"] as const;
@@ -23,11 +24,13 @@ interface IndexClientThemeConfig {
   };
 }
 
+type SidebarConfig = Record<string, MenuItemConfig[]>;
 interface SiteConfig {
   brand: string;
   siteName: string;
 }
 type IndexSiteConfig = BuildI18nViewConfig<SiteConfig>;
+type IndexSidebarConfig = BuildI18nViewConfig<SidebarConfig>;
 
 type UserIndexClientThemeConfig = DeepPartial<
   Omit<IndexClientThemeConfig, "breakPoint"> & { breakPoint: number | [number, number] }
@@ -43,14 +46,11 @@ interface IndexClientThemeContext extends DeepRequired<IndexClientThemeConfig> {
   cycle<K extends keyof IndexClientThemeConfig["theme"]>(key: K, step: -1 | 1): void;
 }
 
-const indexClientThemeKey: InjectionKey<IndexClientThemeContext> =
-  Symbol("indexClientThemeContext");
-
 type AdditionType = keyof IndexClientAdditionConfig;
 type IndexClientAdditionConfig = DeepPartial<{
-  site: SiteConfig;
   nav: NavItemConfig[];
-  sidebar: Record<string, SidebarItemConfig[]>;
+  site: SiteConfig;
+  sidebar: SidebarConfig;
 }>;
 
 type IndexClientConfig<Records extends RMenuItemRecord = RMenuItemRecord> = Partial<{
@@ -61,13 +61,14 @@ type IndexClientConfig<Records extends RMenuItemRecord = RMenuItemRecord> = Part
   sidebar: IndexSidebarConfig;
 }>;
 
-export { indexPreset, indexThemeMode, indexClientThemeKey };
+export { indexPreset, indexThemeMode };
 export type {
   IndexPreset,
   IndexThemeMode,
   AdditionType,
   SiteConfig,
   IndexSiteConfig,
+  IndexSidebarConfig,
   IndexClientConfig,
   IndexClientThemeConfig,
   IndexClientThemeContext,

@@ -39,7 +39,7 @@ const kls = computed(() => ({
         <span>{{ useText(props.text) }}</span>
       </div>
       <template #content>
-        <VtiMenu size="small">
+        <VtiMenu size="small" is-collapsed>
           <slot />
         </VtiMenu>
       </template>
@@ -55,7 +55,7 @@ const kls = computed(() => ({
         </svg>
         <component :is="useIcon(props.icon)" v-if="props?.icon" />
       </div>
-      <VtiMenu v-if="expanded" size="medium">
+      <VtiMenu v-if="expanded" size="medium" is-collapsed>
         <slot />
       </VtiMenu>
     </template>

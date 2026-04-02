@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { BrandProps } from "../types";
-import { useBem, useLink, useText } from "../composables";
-import { computed, useAttrs } from "vue";
+import { useAttrsExist, useBem, useLink, useText } from "../composables";
+import { computed } from "vue";
 
 const emit = defineEmits<{ (e: "onActivate"): void }>();
 const props = withDefaults(defineProps<BrandProps>(), {
@@ -9,18 +9,15 @@ const props = withDefaults(defineProps<BrandProps>(), {
   size: "medium",
   href: "/",
 });
-
-const attrs = useAttrs();
-const hasOnActivate = computed(() => "onActivate" in attrs);
-
-const { attr } = useLink({ href: "/" });
+const { existed: hasActivate } = useAttrsExist("onActivate");
 const handleClick = (e: MouseEvent) => {
-  if (hasOnActivate.value) {
+  if (hasActivate.value) {
     emit("onActivate");
     e.preventDefault();
   }
 };
 
+const { attr } = useLink({ href: "/" });
 const ns = useBem("brand");
 const kls = computed(() => ({
   wrap: ns.b(),
