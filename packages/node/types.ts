@@ -1,4 +1,13 @@
-import type { DeepPartial, DeepRequired, I18NConfig } from "@vitepress-theme-index/shared";
+import type {
+  DeepPartial,
+  DeepRequired,
+  I18NConfig,
+  MaybeArray,
+  PostMetaInfo,
+  IndexErrorInterceptor,
+  IndexPostPlugin,
+  DefineAble,
+} from "@vitepress-theme-index/shared";
 import type { Alias, ResolvedConfig, ViteDevServer } from "vite";
 
 /* ==================== unit ==================== */
@@ -16,26 +25,53 @@ type IndexImportPluginConfig = {
   mode: ImportMode;
 };
 
+type DefaultLast = "now" | "mtime";
+interface MetaConfig {
+  include: MaybeArray<string>;
+  exclude: MaybeArray<string>;
+  cache: {
+    file: string;
+    enable: boolean;
+    concurrency: number;
+    defaultLast: DefaultLast;
+  };
+}
+
+interface MetaCache {
+  hashKey: string;
+  generate: number;
+  posts: PostMetaInfo[];
+}
+
 type IndexPluginConfig = {
   i18n: I18NConfig;
+  meta: MetaConfig;
   addition: { name: string };
+  plugins: DefineAble<IndexPostPlugin>[];
 };
 
-type IndexPluginInitConfig = IndexPluginConfig & { imports: IndexImportPluginConfig };
+type IndexPluginInitConfig = IndexPluginConfig & {
+  imports: IndexImportPluginConfig;
+  logger: IndexErrorInterceptor;
+};
 
 type UserIndexPluginConfig = DeepPartial<IndexPluginConfig>;
 type ResolvedIndexPluginConfig = DeepRequired<IndexPluginConfig>;
 
 /* ==================== context ==================== */
-interface IndexPluginContext {
-  viteServer?: ViteDevServer;
-  viteConfig?: ResolvedConfig;
+type IndexPluginContext = Partial<{
+  viteServer: ViteDevServer;
+  viteConfig: ResolvedConfig;
   // vitepress-theme-index
-  plugins?: DeepRequired<IndexPluginConfig>;
-}
+  ctx: DeepRequired<IndexPluginConfig>;
+  cwd: string;
+}>;
 
 export { importAliasEnvs };
 export type {
+  DefaultLast,
+  MetaCache,
+  MetaConfig,
   ImportAlias,
   IndexPluginConfig,
   IndexPluginInitConfig,

@@ -2,11 +2,13 @@ import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import type { IndexPluginInitConfig, IndexPluginContext } from "../types";
 import { createConfigPlugin } from "./config";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
+import { setupIndexErrorInterceptor } from "@vitepress-theme-index/shared";
 import { PLUGIN_PREFIX } from "../const";
 import { createI18nPlugin } from "./i18n";
 import { createAdditionPlugin } from "./addition";
+import { createMetaPlugin } from "./post";
 
-const ctx: IndexPluginContext = {};
+const ctx: IndexPluginContext = { cwd: process.cwd() };
 function createPluginContext(): Plugin {
   return {
     name: `${PLUGIN_PREFIX}/base`,
@@ -25,6 +27,7 @@ function vitepressThemeIndex(config?: DeepPartial<IndexPluginInitConfig>): Plugi
   const configPlugin = createConfigPlugin(ctx, config);
   const additionPlugin = createAdditionPlugin(ctx);
   const i18nPlugin = createI18nPlugin(ctx);
+  const metaPlugin = createMetaPlugin(ctx);
   return [
     /**
      * ⚠️ Notes:
@@ -36,6 +39,7 @@ function vitepressThemeIndex(config?: DeepPartial<IndexPluginInitConfig>): Plugi
     configPlugin,
     additionPlugin,
     i18nPlugin,
+    metaPlugin,
   ];
 }
 

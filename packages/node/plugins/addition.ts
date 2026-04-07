@@ -14,7 +14,7 @@ function createAdditionPlugin(ctx: IndexPluginContext): Plugin {
     },
     load(id) {
       if (id !== addResolvedId) return;
-      const { addition } = ctx?.plugins ?? {};
+      const { addition } = ctx?.ctx ?? {};
       const name = addition?.name || DEFAULT_NAME;
       const patterns = [
         "!**/node_modules/**",
@@ -26,7 +26,7 @@ function createAdditionPlugin(ctx: IndexPluginContext): Plugin {
                                         { eager: true, import: "default"})`;
     },
     handleHotUpdate({ file, server }) {
-      const { addition } = ctx?.plugins ?? {};
+      const { addition } = ctx?.ctx ?? {};
       if (
         addition?.name &&
         VITE_EXTENSIONS.some((ext) => file.endsWith(`${addition.name}${ext}`))

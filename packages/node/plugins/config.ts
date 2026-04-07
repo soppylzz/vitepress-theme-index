@@ -17,14 +17,19 @@ import {
 } from "../const";
 import { type Alias, type Plugin, type ViteDevServer } from "vite";
 import { normalizeAlias, ssrRewriteLoadModules } from "../utils";
-import { isAbsolute, resolve } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
-import { pluginLogger, resolveDefineAble } from "@vitepress-theme-index/shared";
-import fs from "node:fs";
-import { merge } from "lodash-unified";
+import {
+  setupIndexErrorInterceptor,
+  pluginLogger,
+  resolveDefineAble,
+} from "@vitepress-theme-index/shared";
+import fs from "fs-extra";
+import { concat, merge } from "lodash-unified";
 import { i18nResolvedId } from "./i18n";
 import { addResolvedId } from "./addition";
+import { archiveResolvedId, searchResolvedId } from "./post";
 
 const PKG_ROOT = resolve(fileURLToPath(import.meta.url), "..", "..", "..");
 const CLIENT_MOD = resolve(PKG_ROOT, "client");
@@ -67,7 +72,7 @@ async function loadPluginConfig(
     return null;
   }
 
-  let inputConfig: Record<string, any> = {};
+  let inputConfig: UserIndexPluginConfig = {};
   const filePath = findConfigFile();
 
   if (filePath) {
@@ -82,7 +87,15 @@ async function loadPluginConfig(
       pluginLogger.warn("load config error, use default config instead");
     }
   }
-  ctx.plugins = merge(DEFAULT_PLUGIN_CONFIG, fix, inputConfig) as ResolvedIndexPluginConfig;
+
+  const mergedConfig = merge(DEFAULT_PLUGIN_CONFIG, fix, inputConfig) as ResolvedIndexPluginConfig;
+  // manually merge post plugins
+  mergedConfig.plugins = concat(
+    DEFAULT_PLUGIN_CONFIG.plugins,
+    fix?.plugins ?? [],
+    inputConfig?.plugins ?? []
+  );
+  ctx.ctx = mergedConfig;
   return { filePath };
 }
 
@@ -96,8 +109,9 @@ export function createConfigPlugin(
   ctx: IndexPluginContext,
   config?: DeepPartial<IndexPluginInitConfig>
 ): Plugin {
-  const { imports, ...plugins } = config ?? {};
+  const { imports, logger, ...plugins } = config ?? {};
   const resolved = resolveImportPluginConfig(imports);
+  setupIndexErrorInterceptor(logger);
 
   // resolve "vitepress-theme-index" as "vitepress-theme-index/client" default
   switch (resolved.mode) {
@@ -128,18 +142,26 @@ export function createConfigPlugin(
       const userAlias = normalizeAlias(config.resolve?.alias);
       config.resolve.alias = [...userAlias, ...(alias?.client ?? [])];
     },
-    async buildStart() {
-      const { filePath } = await loadPluginConfig(ctx, resolved);
-      const { viteServer } = ctx;
+    buildStart: {
+      sequential: true,
+      async handler() {
+        const { filePath } = await loadPluginConfig(ctx, resolved, plugins);
+        const { viteServer } = ctx;
 
-      if (!viteServer) return;
-      viteServer.watcher.add(filePath).on("change", async (file) => {
-        pluginLogger.info(`config file changed: ${file}`);
-        await loadPluginConfig(ctx, resolved);
+        if (!viteServer) return;
+        viteServer.watcher.add(filePath).on("change", async (file) => {
+          pluginLogger.info(
+            `config file ${relative(ctx.cwd, file)} changed, invalidate sub-plugins...`
+          );
+          await loadPluginConfig(ctx, resolved, plugins);
 
-        invalidateModes([i18nResolvedId, addResolvedId], viteServer);
-        viteServer.ws.send({ type: "full-reload", path: "*" });
-      });
+          invalidateModes(
+            [i18nResolvedId, addResolvedId, searchResolvedId, archiveResolvedId],
+            viteServer
+          );
+          viteServer.ws.send({ type: "full-reload", path: "*" });
+        });
+      },
     },
   };
 }

@@ -14,7 +14,7 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
     },
     load(id) {
       if (id !== i18nResolvedId) return;
-      const { i18n } = ctx?.plugins ?? {};
+      const { i18n } = ctx?.ctx ?? {};
 
       switch (i18n.mode) {
         case "mixin": {
@@ -35,7 +35,7 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
       }
     },
     handleHotUpdate({ file, server }) {
-      const { i18n } = ctx?.plugins ?? {};
+      const { i18n } = ctx?.ctx ?? {};
 
       if (i18n?.mode !== "mixin" && file.endsWith(`${i18n.file}.json`)) {
         const mod = server.moduleGraph.getModuleById(i18nResolvedId);
