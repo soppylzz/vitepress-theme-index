@@ -1,9 +1,9 @@
 import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
 import { indexSiteKey, indexSidebarKey, indexNavKey, indexClientThemeKey } from "../../types";
-import { checkExternal, pascalCase } from "../../utils";
+import { checkExternal, pascalCase, normalizeLink } from "../../utils";
 import { isObject, isString } from "lodash-unified";
-import { normalizeLink } from "./utils";
-import { computed, inject, toRefs, unref } from "vue";
+import type { MaybeRef } from "vue";
+import { computed, inject, unref } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -16,17 +16,17 @@ function useIcon(icon: IndexIcon) {
       : `VtiI${pascalCase(icon)}`;
 }
 
-function useLink<T extends IndexLink>(link: T) {
+function useLink<T extends IndexLink>(link: MaybeRef<T>) {
   const { site } = useData();
   const rawLink = computed(() => unref(link));
 
   const isExternal = computed(
-    () => !!(checkExternal(rawLink.value.href) || rawLink.value._target === "_blank")
+    () => checkExternal(rawLink.value?.href) || rawLink.value._target === "_blank"
   );
 
   const attr = computed(() => ({
-    href: rawLink.value.href ? normalizeLink(site.value, rawLink.value.href) : undefined,
-    target: rawLink.value._target ?? (isExternal.value ? "_blank" : undefined),
+    href: rawLink.value?.href ? normalizeLink(site.value, rawLink.value.href) : undefined,
+    target: rawLink.value?._target ?? (isExternal.value ? "_blank" : undefined),
     rel: isExternal.value ? "noreferrer" : undefined,
   }));
 
@@ -71,4 +71,15 @@ function useMaybeI18nDataWithRoute<T>(
   });
 }
 
-export { useIcon, useLink, useIndex, useMaybeI18nData, useMaybeI18nDataWithRoute };
+function flatArrayWithRoute<T>(raw: Record<string, T[]>) {
+  return Object.values(raw).flat() as T[];
+}
+
+export {
+  useIcon,
+  useLink,
+  useIndex,
+  useMaybeI18nData,
+  useMaybeI18nDataWithRoute,
+  flatArrayWithRoute,
+};

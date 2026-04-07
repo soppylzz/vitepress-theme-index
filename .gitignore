@@ -19,3 +19,4 @@ dist
 **/.vitepress/cache/
 **/.vitepress/.temp/
 node_modules/
+pnpm-lock.yaml

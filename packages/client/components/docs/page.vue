@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { useBem, useI18n } from "../../composables";
+import { useBem, useI18n, useLink, usePrevNext, useText } from "../../composables";
 import { computed } from "vue";
-import { useData } from "vitepress";
 
 const { t } = useI18n();
+
+const { prev, next } = usePrevNext();
+const { attr: pLink } = useLink(prev);
+const { attr: nLink } = useLink(next);
+
 const ns = useBem("docs-page");
 const kls = computed(() => ({
   wrap: ns.b(),
@@ -14,13 +18,13 @@ const kls = computed(() => ({
 
 <template>
   <div :class="kls.wrap">
-    <a :class="kls.prev">
+    <a v-if="prev" :class="kls.prev" v-bind="pLink">
       <span>{{ t("docs.prev") }}</span>
-      <span>TEMP</span>
+      <span>{{ useText(prev.text) }}</span>
     </a>
-    <a :class="kls.next">
+    <a v-if="next" :class="kls.next" v-bind="nLink">
       <span>{{ t("docs.next") }}</span>
-      <span>TEMP</span>
+      <span>{{ useText(next.text) }}</span>
     </a>
   </div>
 </template>

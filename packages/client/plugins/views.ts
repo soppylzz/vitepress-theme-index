@@ -1,6 +1,6 @@
 import type { EnhanceAppContext, SiteData } from "vitepress";
 import type { IndexClientConfig, IndexClientAdditionConfig, AdditionType } from "../types";
-import { indexSiteKey, IndexSiteConfig, indexSidebarKey, indexNavKey } from "../types";
+import { indexSiteKey, indexSidebarKey, indexNavKey } from "../types";
 import { isEmpty, isFunction } from "lodash-unified";
 import { configs } from "virtual:index-addition";
 

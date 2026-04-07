@@ -35,6 +35,11 @@ export default withAdditionIndex({
   ],
   sidebar: {
     "/api": [
+      { type: "button", text: "1", href: "api/1" },
+      { type: "button", text: "2", href: "api/2" },
+      { type: "button", text: "3", href: "api/3" },
+    ],
+    "/guide": [
       { type: "button", text: "参考" },
       { type: "group", text: "侧边栏", children: [{ type: "button", text: "侧边栏" }] },
       {
@@ -44,6 +49,5 @@ export default withAdditionIndex({
         collapsable: true,
       },
     ],
-    "/guide": [{ type: "button", text: "指南" }],
   },
 });

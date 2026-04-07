@@ -16,4 +16,13 @@ type MenuDividerConfig = { type: "divider" };
 type MenuItemConfig = MenuButtonConfig | MenuGroupConfig | MenuDividerConfig;
 type MenuItemType = MenuItemConfig["type"];
 
-export type { MenuItemType, MenuItemConfig, MenuProps, MenuButtonProps, MenuGroupProps };
+type MenuLinkItem = Extract<MenuItemConfig, IndexLink>;
+
+export type {
+  MenuItemType,
+  MenuItemConfig,
+  MenuProps,
+  MenuButtonProps,
+  MenuGroupProps,
+  MenuLinkItem,
+};
