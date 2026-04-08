@@ -20,4 +20,9 @@ interface IndexPostPlugin {
   postProcess?: (map: IndexPostArchives) => IndexPostArchives;
 }
 
-export type { PostMetaInfo, GitInfo, IndexPostPlugin, IndexPostArchives };
+type IndexSearchIndex = Array<{
+  id: string;
+  content: string;
+}>;
+
+export type { PostMetaInfo, GitInfo, IndexPostPlugin, IndexPostArchives, IndexSearchIndex };

@@ -1,6 +1,6 @@
 import type { Component, VNode } from "vue";
 import { watch, watchEffect, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
-import { useBem, useIndex, useMaybeI18nData } from "../../composables";
+import { useBem, useNav, useSite, useTheme } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
   IndexResponse,
@@ -11,7 +11,7 @@ import type {
   NavItemType,
 } from "../../types";
 import { VtiNavButton, VtiNavMenu, VtiNavSwitch } from "./items";
-import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
+import { ensureArray, hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
 import { renderMenuItems } from "../menu";
 import VtiBrand from "../brand.vue";
 import { useRoute } from "vitepress";
@@ -77,7 +77,9 @@ function renderContentByType(
     }
     default: {
       const comp = navItemMap[type];
-      if (!comp) throw new Error(`unknown nav item type: ${type}`);
+      if (!comp) {
+        renderLogger.error(`unknown nav item type: ${type}`);
+      }
       const cleanProps = omit(res, ["children", "show"]);
       if (type === "menu") {
         return createVNode(comp, { key, ...cleanProps, container }, () =>
@@ -105,11 +107,9 @@ function renderNavItem(
 const VtiNav = defineComponent({
   name: "VtiNav",
   setup() {
-    const { response } = useIndex().theme;
-    const { nav, site } = useIndex();
-
-    const itemsRef = useMaybeI18nData(nav, []);
-    const siteRef = useMaybeI18nData(site, undefined);
+    const nav = useNav();
+    const { response } = useTheme();
+    const { brand, siteName } = useSite();
 
     const open = ref(false);
 
@@ -146,20 +146,20 @@ const VtiNav = defineComponent({
         screenIcons: [ns.e("screen-icons")],
       };
 
-      const screenItems = itemsRef.value
+      const screenItems = nav.value
         .filter((item) => checkRender(item, "screen"))
         .filter((item) => !checkIconButton(item));
-      const screenIcons = itemsRef.value
+      const screenIcons = nav.value
         .filter((item) => checkRender(item, "screen"))
         .filter((item) => checkIconButton(item));
 
       return (
         <div class={kls.wrapper}>
           <div class={kls.header}>
-            {<VtiBrand text={siteRef.value.siteName} brand={siteRef.value.brand} size={"medium"} />}
+            {<VtiBrand text={siteName.value} brand={brand.value} size={"medium"} />}
             {
               /* header container */
-              itemsRef.value
+              nav.value
                 .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
                 .filter((item) => !!item)
             }

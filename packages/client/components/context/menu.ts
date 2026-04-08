@@ -1,6 +1,7 @@
 import type { InjectionKey, MaybeRef } from "vue";
 import { toValue, computed, getCurrentInstance, inject, provide, ref } from "vue";
 import type { MenuProps } from "../../types";
+import { useInject } from "../../composables";
 
 interface MenuState extends Required<MenuProps> {
   level: number;
@@ -69,10 +70,7 @@ function provideMenuContext<T extends MenuProps>(props?: T) {
 
 function useMenuItem() {
   const uid = getCurrentInstance()!.uid;
-  const { setActive, ctx } = inject<MenuContext>(MenuContextKey) ?? {};
-  if (!ctx || !setActive) {
-    throw new Error("MenuContextKey is not found");
-  }
+  const { setActive, ctx } = useInject(MenuContextKey);
 
   const ctxRef = computed(() => toValue(ctx));
   const key = computed(() => buildMenuKey(ctxRef.value.parentKey, uid));

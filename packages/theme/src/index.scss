@@ -7,6 +7,8 @@
 @use "brand";
 @use "right-menu";
 
+@use "markdown";
+
 @include createFontFace("Monaco", "./fonts/Monaco.ttf");
 @include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./fonts/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");

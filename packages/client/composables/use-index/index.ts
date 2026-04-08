@@ -1,12 +1,13 @@
 import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
-import { indexSiteKey, indexSidebarKey, indexNavKey, indexClientThemeKey } from "../../types";
-import { checkExternal, pascalCase, normalizeLink } from "../../utils";
+import { indexClientThemeKey, indexNavKey, indexSidebarKey, indexSiteKey } from "../../types";
+import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
 import { isObject, isString } from "lodash-unified";
-import type { MaybeRef } from "vue";
-import { computed, inject, unref } from "vue";
+import type { MaybeRefOrGetter } from "vue";
+import { computed, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
+import { useInject } from "../use-inject";
 
 function useIcon(icon: IndexIcon) {
   return !isString(icon)
@@ -16,9 +17,9 @@ function useIcon(icon: IndexIcon) {
       : `VtiI${pascalCase(icon)}`;
 }
 
-function useLink<T extends IndexLink>(link: MaybeRef<T>) {
+function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>) {
   const { site } = useData();
-  const rawLink = computed(() => unref(link));
+  const rawLink = computed(() => toValue(link));
 
   const isExternal = computed(
     () => checkExternal(rawLink.value?.href) || rawLink.value._target === "_blank"
@@ -33,19 +34,7 @@ function useLink<T extends IndexLink>(link: MaybeRef<T>) {
   return { attr, isExternal };
 }
 
-function useIndex() {
-  const nav = inject(indexNavKey);
-  const theme = inject(indexClientThemeKey);
-  const sidebar = inject(indexSidebarKey);
-  const site = inject(indexSiteKey);
-
-  if (!nav || !sidebar || !theme || !site) {
-    throw new Error("unable to find Index data");
-  }
-  return { theme, nav, sidebar, site };
-}
-
-function useMaybeI18nData<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
+function useMaybeI18nData<T>(raw: BuildI18nViewConfig<T>, defaultVal?: T) {
   const { localeIndex } = useI18n(); // 你的国际化 hook
 
   return computed<T>(() => {
@@ -59,7 +48,7 @@ function useMaybeI18nData<T>(raw: BuildI18nViewConfig<T>, defaultVal: T) {
 
 function useMaybeI18nDataWithRoute<T>(
   raw: BuildI18nViewConfig<Record<string, T>>,
-  defaultVal: Record<string, T>
+  defaultVal: Record<string, T> = {}
 ) {
   const withRoute = useMaybeI18nData(raw, defaultVal);
   const route = useRoute();
@@ -75,11 +64,18 @@ function flatArrayWithRoute<T>(raw: Record<string, T[]>) {
   return Object.values(raw).flat() as T[];
 }
 
-export {
-  useIcon,
-  useLink,
-  useIndex,
-  useMaybeI18nData,
-  useMaybeI18nDataWithRoute,
-  flatArrayWithRoute,
+const useTheme = () => useInject(indexClientThemeKey);
+const useNav = () => {
+  const raw = useInject(indexNavKey);
+  return useMaybeI18nData(raw, []);
 };
+const useSidebar = () => {
+  const raw = useInject(indexSidebarKey);
+  return useMaybeI18nDataWithRoute(raw);
+};
+const useSite = () => {
+  const raw = useInject(indexSiteKey);
+  return useSplitRefs(useMaybeI18nData(raw));
+};
+
+export { useIcon, useLink, useNav, useTheme, useSite, useSidebar, flatArrayWithRoute };

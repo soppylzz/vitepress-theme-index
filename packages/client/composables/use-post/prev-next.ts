@@ -2,7 +2,7 @@ import type { MenuItemConfig, MenuLinkItem } from "../../types";
 import { checkExternal, normalizeLink } from "../../utils";
 import { useData, useRoute } from "vitepress";
 import { computed } from "vue";
-import { flatArrayWithRoute, useIndex, useMaybeI18nDataWithRoute } from "../use-index";
+import { flatArrayWithRoute, useSidebar } from "../use-index";
 
 function getValidInternalItems(items: MenuItemConfig[]): MenuLinkItem[] {
   const list: MenuLinkItem[] = [];
@@ -21,15 +21,13 @@ function getValidInternalItems(items: MenuItemConfig[]): MenuLinkItem[] {
 }
 
 function usePrevNext() {
-  const { site } = useData();
   const route = useRoute();
-
-  const { sidebar } = useIndex();
-  const rawSidebar = useMaybeI18nDataWithRoute(sidebar, {});
+  const raw = useSidebar();
+  const { site } = useData();
 
   const items = computed(() => {
-    const items = flatArrayWithRoute(rawSidebar.value);
-    return getValidInternalItems(items);
+    const sidebar = flatArrayWithRoute(raw.value);
+    return getValidInternalItems(sidebar);
   });
 
   const currentIndex = computed(() =>
@@ -41,8 +39,6 @@ function usePrevNext() {
   );
   const next = computed(() => {
     const idx = currentIndex.value;
-    console.log(currentIndex.value);
-    console.log(items.value.length);
     return idx !== -1 && idx < items.value.length - 1 ? items.value[idx + 1] : null;
   });
   return { prev, next };

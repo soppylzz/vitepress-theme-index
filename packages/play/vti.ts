@@ -2,7 +2,18 @@ import { withAdditionIndex } from "vitepress-theme-index";
 import brand from "./.vitepress/assets/brand.svg";
 
 export default withAdditionIndex({
-  site: { brand, siteName: "禁书目录" },
+  site: {
+    brand,
+    siteName: "禁书目录",
+    build: "2025",
+    owner: {
+      text: "soppylzz",
+      href: "https://github.com/soppylzz",
+    },
+    beian: {
+      text: "渝ICP备2025063057号-1",
+    },
+  },
   nav: [
     { type: "space" },
     { type: "button", icon: "github", text: "参考", target: "both", href: "/api/1" },
@@ -24,7 +35,7 @@ export default withAdditionIndex({
       ],
     },
     { type: "button", icon: "github", target: "screen" },
-    { type: "divider", show: ["pad", "computer"] },
+    { type: "divider", show: ["pad", "desktop"] },
     {
       type: "button",
       icon: "github",

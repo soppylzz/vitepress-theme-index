@@ -1,3 +1,0 @@
-function usePagination() {}
-
-export { usePagination };

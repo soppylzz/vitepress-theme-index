@@ -17,7 +17,7 @@ const kls = computed(() => ({
 </script>
 
 <template>
-  <div :class="kls.wrap">
+  <div v-if="prev || next" :class="kls.wrap">
     <a v-if="prev" :class="kls.prev" v-bind="pLink">
       <span>{{ t("docs.prev") }}</span>
       <span>{{ useText(prev.text) }}</span>

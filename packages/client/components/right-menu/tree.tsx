@@ -9,7 +9,7 @@ import {
   VtiRMenuSubMenu,
   VtiRMenuText,
 } from "./items";
-import { hasOwnProperty } from "@vitepress-theme-index/shared";
+import { hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
 import { omit } from "lodash-unified";
 
 const rightMenuItemMap: Record<RMenuItemType, Component | undefined> = {
@@ -29,7 +29,9 @@ function renderRightMenu(records?: RMenuItemRecord) {
     }
 
     const comp = rightMenuItemMap[type];
-    if (!comp) throw new Error(`unknown menu item type: ${type}`);
+    if (!comp) {
+      renderLogger.error(`unknown menu item type: ${type}`);
+    }
 
     const cleanProps = omit(res, "children");
     if (hasOwnProperty(res, "children")) {

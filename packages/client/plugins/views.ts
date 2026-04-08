@@ -3,6 +3,7 @@ import type { IndexClientConfig, IndexClientAdditionConfig, AdditionType } from 
 import { indexSiteKey, indexSidebarKey, indexNavKey } from "../types";
 import { isEmpty, isFunction } from "lodash-unified";
 import { configs } from "virtual:index-addition";
+import { pluginLogger } from "@vitepress-theme-index/shared";
 
 const getLocaleKey = (path: string) => {
   const segments = path.split("/").filter(Boolean);
@@ -16,7 +17,7 @@ async function collectLocalConfigs(site: SiteData) {
   const keys = Object.keys(configs);
   const exts = Array.from(new Set(keys.map((k) => k.split(".").pop())));
   if (exts.length > 1) {
-    throw new Error(`use only one ext for localConfig files, found: ${exts.join(", ")}`);
+    pluginLogger.error(`only accept ont ext in addition config files, found ${exts.join(", ")}`);
   }
   const result: Record<string, IndexClientAdditionConfig> = {};
 

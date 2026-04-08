@@ -1,4 +1,4 @@
-import type { IndexIcon, IndexLink, IndexSize, IndexText } from "../global";
+import type { IndexIcon, IndexLink, IndexSize, IndexText, IndexTextLink } from "../global";
 
 interface MenuProps {
   size?: IndexSize;
@@ -6,7 +6,7 @@ interface MenuProps {
   showActivate?: boolean;
 }
 
-type MenuButtonProps = { text: IndexText; icon?: IndexIcon } & IndexLink;
+type MenuButtonProps = { icon?: IndexIcon } & IndexTextLink;
 type MenuGroupProps = { text: IndexText; collapsable?: boolean };
 
 type MenuButtonConfig = { type: "button"; onActivate?: () => void } & MenuButtonProps;

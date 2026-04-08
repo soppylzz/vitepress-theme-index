@@ -7,6 +7,7 @@ import type {
   IndexMenuProvideContext,
   IndexMenuProvideHooks,
 } from "../../types";
+import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 const rootProvide: Partial<IndexMenuProvideContext> = {
   close() {},
@@ -25,7 +26,7 @@ function provideRightMenuContext(
   const inSetup = !!getCurrentInstance();
   const provideFn = app?.provide ?? (inSetup ? provide : undefined);
   if (!provideFn) {
-    throw new Error("provideRightMenuContext need app or to be in setup");
+    rightMenuLogger.error("unable to find provideFn");
   }
 
   const parent = useRightMenuProvide();

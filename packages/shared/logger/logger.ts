@@ -50,18 +50,18 @@ class IndexError extends Error {
   }
 }
 
-type IndexLogger = Record<IndexLogLevel, (msg: string) => void>;
-
-function createLogger(scoped: string): IndexLogger {
+type IndexNormLogLevel = Exclude<IndexLogLevel, "error">;
+function createLogger(scoped: string) {
   const prefixedScoped = `index-${scoped}` as const;
-  const logger: Omit<IndexLogger, "error"> = {} as any;
-  (["info", "success", "warn", "debug"] as IndexLogLevel[]).forEach((level) => {
+  const logger: Record<IndexNormLogLevel, (msg: string) => void> = {} as any;
+
+  (["info", "success", "warn", "debug"] as IndexNormLogLevel[]).forEach((level) => {
     logger[level] = (msg: string) => i[level](prefixedScoped, msg);
   });
 
   return {
     ...logger,
-    error: (msg: string) => {
+    error: (msg: string): never => {
       throw new IndexError(msg, prefixedScoped);
     },
   };
@@ -69,6 +69,17 @@ function createLogger(scoped: string): IndexLogger {
 
 const buildLogger = createLogger("build");
 const pluginLogger = createLogger("plugin");
-const i18nLogger = createLogger("i18n");
+const injectLogger = createLogger("inject");
+const rightMenuLogger = createLogger("right-menu");
+const renderLogger = createLogger("render");
+const runtimeLogger = createLogger("runtime");
 
-export { buildLogger, pluginLogger, i18nLogger, IndexError };
+export {
+  buildLogger,
+  pluginLogger,
+  injectLogger,
+  rightMenuLogger,
+  renderLogger,
+  runtimeLogger,
+  IndexError,
+};

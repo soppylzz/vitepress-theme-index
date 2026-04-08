@@ -17,7 +17,7 @@ function getDependencies(pkgPath: string) {
 }
 
 function run(command: string, args: string[], cwd: string = projRoot): Promise<void> {
-  buildLogger.info(`run ${command} ${args.map((a) => JSON.stringify(a)).join(" ")}`);
+  buildLogger.info(`🏃 run ${command} ${args.map((a) => JSON.stringify(a)).join(" ")}`);
 
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {

@@ -2,20 +2,22 @@ import { createI18n, useI18n } from "vue-i18n";
 import type { EnhanceAppContext } from "vitepress";
 import { useData } from "vitepress";
 import { watch } from "vue";
-import { resolveIndexLocales } from "./resolve";
-import defaultLocales from "./default";
+import { mapLocaleKey, resolveIndexLocales } from "./resolve";
+import { defaultMessage, defaultDateFormat } from "./default";
 import { indexI18nKey } from "../../types";
 
 async function installI18n(ctx: EnhanceAppContext) {
-  const { initialLocale, messages, routes } = await resolveIndexLocales(
+  const { initialLocale, messages, routes, datetimeFormats } = await resolveIndexLocales(
     ctx.siteData.value,
-    defaultLocales
+    defaultMessage,
+    defaultDateFormat
   );
   const i18n = createI18n({
     legacy: false,
+    globalInjection: true,
     locale: initialLocale,
     fallbackLocale: initialLocale,
-    globalInjection: true,
+    datetimeFormats,
     messages,
   });
   ctx.app.use(i18n);
@@ -29,8 +31,8 @@ export function setupI18n() {
 
   watch(
     () => localeIndex.value,
-    (val) => {
-      locale.value = val;
+    (key) => {
+      locale.value = mapLocaleKey(key);
     },
     { immediate: true }
   );

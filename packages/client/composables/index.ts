@@ -4,4 +4,6 @@ export * from "./use-layout";
 export * from "./use-i18n";
 export * from "./use-right-menu";
 export * from "./use-attrs";
-export * from "./use-pagination";
+export * from "./use-post";
+export * from "./use-inject";
+export * from "./use-share";

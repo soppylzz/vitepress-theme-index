@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { VtiSidebar, VtiSubNav, VtiDocsCard, VtiDocsPage, VtiToc } from "../components";
+import {
+  VtiSidebar,
+  VtiSubNav,
+  VtiDocsCard,
+  VtiDocsPage,
+  VtiToc,
+  VtiDocsFooter,
+} from "../components";
 import { Content } from "vitepress";
 import { computed, ref } from "vue";
 import { useBem } from "../composables";
@@ -27,6 +34,7 @@ const kls = computed(() => ({
       </div>
       <VtiDocsCard />
       <VtiDocsPage />
+      <VtiDocsFooter />
     </div>
     <div :class="kls.aside">
       <VtiToc size="small" />

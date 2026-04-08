@@ -1,7 +1,8 @@
 import type { ComponentInternalInstance, MaybeRef } from "vue";
 import { getCurrentInstance, inject, onMounted, onUnmounted, provide, toValue, watch } from "vue";
-import { useMenuNav, useNavState, useRightMenuProvide } from "../../utils";
+import { useNavState, useRightMenuProvide } from "../../utils";
 import { rightMenuPrivateKey } from "../../types";
+import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 const closerCache = new Map<string, Record<string, HTMLElement>>();
 
@@ -16,7 +17,6 @@ function useRightMenuRoot(render: MaybeRef<boolean>) {
   provide(rightMenuPrivateKey, key);
   const { set } = useNavState();
   const { close } = useRightMenuProvide();
-  const { reset } = useMenuNav();
 
   watch(
     () => toValue(render),
@@ -52,7 +52,7 @@ function useRightMenuRoot(render: MaybeRef<boolean>) {
   onMounted(() => {
     const el: HTMLElement = ins.proxy.$el!;
     if (!(el instanceof HTMLElement)) {
-      throw new Error("useRightMenuRoot does not support fragment components");
+      rightMenuLogger.error("`useRightMenuRoot` does not support fragment components");
     }
     closerCache.set(key, { [key]: el });
     window.addEventListener("click", clickFn);
@@ -75,7 +75,7 @@ function useRightMenuChild(..._: any[]) {
   onMounted(() => {
     const el: HTMLElement = ins.proxy.$el!;
     if (!(el instanceof HTMLElement)) {
-      throw new Error("useRightMenuChild does not support fragment components");
+      rightMenuLogger.error("`useRightMenuChild` does not support fragment components");
     }
     const parentCache = closerCache.get(root) ?? {};
     parentCache[key] = el;

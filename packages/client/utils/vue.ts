@@ -1,7 +1,12 @@
-import type { UnwrapNestedRefs } from "vue";
-import { computed, reactive, readonly, ref, watch } from "vue";
+import type { ComputedRef, MaybeRefOrGetter, UnwrapNestedRefs } from "vue";
+import { toValue, computed, reactive, readonly, ref, watch } from "vue";
 import { isObject, isUndefined } from "lodash-unified";
-import { clearObject, hasOwnProperty } from "@vitepress-theme-index/shared";
+import {
+  clearObject,
+  hasOwnProperty,
+  IndexError,
+  injectLogger,
+} from "@vitepress-theme-index/shared";
 import type { CachedComputedRef } from "../types";
 
 interface UseReactiveProxyOptions<T extends object> {
@@ -107,5 +112,31 @@ function useCachedComputed<Key extends object, Value extends object>(): CachedCo
   return Object.assign(native, customFn);
 }
 
+function useSplitRefs<T extends object>(val: MaybeRefOrGetter<T>) {
+  const initialKeys = Object.keys(toValue(val));
+  const result = {} as { [K in keyof T]: ComputedRef<T[K]> };
+
+  for (const key of initialKeys) {
+    result[key as keyof T] = computed(() => {
+      const target = toValue(val);
+      return target[key as keyof T];
+    });
+  }
+
+  function checkKeys(target: object) {
+    for (const key of initialKeys) {
+      if (!(key in target)) {
+        injectLogger.error(`missing key: ${key}, do not modify structure!`);
+      }
+    }
+    if (Object.keys(target).length !== initialKeys.length) {
+      injectLogger.error(`key count changed, do not modify structure!`);
+    }
+  }
+
+  watch(() => toValue(val), checkKeys, { deep: false });
+  return result;
+}
+
 export type { ReactiveProxy, CachedComputedRef };
-export { useReactiveProxy, useCachedComputed };
+export { useReactiveProxy, useCachedComputed, useSplitRefs };

@@ -15,7 +15,12 @@ const DEFAULT_IMPORT_CONFIG: Required<IndexImportPluginConfig> = {
 
 const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
   // could use unplugin-yaml to import.meta.glob yaml file
-  i18n: { mode: "broad", file: `${DEFAULT_NAME}.json` },
+  i18n: {
+    mode: "broad",
+    rootLocale: "zh-cn",
+    datetimeFormats: undefined,
+    file: `${DEFAULT_NAME}.json`,
+  },
   addition: { name: DEFAULT_NAME },
   meta: {
     cache: {
@@ -32,7 +37,7 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
       name: "timeline",
       extract(post: PostMetaInfo) {
         const date = new Date(post.firstCommit);
-        return isNaN(date.getTime()) ? "unknown" : date.getFullYear().toString();
+        return [isNaN(date.getTime()) ? "unknown" : date.getFullYear().toString(), "overall"];
       },
     },
   ],

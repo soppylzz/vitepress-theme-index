@@ -1,15 +1,15 @@
 import type { Ref } from "vue";
 import { computed, reactive, ref, toRef } from "vue";
-import { isArray, isNumber, isUndefined, merge, omit } from "lodash-unified";
-import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
+import { isArray, isNumber, merge, omit } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
   IndexClientThemeConfig,
   IndexResponse,
-  IndexThemeMode,
+  ResolvedIndexClientThemeConfig,
   UserIndexClientThemeConfig,
 } from "../../types";
 import { indexClientThemeKey, indexThemeMode, indexPreset } from "../../types";
+import { pluginLogger } from "@vitepress-theme-index/shared";
 
 const defaultThemeConfig = {
   breakPoint: [768, 1280],
@@ -21,7 +21,7 @@ const defaultThemeConfig = {
     preset: "default",
     mode: "auto",
   },
-} as const satisfies DeepRequired<IndexClientThemeConfig>;
+} as const satisfies ResolvedIndexClientThemeConfig;
 
 function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>) {
   const width = ref<number>(import.meta.env.SSR ? breakPoint.value[0] : window.innerWidth);
@@ -31,12 +31,12 @@ function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>)
   };
   const response = computed<IndexResponse>(() => {
     const w = width.value;
-    return w < breakPoint.value[0] ? "mobile" : w > breakPoint.value[1] ? "computer" : "pad";
+    return w < breakPoint.value[0] ? "mobile" : w > breakPoint.value[1] ? "desktop" : "pad";
   });
   return { response, update };
 }
 
-function createThemeAction(theme: DeepRequired<IndexClientThemeConfig>["theme"]) {
+function createThemeAction(theme: IndexClientThemeConfig["theme"]) {
   const available: Record<keyof typeof theme, string[]> = {
     mode: [...indexThemeMode],
     preset: [...indexPreset],
@@ -64,17 +64,17 @@ function isValidBreakPoint(breakPoint: IndexClientThemeConfig["breakPoint"]) {
 
 function resolveIndexClientThemeConfig(
   config?: UserIndexClientThemeConfig
-): DeepRequired<IndexClientThemeConfig> {
+): ResolvedIndexClientThemeConfig {
   const merged = merge({}, defaultThemeConfig, omit(config, "breakPoint"));
   const breakPoint = isArray(config?.breakPoint)
     ? config.breakPoint
     : defaultThemeConfig.breakPoint;
 
   if (isValidBreakPoint(breakPoint)) {
-    throw new Error("breakPoint must be a [number, number] increasingly");
+    pluginLogger.error("breakPoint must be a [number, number] increasingly");
   }
   Object.assign(merged, { breakPoint });
-  return merged as DeepRequired<IndexClientThemeConfig>;
+  return merged as ResolvedIndexClientThemeConfig;
 }
 
 function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeConfig) {

@@ -24,6 +24,7 @@ import {
   provideRightMenuContext,
   useRightMenuProvide,
 } from "../../utils";
+import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 type MenuNavOption = Parameters<typeof useTrigger>[1] &
   Pick<RMenuEventHooks, "onSelect"> &
@@ -76,7 +77,7 @@ function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
     if (el_ && el_ instanceof HTMLElement) {
       el.value = el_;
     } else {
-      throw new Error("useMenuNav not support non-single DOM element");
+      rightMenuLogger.error("`useMenuNav` does not support fragment components");
     }
   });
 
@@ -119,7 +120,7 @@ function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
 function useProvidePath(...[provides, hooks, _]: Parameters<typeof provideRightMenuContext>) {
   const ins = getCurrentInstance();
   if (!ins) {
-    throw new Error("useMenuNav must be used in setup script");
+    rightMenuLogger.error("`useMenuNav` must be used in setup script");
   }
 
   const { ctx } = useRightMenuProvide();

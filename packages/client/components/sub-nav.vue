@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useBem, useI18n, useIndex } from "../composables";
+import { useBem, useI18n, useTheme } from "../composables";
 import { provideSubNavContext } from "./context";
 import { computed } from "vue";
 
@@ -12,7 +12,7 @@ function toggleMenu() {
   model.value = true;
 }
 
-const { response } = useIndex().theme;
+const { response } = useTheme();
 
 const ns = useBem("sub-nav");
 const kls = computed(() => ({
@@ -24,7 +24,7 @@ const kls = computed(() => ({
 </script>
 
 <template>
-  <div v-if="response !== 'computer'" :class="kls.wrap">
+  <div v-if="response !== 'desktop'" :class="kls.wrap">
     <div v-if="response === 'mobile'" :class="kls.menu" @click="toggleMenu">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
         <!--! Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc. -->

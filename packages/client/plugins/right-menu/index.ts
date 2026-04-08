@@ -30,6 +30,7 @@ import type { App, Reactive } from "vue";
 import { toRefs, watchEffect } from "vue";
 import { omit, pick } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
+import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 /* =============== setup mode =============== */
 function useBaseSetup(app: App) {
@@ -106,7 +107,7 @@ function useDynamicModeSetup(
 
     provideRightMenuContext({ ...baseProps, ...toRefs(static_.ctx) }, { onClose: closeMenu }, app);
   } else {
-    throw new Error("useDynamicModeSetup only accept 'mixed' | 'auto' mode");
+    rightMenuLogger.error("`useDynamicModeSetup` can not use in mode 'manual'");
   }
   app.provide(indexRightMenuGlobalKey, { mode, ...static_, dynamic, ...menuNav });
 }

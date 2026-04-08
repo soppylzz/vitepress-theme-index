@@ -1,7 +1,6 @@
-import type { IndexLink, IndexSize, IndexText } from "./global";
+import type { IndexSize, IndexTextLink } from "./global";
 
-interface BrandProps extends IndexLink {
-  text: IndexText;
+interface BrandProps extends IndexTextLink {
   brand?: string;
   size?: IndexSize;
   direction?: "row" | "column" | "row-reverse" | "column-reverse";

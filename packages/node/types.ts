@@ -26,6 +26,7 @@ type IndexImportPluginConfig = {
 };
 
 type DefaultLast = "now" | "mtime";
+
 interface MetaConfig {
   include: MaybeArray<string>;
   exclude: MaybeArray<string>;
@@ -56,14 +57,16 @@ type IndexPluginInitConfig = IndexPluginConfig & {
 };
 
 type UserIndexPluginConfig = DeepPartial<IndexPluginConfig>;
-type ResolvedIndexPluginConfig = DeepRequired<IndexPluginConfig>;
+type ResolvedIndexPluginConfig = DeepRequired<Omit<IndexPluginConfig, "i18n">> & {
+  i18n: Required<IndexPluginConfig["i18n"]>;
+};
 
 /* ==================== context ==================== */
 type IndexPluginContext = Partial<{
   viteServer: ViteDevServer;
   viteConfig: ResolvedConfig;
   // vitepress-theme-index
-  ctx: DeepRequired<IndexPluginConfig>;
+  ctx: ResolvedIndexPluginConfig;
   cwd: string;
 }>;
 

@@ -1,5 +1,5 @@
 import { computed, defineComponent, vShow, withDirectives } from "vue";
-import { flatArrayWithRoute, useBem, useIndex, useMaybeI18nDataWithRoute } from "../composables";
+import { flatArrayWithRoute, useBem, useSidebar, useTheme } from "../composables";
 import { renderMenuItems, VtiDrawer, VtiMenu } from "./public";
 
 const VtiSidebar = defineComponent({
@@ -11,8 +11,9 @@ const VtiSidebar = defineComponent({
     },
   },
   setup(props, { emit }) {
-    const { sidebar } = useIndex();
-    const { response } = useIndex().theme;
+    const { response } = useTheme();
+    const raw = useSidebar();
+    const sidebar = computed(() => flatArrayWithRoute(raw.value));
 
     const trigger = computed({
       get: () => props.modelValue,
@@ -21,13 +22,10 @@ const VtiSidebar = defineComponent({
       },
     });
 
-    const raw = useMaybeI18nDataWithRoute(sidebar, {});
-    const items = computed(() => flatArrayWithRoute(raw.value));
-
     const ns = useBem("sidebar");
     return () => {
       const isDrawer = response.value === "mobile";
-      const contents = renderMenuItems(items.value, "sidebar");
+      const contents = renderMenuItems(sidebar.value, "sidebar");
 
       if (isDrawer) {
         return withDirectives(

@@ -8,6 +8,7 @@ import type {
 
 import { indexRightMenuGlobalKey } from "../../types";
 import { createMenuContext } from "../../utils";
+import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 type IndexMenuCustomRecords = never;
 
@@ -15,8 +16,7 @@ function useIndexRightMenu<
   Mode extends MenuMode,
   Record extends RMenuItemRecord = IndexMenuCustomRecords,
 >() {
-  const ctx = inject(indexRightMenuGlobalKey);
-  if (!ctx) throw new Error("IndexMenuGlobalContext not be provided");
+  const ctx = inject(indexRightMenuGlobalKey)!;
   return ctx as IndexMenuGlobalContext<Record, Mode>;
 }
 
@@ -25,14 +25,15 @@ function defineDynamicMenu<Records extends RMenuItemRecord>(
 ) {
   const ctx = useIndexRightMenu();
   if (ctx.mode === "manual") {
-    throw new Error("defineDynamicMenu can not use in mode manual");
+    rightMenuLogger.error("`defineDynamicMenu` can not use in mode 'manual'");
+    return; // why never dont work?
   }
 
   const dyn = createMenuContext(record);
   const ins = getCurrentInstance();
 
   if (!ins) {
-    throw new Error("defineDynamicMenu must be used in setup script");
+    rightMenuLogger.error("`defineDynamicMenu` must be used in setup script");
   }
 
   let el: HTMLElement | null = null;
@@ -47,7 +48,7 @@ function defineDynamicMenu<Records extends RMenuItemRecord>(
       el = raw;
       el.addEventListener("contextmenu", handler, { capture: true });
     } else {
-      throw new Error("defineDynamicMenu require element to bound");
+      rightMenuLogger.error("`defineDynamicMenu` require element to bound");
     }
   });
   onUnmounted(() => {

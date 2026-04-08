@@ -1,18 +1,22 @@
 import type { ComputedRef } from "vue";
-import { computed, inject, readonly } from "vue";
+import { computed, readonly } from "vue";
 import { useI18n as useVueI18n } from "vue-i18n";
 import { useData } from "vitepress";
 import { isFunction, isString } from "lodash-unified";
 import type { IndexText, ResolvedLocaleRoutes } from "../../types";
 import { indexI18nKey } from "../../types";
 import { indexToPrefix } from "../../utils";
+import type { I18nDatetimeFormatKey } from "@vitepress-theme-index/shared";
+import { useInject } from "../use-inject";
 
 function useI18n() {
-  const { routes } = inject(indexI18nKey)!;
-  const { t } = useVueI18n();
+  const { routes } = useInject(indexI18nKey);
+  const { t, d } = useVueI18n();
 
   const { site, localeIndex, hash, page } = useData();
   const translate = (key: string, plural?: number) => t(key, plural);
+  const datetime = (value: number | Date, format: I18nDatetimeFormatKey = "short") =>
+    d(value, format);
 
   const currentRoutes: ComputedRef<ResolvedLocaleRoutes["routes"]> = computed(() => {
     // realize refer to vitepress defaultTheme
@@ -40,6 +44,7 @@ function useI18n() {
     localePrefix: computed(() => indexToPrefix(localeIndex.value)),
     currentRoutes,
     t: translate,
+    d: datetime,
   };
 }
 

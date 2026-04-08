@@ -19,7 +19,7 @@ $icon-ratio: 1.35em;
   @include applyToken($font-size, "md");
   @include applyToken($font-weight, "normal");
 
-  @include m("nav", "computer") {
+  @include m("nav", "desktop") {
     position: sticky;
     top: 0;
     width: 100%;

@@ -2,7 +2,6 @@ import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import type { IndexPluginInitConfig, IndexPluginContext } from "../types";
 import { createConfigPlugin } from "./config";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
-import { setupIndexErrorInterceptor } from "@vitepress-theme-index/shared";
 import { PLUGIN_PREFIX } from "../const";
 import { createI18nPlugin } from "./i18n";
 import { createAdditionPlugin } from "./addition";

@@ -2,6 +2,7 @@ import type {
   DefineAble,
   IndexPostArchives,
   IndexPostPlugin,
+  IndexSearchIndex,
   PostMetaInfo,
 } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger, resolveDefineAble } from "@vitepress-theme-index/shared";
@@ -9,7 +10,7 @@ import { isNull, isUndefined } from "lodash-unified";
 
 class IndexPostBuilder {
   private plugins: IndexPostPlugin[] = [];
-  private searchIndex: Array<{ id: string; content: string }> = [];
+  private searchIndex: IndexSearchIndex = [];
   private registeredNames = new Set<string>();
 
   public async use(plugin: DefineAble<IndexPostPlugin>[]) {

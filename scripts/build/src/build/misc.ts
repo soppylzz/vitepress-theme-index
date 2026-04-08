@@ -36,7 +36,7 @@ function excludeFiles(files: string[], patterns: string[] = []) {
 }
 
 async function buildPackage(config: BuildOptions) {
-  buildLogger.info(`📦 Building: [${config?.name}]`);
+  buildLogger.info(`📦 Building: ${config?.name}`);
   const bundle = await rollup({
     ...config?.input,
     plugins: config.plugins ?? [],

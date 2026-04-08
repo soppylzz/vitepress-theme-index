@@ -2,7 +2,7 @@ import type { ComputedRef, Reactive } from "vue";
 import type { DeepPartial, DeepRequired } from "@vitepress-theme-index/shared";
 import type { RMenuItemRecord, UserIndexRightMenuConfig } from "./right-menu";
 import type { IndexNavConfig, NavItemConfig } from "./nav";
-import type { IndexResponse } from "./global";
+import type { IndexLink, IndexResponse, IndexTextLink } from "./global";
 import type { BuildI18nViewConfig } from "./i18n";
 import type { MenuItemConfig } from "./comps";
 
@@ -25,10 +25,16 @@ interface IndexClientThemeConfig {
 }
 
 type SidebarConfig = Record<string, MenuItemConfig[]>;
+
 interface SiteConfig {
   brand: string;
   siteName: string;
+  build: number | string | Date;
+  beian: IndexTextLink;
+  owner: IndexTextLink;
+  license: IndexTextLink;
 }
+
 type IndexSiteConfig = BuildI18nViewConfig<SiteConfig>;
 type IndexSidebarConfig = BuildI18nViewConfig<SidebarConfig>;
 
@@ -36,8 +42,10 @@ type UserIndexClientThemeConfig = DeepPartial<
   Omit<IndexClientThemeConfig, "breakPoint"> & { breakPoint: number | [number, number] }
 >;
 
-interface IndexClientThemeContext extends DeepRequired<IndexClientThemeConfig> {
-  ctx: Reactive<DeepRequired<IndexClientThemeConfig>>;
+type ResolvedIndexClientThemeConfig = DeepRequired<IndexClientThemeConfig>;
+
+interface IndexClientThemeContext extends ResolvedIndexClientThemeConfig {
+  ctx: Reactive<ResolvedIndexClientThemeConfig>;
   response: ComputedRef<IndexResponse>;
   set<K extends keyof IndexClientThemeConfig["theme"]>(
     key: K,
@@ -73,5 +81,6 @@ export type {
   IndexClientThemeConfig,
   IndexClientThemeContext,
   UserIndexClientThemeConfig,
+  ResolvedIndexClientThemeConfig,
   IndexClientAdditionConfig,
 };

@@ -5,7 +5,7 @@ import type { Component } from "vue";
 const EXTERNAL_URL_RE = /^(?:[a-z]+:|\/\/)/i;
 const INTERNAL_ABS_URL_RE = /^(?:[a-z]|\/)/i;
 
-type IndexResponse = "mobile" | "pad" | "computer";
+type IndexResponse = "mobile" | "pad" | "desktop";
 type IndexLinkMode = "_blank" | "_self";
 type IndexActivateEvent = "click" | "mouseenter";
 type IndexPlacement = "top" | "bottom" | "left" | "right";
@@ -17,6 +17,7 @@ type IndexLink = {
   href?: string;
   _target?: IndexLinkMode;
 };
+type IndexTextLink = IndexLink & { text: IndexText };
 
 export { EXTERNAL_URL_RE, INTERNAL_ABS_URL_RE };
 export type {
@@ -26,5 +27,6 @@ export type {
   IndexActivateEvent,
   IndexResponse,
   IndexPlacement,
+  IndexTextLink,
   IndexSize,
 };
