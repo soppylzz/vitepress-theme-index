@@ -1,12 +1,12 @@
 @use "sass:map";
-@use "./abstract" as *;
-@use "./tokens" as *;
+@use "abstract" as *;
+@use "tokens" as *;
 @use "public" as *;
 
 $menu-config: (
-  small: (font-size: "sm", line-height: "tight", min-weight: 180px),
-  medium: (font-size: "sm", line-height: "normal", min-weight: 230px),
-  large: (font-size: "md", line-height: "relaxed", min-weight: 280px),
+  small: (font-size: "sm", line-height: "tight"),
+  medium: (font-size: "sm", line-height: "normal"),
+  large: (font-size: "md", line-height: "relaxed"),
 );
 
 $menu-button-config: (
@@ -24,7 +24,7 @@ $menu-group-config: (
 @include b("menu") {
   display: flex;
   flex-direction: column;
-
+  min-width: 150px;
   color: getCssVar("text", "primary");
   @include applyToken($border-radius, "md");
 
@@ -32,7 +32,6 @@ $menu-group-config: (
     @include m($size) {
       @include applyToken($font-size, map.get($config, "font-size"));
       @include applyToken($line-height, map.get($config, "line-height"));
-      min-width: map.get($config, "min-weight");
       padding-inline: 0;
     }
   }

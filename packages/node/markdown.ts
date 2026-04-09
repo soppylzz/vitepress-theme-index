@@ -5,6 +5,9 @@ function withIndexMarkdown(config: MarkdownOptions = {}): MarkdownOptions {
 
   return {
     ...config,
+    headers: {
+      level: [1, 2, 3],
+    },
     preConfig: (md) => {
       preFence = md.renderer.rules.fence!;
       config?.preConfig?.(md);

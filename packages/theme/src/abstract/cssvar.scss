@@ -7,7 +7,9 @@
 @function getCssVarName($keys...) {
   $name: "--#{$namespace}";
   @each $key in $keys {
-    @if $key != "" { $name: '#{$name}#{$common-separator}#{$key}'; }
+    @if $key != "" {
+      $name: '#{$name}#{$common-separator}#{$key}';
+    }
   }
   @return $name;
 }
@@ -59,16 +61,34 @@
 }
 
 @mixin registerTheme($theme-name, $data, $is-default: false) {
-  :root[data-theme="#{$theme-name}"] { @include generateTokenVars($data); }
+  :root[data-theme="#{$theme-name}"] {
+    @include generateTokenVars($data);
+    @content;
+  }
   @if $is-default {
-    :root { @include generateTokenVars($data); }
+    @at-root {
+      :root {
+        @include generateTokenVars($data);
+        @content;
+      }
+    }
   }
 }
 
 @mixin scopedThemes($theme-names...) {
   @each $name in $theme-names {
-    :root[data-theme="#{$name}"] & {
-      @content;
+    @if $name == null {
+      :root {
+        & {
+          @content;
+        }
+      }
+    } @else {
+      :root[data-theme="#{$name}"] {
+        & {
+          @content;
+        }
+      }
     }
   }
 }

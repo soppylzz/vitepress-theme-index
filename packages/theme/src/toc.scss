@@ -1,0 +1,76 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "tokens" as *;
+@use "public" as *;
+
+$toc-config: (
+  small: (font-size: "sm", line-height: "tight", gap: "md"),
+  medium: (font-size: "sm", line-height: "normal", gap: "md"),
+);
+
+$toc-item-margin: (
+  small: "2xl",
+  medium: "2xl",
+);
+
+@include b("toc") {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: getCssVar("text", "secondary");
+
+  @each $size, $config in $toc-config {
+    @include m($size) {
+      @include applyToken($font-size, map.get($config, "font-size"));
+      @include applyToken($line-height, map.get($config, "line-height"));
+      @include applyToken($gap, map.get($config, "gap"));
+    }
+  }
+
+  @include e("slider") {
+    position: absolute;
+    left: 0;
+    width: 2px;
+    border-radius: 2px;
+    background-color: getCssVar("primary", "base");
+  }
+
+  @include e("item") {
+    @include useLink();
+    @include useNLine(2);
+
+    color: getCssVar("text", "secondary");
+
+    &:hover {
+      color: getCssVar("secondary", "base");
+    }
+
+    @include when("active") {
+      color: getCssVar("primary", "active");
+    }
+
+    $item-margin-var: ["toc", "item", "margin"];
+    @each $size, $key in $toc-item-margin {
+      @include m($size) {
+        #{getCssVarName($item-margin-var...)}: getToken($margin, $key);
+      }
+    }
+    @each $num in (1,2,3,4,5,6) {
+      @include m("level-#{$num}") {
+        margin-left: calc($num * getCssVar($item-margin-var...));
+      }
+    }
+    @include m("level-1") {
+      font-size: 1.1em;
+      @include applyToken($font-weight, "medium")
+    }
+    @include m("level-2") {
+      font-size: 1em;
+      @include applyToken($font-weight, "normal")
+    }
+    @include m("level-3", "level-4", "level-5", "level-6") {
+      font-size: 0.9em;
+      @include applyToken($font-weight, "normal")
+    }
+  }
+}

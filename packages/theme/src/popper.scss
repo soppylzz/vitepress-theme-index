@@ -1,6 +1,6 @@
 @use "sass:map";
-@use "./abstract" as *;
-@use "./tokens" as *;
+@use "abstract" as *;
+@use "tokens" as *;
 
 $pop-size-config: (
   small: (

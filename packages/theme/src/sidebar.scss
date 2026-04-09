@@ -1,0 +1,22 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "tokens" as *;
+@use "public" as *;
+
+@include b("sidebar") {
+  position: sticky;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @include applyToken($padding, "md");
+  @include applyToken($z-index, "sticky");
+
+  // default:desktop, existed: pad, desktop
+  top: $header-height;
+  height: calc(100vh - $header-height);
+
+  @include m("pad") {
+    top: 0;
+    height: 100vh;
+  }
+}

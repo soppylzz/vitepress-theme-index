@@ -47,7 +47,7 @@ const VtiSidebar = defineComponent({
         );
       }
       return (
-        <div class={[ns.b(), ns.m("fixed")]}>
+        <div class={[ns.b(), ns.m(response.value)]}>
           {/* fixed header slots */}
           <VtiMenu size={"large"} collapsed showActivate>
             {contents}

@@ -2,12 +2,16 @@ import type { I18nDatetimeFormatSchema, LocaleMessages } from "@vitepress-theme-
 
 const defaultMessage = {
   docs: {
-    prev: "prev page",
-    next: "next page",
+    prev: "上一页",
+    next: "下一页",
     footer: {
       owner: "Maintained by",
       theme: "Powered by",
     },
+  },
+  "sub-nav": {
+    menu: "菜单",
+    toc: "页面导航",
   },
 } satisfies LocaleMessages;
 

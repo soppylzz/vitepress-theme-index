@@ -1,11 +1,5 @@
+// md plugins
 @forward "default";
 @forward "with-index";
-
-// shiki support
-html .shiki span {
-  color: var(--shiki-light, inherit)
-}
-
-html[code-theme="dark"] .shiki span {
-  color: var(--shiki-dark, inherit)
-}
+// markdown
+@forward "cyanosis";

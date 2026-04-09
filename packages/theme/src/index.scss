@@ -7,17 +7,39 @@
 @use "brand";
 @use "right-menu";
 
+@use "layout";
+@use "sidebar";
+@use "sub-nav";
+@use "toc";
+
 @use "markdown";
 
-@include createFontFace("Monaco", "./fonts/Monaco.ttf");
-@include createFontFace("LXGW", "./fonts/LXGWWenKaiScreen.ttf");
-@include createFontFace("ArkPixel", "./fonts/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
-
-@include registerTheme("github-light", $github-light-colors, true);
-@include registerTheme("github-dark", $github-dark-colors);
-
+// font
+@include createFontFace("Monaco", "./assets/Monaco.ttf");
+@include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
+@include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 @include registerFonts("TEST", "LXGW", "Monaco", true);
 
+// style
+@include registerTheme("github-light", $github-light-colors, true) {
+  @include markdown.cyanosisLight();
+}
+@include registerTheme("github-dark", $github-dark-colors) {
+  @include markdown.cyanosisDark();
+}
+@include scopedThemes(null, "github-light", "github-dark") {
+  @include markdown.cyanosis();
+}
+
+html .shiki span {
+  color: var(--shiki-light, inherit)
+}
+
+html[md-theme="dark"] .shiki span {
+  color: var(--shiki-dark, inherit)
+}
+
+// reset
 *,
 *::before,
 *::after {
@@ -26,6 +48,7 @@
 }
 
 html {
+  box-sizing: border-box;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -38,7 +61,6 @@ body {
   scroll-behavior: smooth;
 
   @include applyToken($z-index, "base");
-
   // font initial settings
   @include applyToken($font-size, "md");
   @include applyToken($font-weight, "normal");

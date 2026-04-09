@@ -9,35 +9,39 @@ import {
 } from "../components";
 import { Content } from "vitepress";
 import { computed, ref } from "vue";
-import { useBem } from "../composables";
+import { useBem, useTheme } from "../composables";
 
 const menu = ref(false);
+const { response } = useTheme();
 
 const ns = useBem("docs");
 const kls = computed(() => ({
   wrap: ns.b(),
-  main: ns.e("main"),
-  content: ns.e("content"),
-  aside: ns.e("aside"),
+  sidebar: [ns.e("sidebar"), ns.em("sidebar", response.value)],
+  content: [ns.e("content"), ns.em("content", response.value)],
 }));
 </script>
 
 <template>
   <div :class="kls.wrap">
-    <VtiSidebar v-model="menu" />
-    <div :class="kls.main">
+    <div :class="kls.sidebar">
+      <VtiSidebar v-model="menu" />
+    </div>
+    <div id="vti-docs-main">
       <VtiSubNav v-model="menu">
-        <VtiToc size="large" />
+        <VtiToc size="medium" />
       </VtiSubNav>
       <div :class="kls.content">
-        <Content />
+        <div id="vti-docs-content">
+          <Content class="markdown-body" />
+          <VtiDocsCard />
+          <VtiDocsPage />
+        </div>
+        <div id="vti-docs-aside">
+          <VtiToc size="small" />
+        </div>
       </div>
-      <VtiDocsCard />
-      <VtiDocsPage />
       <VtiDocsFooter />
-    </div>
-    <div :class="kls.aside">
-      <VtiToc size="small" />
     </div>
   </div>
 </template>

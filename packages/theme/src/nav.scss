@@ -5,7 +5,6 @@
 @use "tokens" as *;
 @use "public" as *;
 
-$header-height: 3.5em;
 $icon-ratio: 1.35em;
 
 @include b("nav") {
@@ -19,12 +18,12 @@ $icon-ratio: 1.35em;
   @include applyToken($font-size, "md");
   @include applyToken($font-weight, "normal");
 
-  @include m("nav", "desktop") {
+  @include m("desktop") {
     position: sticky;
     top: 0;
     width: 100%;
   }
-  @include m("mobile") {
+  @include m("mobile", "pad") {
     position: relative;
   }
 
@@ -120,7 +119,7 @@ $icon-ratio: 1.35em;
     @include useLink();
     span {
       flex: 1;
-      @include useOneLine();
+      @include useNLine();
     }
 
     padding-inline: getToken($padding, "md");
@@ -170,7 +169,7 @@ $icon-ratio: 1.35em;
 
     span {
       flex: 1;
-      @include useOneLine();
+      @include useNLine();
     }
 
     padding-block: getToken($padding, "lg");
