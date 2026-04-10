@@ -1,0 +1,106 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "tokens" as *;
+@use "public" as *;
+
+@include b("docs-footer") {
+  display: flex;
+  flex-direction: column;
+
+  @include applyToken($padding, "2xl");
+  @include applyToken($gap, "xl");
+
+  border-top: 1px solid getCssVar("border", "primary");
+  background-color: getCssVar("bg", "secondary");
+
+  @include applyToken($font-size, "sm");
+  color: getCssVar("text", "secondary");
+  @include applyToken($line-height, "normal");
+
+  a {
+    @include useLink();
+    color: getCssVar("primary", "base");
+    @include applyToken($transition, "base");
+
+    &:hover {
+      color: getCssVar("primary", "hover");
+      text-decoration: underline;
+    }
+  }
+
+  @include e("info") {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    @include applyToken($gap, "md");
+
+    span {
+      @include useNLine(1);
+    }
+
+    @include em("info", "desktop") {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @include em("info", "pad") {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @include em("info", "mobile") {
+      flex-direction: column;
+    }
+  }
+
+  @include e("function") {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    @include applyToken($gap, "lg");
+    @include useIcon(1.2em);
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      @include applyToken($padding, "md");
+      @include applyToken($border-radius, "sm");
+
+      border: 1px solid getCssVar("border", "primary");
+      background-color: getCssVar("bg", "primary");
+      @include applyToken($transition, "base");
+
+      &:hover {
+        border-color: getCssVar("primary", "base");
+        background-color: getCssVar("info", "lighter");
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      svg {
+        @include applyToken($transition, "base");
+      }
+    }
+
+    @include em("function", "desktop") {
+      justify-content: flex-end;
+    }
+
+    @include em("function", "pad") {
+      justify-content: flex-end;
+    }
+
+    @include em("function", "mobile") {
+      justify-content: flex-start;
+    }
+  }
+}

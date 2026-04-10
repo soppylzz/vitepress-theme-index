@@ -12,6 +12,8 @@
 @use "sub-nav";
 @use "toc";
 @use "card";
+@use "footer";
+@use "page";
 
 @use "markdown";
 
@@ -19,7 +21,7 @@
 @include createFontFace("Monaco", "./assets/Monaco.ttf");
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
-@include registerFonts("TEST", "LXGW", "Monaco", true);
+@include registerFonts("TEST", "ArkPixel", "Monaco", true);
 
 // style
 @include registerTheme("github-light", $github-light-colors, true) {
