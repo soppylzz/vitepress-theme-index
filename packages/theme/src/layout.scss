@@ -6,7 +6,7 @@
 @include b("layout") {
   display: flex;
   flex-direction: column;
-  background-color: getCssVar("bg", "tertiary");
+  background-color: getCssVar("bg", "secondary");
   min-height: 100vh;
   // main layout
   & > *:nth-of-type(2) {
@@ -29,7 +29,7 @@
     box-sizing: border-box;
     position: relative;
     flex-shrink: 0;
-    background-color: getCssVar("bg", "secondary");
+    background-color: getCssVar("bg", "primary");
 
     // default:mobile
     width: 0;
@@ -45,6 +45,7 @@
     display: flex;
     position: relative;
     flex-direction: row;
+    align-items: start;
 
     @include applyToken($gap, "2xl");
     @include applyToken($padding, "2xl");

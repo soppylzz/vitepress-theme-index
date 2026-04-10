@@ -1,0 +1,41 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "tokens" as *;
+@use "public" as *;
+
+@include b("docs-card") {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid getCssVar("border", "primary");
+  background-color: getCssVar("info", "lighter");
+  @include applyToken($border-radius, "lg");
+
+  @include applyToken($font-size, "md");
+  @include applyToken($font-weight, "light");
+
+  @include useIcon(2em);
+
+  a {
+    @include useLink();
+  }
+
+  @include e("times") {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    font-size: 1em;
+    color: getCssVar("text", "primary");
+
+    @include applyToken($padding, "xl");
+  }
+
+  @include e("license") {
+
+  }
+
+  @include e("share") {
+
+  }
+}

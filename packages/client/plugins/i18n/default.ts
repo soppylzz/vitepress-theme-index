@@ -8,6 +8,11 @@ const defaultMessage = {
       owner: "Maintained by",
       theme: "Powered by",
     },
+    card: {
+      firstUpdate: "初次更新",
+      lastUpdate: "上次更新",
+      license: "许可协议",
+    },
   },
   "sub-nav": {
     menu: "菜单",

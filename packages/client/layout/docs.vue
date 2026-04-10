@@ -9,10 +9,11 @@ import {
 } from "../components";
 import { Content } from "vitepress";
 import { computed, ref } from "vue";
-import { useBem, useTheme } from "../composables";
+import { useBem, useLayout, useTheme } from "../composables";
 
 const menu = ref(false);
 const { response } = useTheme();
+const { hasToc } = useLayout();
 
 const ns = useBem("docs");
 const kls = computed(() => ({
@@ -38,7 +39,7 @@ const kls = computed(() => ({
           <VtiDocsPage />
         </div>
         <div id="vti-docs-aside">
-          <VtiToc size="small" />
+          <VtiToc v-if="hasToc" size="small" />
         </div>
       </div>
       <VtiDocsFooter />

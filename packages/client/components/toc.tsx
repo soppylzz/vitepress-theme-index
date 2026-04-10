@@ -1,143 +1,177 @@
 import type { PropType } from "vue";
-import { computed, watch, defineComponent, nextTick, onUnmounted, ref } from "vue";
+import { computed, watch, defineComponent, nextTick, onUnmounted, ref, onMounted } from "vue";
 import type { Header } from "vitepress";
 import { useData } from "vitepress";
 import { useBem } from "../composables";
 import type { IndexSize } from "../types";
 import { useSubNav } from "./context";
-import { debounce, omit } from "lodash-unified";
 
-function flatHeaders(headers: Header[]) {
-  const flatArr: Omit<Header, "children">[] = [];
+const TOP_OFFSET = 80;
 
-  function traverse(header: Header) {
-    flatArr.push(omit({ ...header }, "children"));
-    if ("children" in header && header.children.length) {
-      header.children.forEach(traverse);
+function flatHeaders(headers: Header[]): Omit<Header, "children">[] {
+  return headers.reduce(
+    (acc, header) => {
+      const { children, ...rest } = header;
+      acc.push(rest);
+      if (children?.length) acc.push(...flatHeaders(children));
+      return acc;
+    },
+    [] as Omit<Header, "children">[]
+  );
+}
+
+function useTocActive() {
+  const activeId = ref("");
+  const isClickScrolling = ref(false);
+
+  let scrollRaf: number | null = null;
+
+  const setActive = (id: string) => {
+    if (!id || activeId.value === id) return;
+    activeId.value = id;
+    history.replaceState(null, "", `#${id}`);
+  };
+
+  const scrollToId = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    isClickScrolling.value = true;
+
+    const targetTop = window.scrollY + el.getBoundingClientRect().top - TOP_OFFSET;
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+
+    const onScroll = () => {
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+
+      scrollRaf = requestAnimationFrame(() => {
+        isClickScrolling.value = false;
+        window.removeEventListener("scroll", onScroll);
+      });
+    };
+
+    window.addEventListener("scroll", onScroll);
+  };
+
+  const onObserve = (visibleIds: string[]) => {
+    if (isClickScrolling.value || !visibleIds.length) return;
+
+    const sorted = visibleIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null)
+      .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+
+    if (sorted.length) {
+      setActive(sorted[0].id);
     }
-  }
+  };
 
-  headers.forEach(traverse);
-  return flatArr;
+  return { activeId, scrollToId, onObserve };
 }
 
 const VtiToc = defineComponent({
   name: "VtiToc",
   props: {
-    size: {
-      type: String as PropType<IndexSize>,
-      default: "medium",
-    },
+    size: { type: String as PropType<IndexSize>, default: "medium" },
   },
   setup(props) {
     const { page } = useData();
     const ctx = useSubNav();
     const ns = useBem("toc");
 
-    const activeId = ref("");
+    const headers = computed(() => flatHeaders(page.value.headers || []));
+
+    const { activeId, scrollToId, onObserve } = useTocActive();
+
     const observer = ref<IntersectionObserver | null>(null);
-    const tocItems = ref<HTMLElement[]>([]);
-    const sliderStyle = ref<{ top?: string; height?: string; opacity?: string }>({ opacity: "0" });
+    const itemRefs = ref(new Map<string, HTMLElement>());
 
-    const isClicking = ref(false);
-    const onScrollEnd = debounce(() => {
-      isClicking.value = false;
-      window.removeEventListener("scroll", handleScroll);
-    }, 100);
-    const handleScroll = () => onScrollEnd();
-
-    const headers = computed(() => flatHeaders(page.value.headers));
-
-    function setActive(id: string) {
-      if (activeId.value === id) return;
-      activeId.value = id;
-      history.replaceState(null, "", `#${id}`);
-    }
-
-    watch(activeId, async () => {
-      sliderStyle.value = { opacity: "0" };
-
-      await nextTick();
-      if (!activeId.value) return;
-      const activeEl = tocItems.value.find(
-        (el) => el.getAttribute("href") === `#${activeId.value}`
-      );
-      if (!activeEl) return;
-      sliderStyle.value = {
-        top: `${activeEl.offsetTop}px`,
-        height: `${activeEl.offsetHeight}px`,
-        opacity: "1",
-      };
+    const sliderStyle = ref({
+      transform: "translateY(0)",
+      height: "0",
+      opacity: "0",
     });
 
-    const handleClick = async (e: MouseEvent, slug: string) => {
-      ctx?.closeToc?.();
-      isClicking.value = true;
-      activeId.value = slug;
+    let rafId: number | null = null;
 
-      window.removeEventListener("scroll", handleScroll);
-      window.addEventListener("scroll", handleScroll);
+    const updateSlider = () => {
+      if (rafId) cancelAnimationFrame(rafId);
 
-      onScrollEnd();
+      rafId = requestAnimationFrame(() => {
+        const el = itemRefs.value.get(activeId.value);
+        if (!el) return;
+
+        sliderStyle.value = {
+          transform: `translateY(${el.offsetTop}px)`,
+          height: `${el.offsetHeight}px`,
+          opacity: "1",
+        };
+      });
     };
 
-    const initObserver = async () => {
-      if (observer.value) {
-        observer.value.disconnect();
-      }
+    const initObserver = () => {
+      observer.value?.disconnect();
 
-      await nextTick();
       const elements = headers.value
         .map((h) => document.getElementById(h.slug))
-        .filter(Boolean) as HTMLElement[];
+        .filter((el): el is HTMLElement => el !== null);
 
       if (!elements.length) return;
-      const visibleEntries = new Set<string>();
 
       observer.value = new IntersectionObserver(
         (entries) => {
+          const visibleIds: string[] = [];
+
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              visibleEntries.add(entry.target.id);
-            } else {
-              visibleEntries.delete(entry.target.id);
+              visibleIds.push(entry.target.id);
             }
           });
 
-          if (isClicking.value) return;
-          const activeHeader = headers.value.find((h) => visibleEntries.has(h.slug));
-          if (activeHeader) {
-            setActive(activeHeader.slug);
+          if (visibleIds.length) {
+            onObserve(visibleIds);
           }
         },
         {
-          rootMargin: "0px 0px -60% 0px",
+          rootMargin: `-${TOP_OFFSET}px 0px -70% 0px`,
           threshold: 0,
         }
       );
 
       elements.forEach((el) => observer.value?.observe(el));
-
-      await nextTick();
-      tocItems.value = Array.from(document.querySelectorAll(`.${ns.e("item")}`)) as HTMLElement[];
-
-      if (!activeId.value && headers.value.length > 0) {
-        setActive(headers.value[0].slug);
-      }
     };
+
+    const handleResize = () => {
+      requestAnimationFrame(updateSlider);
+    };
+
+    watch(activeId, async () => {
+      await nextTick();
+      updateSlider();
+    });
 
     watch(
       () => headers.value,
-      () => {
-        setTimeout(initObserver, 100);
+      async () => {
+        await nextTick();
+        initObserver();
+        updateSlider();
       },
-      { immediate: true }
+      { immediate: true, flush: "post" }
     );
+
+    onMounted(() => {
+      window.addEventListener("resize", handleResize);
+    });
 
     onUnmounted(() => {
       observer.value?.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-      onScrollEnd.cancel();
+      window.removeEventListener("resize", handleResize);
+      if (rafId) cancelAnimationFrame(rafId);
     });
 
     return () => (
@@ -145,8 +179,14 @@ const VtiToc = defineComponent({
         {headers.value.map((h) => (
           <a
             key={h.slug}
-            href={h.link}
-            onClick={(e: MouseEvent) => handleClick(e, h.slug)}
+            ref={(el) =>
+              el ? itemRefs.value.set(h.slug, el as HTMLElement) : itemRefs.value.delete(h.slug)
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              ctx?.closeToc?.();
+              scrollToId(h.slug);
+            }}
             class={[
               ns.e("item"),
               ns.em("item", `${props.size}`),
@@ -157,7 +197,6 @@ const VtiToc = defineComponent({
             {h.title}
           </a>
         ))}
-        {/* dynamic slide */}
         <div class={ns.e("slider")} style={sliderStyle.value}></div>
       </div>
     );

@@ -10,6 +10,10 @@ export default withAdditionIndex({
       text: "soppylzz",
       href: "https://github.com/soppylzz",
     },
+    license: {
+      text: "MIT",
+      href: "https://github.com/soppylzz",
+    },
     beian: {
       text: "渝ICP备2025063057号-1",
     },

@@ -6,3 +6,4 @@ export * from "./use-attrs";
 export * from "./use-post";
 export * from "./use-inject";
 export * from "./use-share";
+export * from "./use-layout";
