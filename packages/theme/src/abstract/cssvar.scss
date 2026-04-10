@@ -1,9 +1,10 @@
 @use "sass:list";
 @use "sass:map";
+@use "sass:string";
 @use "sass:meta";
 @use "config" as *;
 
-
+/* CSSVar Support */
 @function getCssVarName($keys...) {
   $name: "--#{$namespace}";
   @each $key in $keys {
@@ -14,30 +15,15 @@
   @return $name;
 }
 
-@mixin setCssVar($keys, $value) {
-  #{getCssVarName($keys...)}: #{$value};
-}
-
 @function getCssVar($keys...) {
   @return var(#{getCssVarName($keys...)});
 }
 
-@function getToken($token, $key) {
-  $css-prop: map.get($token, css);
-  $value-map: map.get($token, value);
-
-  @if not map.has-key($value-map, $key) {
-    @error "Token `#{$css-prop}` has no key `#{$key}`.";
-  }
-
-  @return map.get($value-map, $key)
+@mixin setCssVar($keys, $value) {
+  #{getCssVarName($keys...)}: #{$value};
 }
 
-@mixin applyToken($token, $key) {
-  $css-prop: map.get($token, css);
-  #{$css-prop}: getToken($token, $key);
-}
-
+/* Theme Mixins */
 @function flattenTokenMap($map, $prefix: ()) {
   $result: ();
   @each $key, $value in $map {
@@ -60,35 +46,71 @@
   }
 }
 
-@mixin registerTheme($theme-name, $data, $is-default: false) {
-  :root[data-theme="#{$theme-name}"] {
-    @include generateTokenVars($data);
-    @content;
-  }
+@mixin registerTheme(
+  $name,
+  $foundation,
+  $light,
+  $dark,
+  $is-default: false,
+) {
+  $root-selector: "";
   @if $is-default {
-    @at-root {
-      :root {
-        @include generateTokenVars($data);
-        @content;
-      }
+    $root-selector: ":root"
+  } @else {
+    $root-selector: ":root[data-theme=\"#{$name}\"]"
+  }
+
+  @at-root {
+    #{$root-selector} {
+      @include generateTokenVars($foundation);
+      @include generateTokenVars($light);
+      @content;
+    }
+    #{$root-selector}[data-dark] {
+      @include generateTokenVars($dark);
     }
   }
 }
 
-@mixin scopedThemes($theme-names...) {
-  @each $name in $theme-names {
-    @if $name == null {
-      :root {
-        & {
-          @content;
-        }
-      }
+@mixin scopedThemes($names...) {
+  @each $name in $names {
+    $root-selector: "";
+    @if $name == null or $name == "" {
+      $root-selector: ":root"
     } @else {
-      :root[data-theme="#{$name}"] {
-        & {
-          @content;
-        }
-      }
+      $root-selector: ":root[data-theme=\"#{$name}\"]"
+    }
+    #{$root-selector} {
+      @content
     }
   }
+}
+
+/* Token Derive Support */
+$CURRENT_PALETTE: null !default;
+
+@mixin palette($palette) {
+  $CURRENT_PALETTE: $palette !global;
+}
+
+@function g($color-name) {
+  @return map.get($CURRENT_PALETTE, $color-name);
+}
+
+@function s($color, $nums) {
+  $disable:      list.nth($nums, 1);
+  $base:         list.nth($nums, 2);
+  $hover:        list.nth($nums, 3);
+  $active:       list.nth($nums, 4);
+  $bg-disabled:  list.nth($nums, 5);
+  $bg:           list.nth($nums, 6);
+
+  @return (
+    disable:     g(string.unquote("#{$color}-#{$disable}")),
+    base:        g(string.unquote("#{$color}-#{$base}")),
+    hover:       g(string.unquote("#{$color}-#{$hover}")),
+    active:      g(string.unquote("#{$color}-#{$active}")),
+    bg-disabled: g(string.unquote("#{$color}-#{$bg-disabled}")),
+    bg:          g(string.unquote("#{$color}-#{$bg}")),
+  );
 }

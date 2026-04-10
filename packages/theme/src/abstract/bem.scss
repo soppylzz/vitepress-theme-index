@@ -35,12 +35,6 @@ $B: null !default;
   @at-root #{$currentSelector} { @content; }
 }
 
-@mixin em($element, $modifiers...) {
-  $base: "#{$B}#{$element-separator}#{$element}";
-  $currentSelector: buildBEMSelector($base, $modifiers, $modifier-separator, false);
-  @at-root #{$currentSelector} { @content; }
-}
-
 @mixin when($states...) {
   $selectors: ();
 

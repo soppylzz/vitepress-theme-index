@@ -1,0 +1,106 @@
+@use "sass:map" as *;
+@use "../public" as *;
+@use "../abstract" as *;
+
+$github-light-palette: () !default;
+$github-dark-palette: () !default;
+
+$github-light-palette: deep-merge($base-light-palette, $github-light-palette);
+$github-dark-palette: deep-merge($base-dark-palette, $github-dark-palette);
+
+$github-nums: null !default;
+
+@include palette($github-light-palette);
+$github-nums: (3, 5, 6, 7, 1, 0);
+$github-light: (
+  text: (
+    primary: g(gray-9),
+    secondary: g(gray-6),
+    tertiary: g(gray-5),
+    disable: g(gray-4),
+    inverse: g(gray-0)
+  ),
+  bg: (
+    primary: g(gray-0),
+    secondary: g(gray-1),
+    tertiary: g(gray-2)
+  ),
+  border: (
+    primary: g(gray-3),
+    secondary: g(gray-2),
+    tertiary: g(gray-1)
+  ),
+
+  primary: s("blue", $github-nums),
+  success: s("green", $github-nums),
+  warning: s("orange", $github-nums),
+  danger:  s("red", $github-nums),
+  info:    s("blue", $github-nums),
+
+  accent: (
+    disable: #8c959f,
+    base: #0969da,
+    hover: #0550ae,
+    active: #033d8b,
+    bg-disable: #eaeef2,
+    bg: #ddf4ff
+  ),
+  link: (
+    base: g(blue-5),
+    hover: g(blue-6),
+    active: g(blue-7),
+    disable: g(gray-4)
+  )
+);
+
+@include palette($github-dark-palette);
+$github-nums: (7, 5, 4, 3, 2, 9);
+$github-dark: (
+  text: (
+    primary:   g(gray-9),
+    secondary: g(gray-6),
+    tertiary:  g(gray-5),
+    disable:   g(gray-4),
+    inverse:   g(gray-0)
+  ),
+  bg: (
+    primary:   g(gray-0),
+    secondary: g(gray-1),
+    tertiary:  g(gray-2)
+  ),
+  border: (
+    primary:   g(gray-3),
+    secondary: g(gray-2),
+    tertiary:  g(gray-1)
+  ),
+
+  primary: s("blue", $github-nums),
+  success: s("green", $github-nums),
+  warning: s("orange", $github-nums),
+  danger:  s("red", $github-nums),
+  info:    s("purple", $github-nums),
+
+  accent: (
+    disable: #6e7681,
+    base: #2f81f7,
+    hover: #388bfd,
+    active: #58a6ff,
+    bg-disable: #21262d,
+    bg: #051d4d
+  ),
+  link: (
+    base: g(blue-4),
+    hover: g(blue-3),
+    active: g(blue-2),
+    disable: g(gray-5)
+  )
+);
+
+$github-foundation: () !default;
+$github-foundation: deep-merge($base-foundation, $github-foundation);
+
+@mixin github($is-default: false) {
+  @include registerTheme("github", $github-foundation, $github-light, $github-dark, $is-default) {
+    @include useFont("LXGW", "Monaco");
+  }
+}

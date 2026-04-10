@@ -55,28 +55,10 @@ $formats: (
   }
 }
 
-@mixin registerFonts(
-  $group-name,
-  $text-group,
-  $code-group,
-  $is-default: false
-) {
+@mixin useFont($text-group, $code-group) {
   $text-norm: normalizeFont($text-group);
   $code-norm: normalizeFont($code-group);
 
-  @at-root :root[font-group="#{$group-name}"] {
-    @include setCssVar(("text", "font-group"), $text-norm);
-    @include setCssVar(("code", "font-group"), $code-norm);
-  }
-
-  @if $is-default {
-    body { font-family: getCssVar("text", "font-group"), sans-serif; }
-    pre, code { font-family: getCssVar("code", "font-group"), monospace; }
-
-    @at-root :root {
-      font-size: 16px;  // rem support;
-      @include setCssVar(("text", "font-group"), $text-norm);
-      @include setCssVar(("code", "font-group"), $code-norm);
-    }
-  }
+  @include setCssVar(("text", "font-group"), $text-norm);
+  @include setCssVar(("code", "font-group"), $code-norm);
 }

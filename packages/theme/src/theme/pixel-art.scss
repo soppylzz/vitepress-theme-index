@@ -1,0 +1,263 @@
+@use "sass:map" as *;
+@use "../public" as *;
+@use "../abstract" as *;
+
+$pixel-light-palette: (
+  gray-0: #ffffff,
+  gray-1: #fafaf8,
+  gray-2: #f0ebe0,
+  gray-3: #d4c5a9,
+  gray-4: #a89968,
+  gray-5: #8b7355,
+  gray-6: #6b5847,
+  gray-7: #504032,
+  gray-8: #3a2f25,
+  gray-9: #2a1f15,
+  gray-10: #1a0f00,
+
+  blue-0: #e6f2ff,
+  blue-1: #99d9ff,
+  blue-2: #4db8ff,
+  blue-3: #0099ff,
+  blue-4: #0077cc,
+  blue-5: #004d99,
+  blue-6: #003366,
+  blue-7: #001a4d,
+  blue-8: #000d26,
+  blue-9: #000013,
+
+  green-0: #d9ffc6,
+  green-1: #99ff66,
+  green-2: #66ff00,
+  green-3: #33cc00,
+  green-4: #1a9900,
+  green-5: #006600,
+  green-6: #004400,
+  green-7: #002200,
+  green-8: #001100,
+  green-9: #000800,
+
+  red-0: #ffcccc,
+  red-1: #ff6666,
+  red-2: #ff3333,
+  red-3: #ff0000,
+  red-4: #cc0000,
+  red-5: #990000,
+  red-6: #660000,
+  red-7: #330000,
+  red-8: #1a0000,
+  red-9: #0d0000,
+
+  purple-0: #f0ccff,
+  purple-1: #d966ff,
+  purple-2: #cc33ff,
+  purple-3: #9900ff,
+  purple-4: #6600cc,
+  purple-5: #330099,
+  purple-6: #1a0066,
+  purple-7: #0d0033,
+  purple-8: #050014,
+  purple-9: #020008,
+
+  orange-0: #ffe5cc,
+  orange-1: #ffb366,
+  orange-2: #ff8800,
+  orange-3: #ff6600,
+  orange-4: #ff4400,
+  orange-5: #cc3300,
+  orange-6: #992200,
+  orange-7: #661100,
+  orange-8: #330800,
+  orange-9: #1a0400,
+);
+$pixel-dark-palette: (
+  gray-0: #1a1410,
+  gray-1: #2a2420,
+  gray-2: #3a3430,
+  gray-3: #4a4440,
+  gray-4: #6b5847,
+  gray-5: #8b7355,
+  gray-6: #a89968,
+  gray-7: #d4c5a9,
+  gray-8: #f0ebe0,
+  gray-9: #fafaf8,
+  gray-10: #ffffff,
+
+  blue-0: #000d26,
+  blue-1: #001a4d,
+  blue-2: #003366,
+  blue-3: #004d99,
+  blue-4: #0077cc,
+  blue-5: #0099ff,
+  blue-6: #4db8ff,
+  blue-7: #99d9ff,
+  blue-8: #cce8ff,
+  blue-9: #e6f2ff,
+
+  green-0: #001100,
+  green-1: #002200,
+  green-2: #004400,
+  green-3: #006600,
+  green-4: #1a9900,
+  green-5: #33cc00,
+  green-6: #66ff00,
+  green-7: #99ff66,
+  green-8: #ccffa3,
+  green-9: #e6ffd1,
+
+  red-0: #0d0000,
+  red-1: #330000,
+  red-2: #660000,
+  red-3: #990000,
+  red-4: #cc0000,
+  red-5: #ff0000,
+  red-6: #ff3333,
+  red-7: #ff6666,
+  red-8: #ff9999,
+  red-9: #ffcccc,
+
+  purple-0: #050014,
+  purple-1: #0d0033,
+  purple-2: #1a0066,
+  purple-3: #330099,
+  purple-4: #6600cc,
+  purple-5: #9900ff,
+  purple-6: #cc33ff,
+  purple-7: #d966ff,
+  purple-8: #e699ff,
+  purple-9: #f0ccff,
+
+  orange-0: #1a0400,
+  orange-1: #330800,
+  orange-2: #661100,
+  orange-3: #992200,
+  orange-4: #cc3300,
+  orange-5: #ff4400,
+  orange-6: #ff6600,
+  orange-7: #ff8800,
+  orange-8: #ffb366,
+  orange-9: #ffe5cc,
+);
+
+$pixel-light-palette: deep-merge($base-light-palette, $pixel-light-palette);
+$pixel-dark-palette: deep-merge($base-dark-palette, $pixel-dark-palette);
+
+$pixel-nums: null !default;
+
+@include palette($pixel-light-palette);
+$pixel-nums: (3, 4, 3, 2, 0, 9);
+$pixel-light: (
+  text: (
+    primary: g(gray-9),
+    secondary: g(gray-6),
+    tertiary: g(gray-4),
+    disable: g(gray-3),
+    inverse: g(gray-0)
+  ),
+  bg: (
+    primary: g(gray-0),
+    secondary: g(gray-1),
+    tertiary: g(gray-2)
+  ),
+  border: (
+    primary: g(gray-3),
+    secondary: g(gray-2),
+    tertiary: g(gray-1)
+  ),
+
+  primary: s("blue", $pixel-nums),
+  success: s("green", $pixel-nums),
+  warning: s("orange", $pixel-nums),
+  danger:  s("red", $pixel-nums),
+  info:    s("purple", $pixel-nums),
+
+  accent: (
+    disable: g(gray-4),
+    base: g(blue-3),
+    hover: g(blue-4),
+    active: g(blue-5),
+    bg-disable: g(gray-2),
+    bg: g(blue-0)
+  ),
+  link: (
+    base: g(blue-4),
+    hover: g(blue-5),
+    active: g(blue-6),
+    disable: g(gray-3)
+  )
+);
+
+@include palette($pixel-dark-palette);
+$pixel-nums: (3, 5, 6, 7, 1, 8);
+$pixel-dark: (
+  text: (
+    primary:   g(gray-8),
+    secondary: g(gray-6),
+    tertiary:  g(gray-5),
+    disable:   g(gray-4),
+    inverse:   g(gray-0)
+  ),
+  bg: (
+    primary:   g(gray-0),
+    secondary: g(gray-1),
+    tertiary:  g(gray-2)
+  ),
+  border: (
+    primary:   g(gray-3),
+    secondary: g(gray-2),
+    tertiary:  g(gray-1)
+  ),
+
+  primary: s("blue", $pixel-nums),
+  success: s("green", $pixel-nums),
+  warning: s("orange", $pixel-nums),
+  danger:  s("red", $pixel-nums),
+  info:    s("purple", $pixel-nums),
+
+  accent: (
+    disable: g(gray-4),
+    base: g(blue-5),
+    hover: g(blue-6),
+    active: g(blue-7),
+    bg-disable: g(gray-2),
+    bg: g(blue-0)
+  ),
+  link: (
+    base: g(blue-5),
+    hover: g(blue-6),
+    active: g(blue-7),
+    disable: g(gray-4)
+  )
+);
+
+$pixel-foundation: (
+  font-weight: (
+    light: 400,
+    normal: 500,
+    medium: 600,
+    semibold: 700,
+    bold: 800,
+  ),
+  border-width: (
+    none: 0,
+    thin: 2px,
+    base: 3px,
+    thick: 4px,
+  ),
+  border-radius: (
+    none: 0,
+    xs: 2px,
+    sm: 4px,
+    md: 4px,
+    lg: 4px,
+    xl: 4px,
+    full: 0,
+  )
+) !default;
+$pixel-foundation: deep-merge($base-foundation, $pixel-foundation);
+
+@mixin pixelArt($is-default: false) {
+  @include registerTheme("pixel-art", $pixel-foundation, $pixel-light, $pixel-dark, $is-default) {
+    @include useFont("ArkPixel", "Monaco");
+  }
+}

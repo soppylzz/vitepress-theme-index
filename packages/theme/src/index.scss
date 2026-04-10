@@ -1,56 +1,22 @@
-@use "tokens" as *;
 @use "abstract" as *;
-
-@use "nav";
-@use "popper";
-@use "menu";
-@use "brand";
-@use "right-menu";
-
-@use "layout";
-@use "sidebar";
-@use "sub-nav";
-@use "toc";
-@use "card";
-@use "footer";
-@use "page";
-
+@use "theme" as *;
 @use "markdown";
 
-// font
 @include createFontFace("Monaco", "./assets/Monaco.ttf");
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
-@include registerFonts("TEST", "ArkPixel", "Monaco", true);
 
-// style
-@include registerTheme("github-light", $github-light-colors, true) {
-  @include markdown.cyanosisLight();
-}
-@include registerTheme("github-dark", $github-dark-colors) {
-  @include markdown.cyanosisDark();
-}
-@include scopedThemes(null, "github-light", "github-dark") {
-  @include markdown.cyanosis();
-}
+@include github();
+@include pixelArt(true);
 
-html .shiki span {
-  color: var(--shiki-light, inherit)
-}
-
-html[md-theme="dark"] .shiki span {
-  color: var(--shiki-dark, inherit)
-}
-
-// reset
 *,
 *::before,
 *::after {
-  // width = padding + border + width
   box-sizing: border-box;
 }
 
 html {
+  font-size: 16px;
   box-sizing: border-box;
   -webkit-text-size-adjust: 100%;
 }
@@ -62,15 +28,24 @@ body {
   min-width: 320px;
   min-height: 100vh;
   scroll-behavior: smooth;
-
-  @include applyToken($z-index, "base");
-  // font initial settings
-  @include applyToken($font-size, "md");
-  @include applyToken($font-weight, "normal");
-  @include applyToken($line-height, "normal");
-  @include applyToken($letter-spacing, "normal");
-
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  z-index: getCssVar("z-index", "normal");
+  font-size: getCssVar("font-size", "md");
+  font-weight: getCssVar("font-weight", "normal");
+  font-family: getCssVar("text", "font-group"), sans-serif;
+  line-height: getCssVar("line-height", "normal");
+  letter-spacing: getCssVar("letter-spacing", "normal");
+}
+
+pre, code { font-family: getCssVar("code", "font-group"), monospace; }
+
+html .shiki span {
+  color: var(--shiki-light, inherit)
+}
+
+html[md-theme="dark"] .shiki span {
+  color: var(--shiki-dark, inherit)
 }
