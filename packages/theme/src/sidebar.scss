@@ -1,0 +1,20 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("sidebar") {
+  position: sticky;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-block: getCssVar("padding", "lg");
+  z-index: getCssVar("z-index", "sidebar");
+
+  top: $header-height;
+  height: calc(100vh - $header-height);
+
+  @include m("pad") {
+    top: 0;
+    height: 100vh;
+  }
+}

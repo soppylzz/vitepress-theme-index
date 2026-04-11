@@ -49,7 +49,7 @@ const _slots = computed(() => {
 
 const ns = useBem("r-menu-group");
 const kls = computed(() => ({
-  block: ns.b(),
+  wrap: ns.b(),
   text: [ns.e("text"), ns.em("text", size.value), ns.when(state.value)],
   container: [ns.em("container", props.mode)],
   button: [
@@ -69,7 +69,7 @@ const styl = computed(() => {
 </script>
 
 <template>
-  <div v-show="render" :class="kls.block">
+  <div v-show="render" :class="kls.wrap">
     <div v-if="props.mode === 'component'" :class="kls.text">
       {{ useText(props.text) }}
     </div>

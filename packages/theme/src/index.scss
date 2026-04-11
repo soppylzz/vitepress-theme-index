@@ -2,12 +2,24 @@
 @use "theme" as *;
 @use "markdown";
 
+@use "layout";
+@use "brand";
+@use "nav";
+@use "sidebar";
+@use "sub-nav";
+@use "toc";
+@use "right-menu";
+
+@use "popper";
+@use "drawer";
+@use "menu";
+
 @include createFontFace("Monaco", "./assets/Monaco.ttf");
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 
-@include github();
-@include pixelArt(true);
+@include github(true);
+@include pixelArt();
 
 *,
 *::before,

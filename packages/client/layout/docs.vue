@@ -10,10 +10,12 @@ import {
 import { Content } from "vitepress";
 import { computed, ref } from "vue";
 import { useBem, useLayout, useTheme } from "../composables";
+import type { IndexSize } from "../types";
 
 const menu = ref(false);
 const { response } = useTheme();
 const { hasToc } = useLayout();
+const tocSize = computed<IndexSize>(() => (response.value === "mobile" ? "small" : "medium"));
 
 const ns = useBem("docs");
 const kls = computed(() => ({
@@ -30,7 +32,7 @@ const kls = computed(() => ({
     </div>
     <div id="vti-docs-main">
       <VtiSubNav v-model="menu">
-        <VtiToc size="medium" />
+        <VtiToc :size="tocSize" />
       </VtiSubNav>
       <div :class="kls.content">
         <div id="vti-docs-content">
@@ -39,7 +41,7 @@ const kls = computed(() => ({
           <VtiDocsPage />
         </div>
         <div id="vti-docs-aside">
-          <VtiToc v-if="hasToc" size="small" />
+          <VtiToc v-if="hasToc" size="large" />
         </div>
       </div>
       <VtiDocsFooter />

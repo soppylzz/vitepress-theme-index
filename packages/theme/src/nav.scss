@@ -1,0 +1,177 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("nav") {
+  @include useFlex(row);
+  @include useUnselect();
+
+  width: 100%;
+  position: relative;
+  color: getCssVar("text", "primary");
+  z-index: getCssVar("z-index", "nav");
+  font-weight: getCssVar("font-weight", "normal");
+  font-size: getCssVar("font-size", "lg");
+
+  @include m("desktop") {
+    position: sticky;
+    top: 0;
+  }
+
+  @include e("header") {
+    flex: 1;
+    height: $header-height;
+    padding-inline: getCssVar("padding", "2xl");
+    background-color: getCssVar("bg", "primary");
+
+    @include useBorder(bottom);
+    @include useFlex(row, center, null);
+
+    @include m("mobile") {
+      padding-inline: getCssVar("padding", "lg");
+    }
+  }
+
+  @include e("screen") {
+    position: fixed;
+    overflow-y: auto;
+
+    @include useFlex(column, null, null, "xl");
+    @include setCssVar(("nav-header-height"), $header-height);
+
+    top: getCssVar("nav-header-height");
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+    background-color: getCssVar("bg", "primary");
+    padding-inline: getCssVar("padding", "4xl");
+    padding-block: getCssVar("padding", "2xl");
+  }
+
+  #nav-screen-items {
+    @include useFlex(column);
+  }
+
+  #nav-screen-icons {
+    @include useFlex(row, center, null, "md", wrap, center);
+    @include useBorder(null, "secondary", "thin");
+    border-radius: getCssVar("border-radius", "md");
+    background-color: getCssVar("bg", "secondary");
+  }
+}
+
+@include b("nav-divider") {
+  flex-shrink: 0;
+  margin-block: getCssVar("margin", "lg");
+  margin-inline: getCssVar("margin", "md");
+
+  @include useBorder(left);
+  @include m("screen") {
+    display: none;
+  }
+}
+
+@include b("nav-space") {
+  flex: 1;
+  @include m("screen") {
+    display: none;
+  }
+}
+
+@include b("nav-button") {
+  display: contents;
+  @include e("link") {
+    flex-shrink: 0;
+    padding-inline: getCssVar("padding", "md");
+
+    @include useLink();
+    @include useIcon();
+    @include useFlex(row, center, center, "sm");
+
+    &>span {
+      flex: 1;
+      @include useNLine();
+    }
+
+    &:hover {
+      color: getCssVar("accent", "hover");
+    }
+
+    @include m("header") {
+      @include when("active") {
+        color: getCssVar("accent", "active");
+        @include useBorder(bottom, "primary", "thick");
+        border-color: getCssVar("accent", "active");
+      }
+    }
+
+    @include m("screen") {
+      line-height: getCssVar("line-height", "relaxed");
+      padding: getCssVar("padding", "lg");
+
+      @include useFlex(row-reverse, null, null, "lg");
+      &:not(.is-icon) {
+        @include useBorder(bottom, "primary", thin);
+      }
+    }
+
+    @include when("icon") {
+      margin-block: getCssVar("margin", "lg");
+    }
+
+    @include when("active") {
+      color: getCssVar("accent", "active");
+    }
+  }
+}
+
+@include b("nav-menu") {
+  display: contents;
+  $half-menu-margin: calc(getCssVar("margin", "lg") / 2);
+
+  @include e("trigger") {
+    flex-shrink: 0;
+
+    @include useIcon();
+    @include useFlex(row, center, center, "sm");
+
+    &>span {
+      flex: 1;
+      @include useNLine();
+    }
+
+    margin-block: getCssVar("margin", "lg");
+    padding-inline: getCssVar("padding", "lg");
+
+    &:hover {
+      color: getCssVar("accent", "hover");
+    }
+
+    @include m("screen") {
+      gap: getCssVar("lg");
+      margin-bottom: 0;
+      line-height: getCssVar("line-height", "relaxed");
+      svg:nth-of-type(1) {
+        display: none;
+      }
+    }
+  }
+
+  @include e("divider") {
+    @include m("screen") {
+      margin-top: getCssVar("margin", "lg");
+      @include useBorder(bottom, "primary", "thin");
+    }
+  }
+}
+
+@include b("nav-switch") {
+  @include useIcon();
+  @include useFlex(row, center, center);
+
+  color: getCssVar("text", "primary");
+  :hover {
+    color: getCssVar("accent", "hover");
+  }
+}

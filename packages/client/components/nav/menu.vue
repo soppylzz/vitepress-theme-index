@@ -22,6 +22,7 @@ const kls = computed(() => ({
     ns.em("trigger", props.container),
     ns.when("expanded", expanded.value),
   ],
+  divider: ns.em("divider", props.container),
 }));
 </script>
 
@@ -58,6 +59,7 @@ const kls = computed(() => ({
       <VtiMenu v-if="expanded" size="medium" is-collapsed>
         <slot />
       </VtiMenu>
+      <div :class="kls.divider"><!--  divider last  --></div>
     </template>
   </div>
 </template>

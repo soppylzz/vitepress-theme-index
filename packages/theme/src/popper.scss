@@ -1,0 +1,61 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("popper") {
+  display: contents;
+
+  @include e("content") {
+    position: fixed;
+    word-wrap: break-word;
+    color: getCssVar("text", "secondary");
+    z-index: getCssVar("z-index", "popper");
+
+    background-color: getCssVar("bg", "secondary");
+
+    // default: medium-size + inline, large undefined;
+    font-size: getCssVar("font-size", "md");
+
+    max-width: 200px;
+    border-radius: getCssVar("border-radius", "md");
+    padding: getCssVar("padding", "md");
+    @include useBorder(null);
+
+    @include m("small") {
+      max-width: 250px;
+      font-size: getCssVar("font-size", "sm");
+      border-width: getCssVar("border-width", "thin");
+      padding: getCssVar("padding", "sm");
+      border-radius: getCssVar("border-radius", "sm");
+    }
+
+    @include m("block") {
+      padding-inline: 0;
+    }
+  }
+
+  @include e("arrow") {
+    position: fixed;
+    z-index: getCssVar("z-index", "popper");
+
+    transform: rotate(45deg);
+    background-color: getCssVar("bg", "secondary");
+    @include useBorder(null);
+    border-top-color: transparent;
+    border-left-color: transparent;
+
+    width: 0.9em;
+    height: 0.9em;
+
+    font-size: getCssVar("font-size", "md");
+    @include m("small") {
+      font-size: getCssVar("font-size", "sm");
+    }
+
+    @each $placement, $degree in (top: 45deg, right: 135deg, bottom: 225deg, left: 315deg) {
+      @include m($placement) {
+        transform: rotate($degree);
+      }
+    }
+  }
+}

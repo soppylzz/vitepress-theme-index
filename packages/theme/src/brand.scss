@@ -1,0 +1,44 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("brand") {
+  flex-shrink: 0;
+  width: fit-content;
+  position: relative;
+  font-weight: getCssVar("font-weight", "semibold");
+
+  @include useLink();
+  @include useFlex(row, null, center, "lg");
+
+  &:hover {
+    color: getCssVar("accent", "hover");
+  }
+
+  @include e("logo") {
+    position: relative;
+
+    width: auto;
+    height: 1.5em;
+  }
+
+  @include e("text") {
+    @include useNLine(1);
+    line-height: getCssVar("line-height", "tight");
+  }
+
+  @each $direction in (row, column, row-reverse, column-reverse) {
+    &[data-direction="#{$direction}"] {
+      flex-direction: $direction;
+    }
+  }
+  &[data-size=small] {
+    font-size: getCssVar("font-size", lg);
+  }
+  &[data-size=medium] {
+    font-size: getCssVar("font-size", xl);
+  }
+  &[data-size=large] {
+    font-size: getCssVar("font-size", 2xl);
+  }
+}

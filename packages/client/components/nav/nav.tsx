@@ -142,8 +142,6 @@ const VtiNav = defineComponent({
         wrapper: [ns.b(), ns.m(current)],
         header: [ns.e("header"), ns.em("header", current)],
         screen: [ns.e("screen")],
-        screenItems: [ns.e("screen-items")],
-        screenIcons: [ns.e("screen-icons")],
       };
 
       const screenItems = nav.value
@@ -174,7 +172,7 @@ const VtiNav = defineComponent({
             withDirectives(
               <div class={kls.screen}>
                 {/* Normal items (with text buttons, menus, etc.) */}
-                <div class={kls.screenItems}>
+                <div id={"nav-screen-items"}>
                   {screenItems
                     .map((item, index) =>
                       renderNavItem(index, item, { current, container: "screen" })
@@ -183,7 +181,7 @@ const VtiNav = defineComponent({
                 </div>
                 {/* Icon only buttons */}
                 {screenIcons.length > 0 && (
-                  <div class={kls.screenIcons}>
+                  <div id={"nav-screen-icons"}>
                     {screenIcons
                       .map((item, index) =>
                         renderNavItem(index, item, { current, container: "screen" })

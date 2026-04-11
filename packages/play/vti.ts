@@ -29,7 +29,8 @@ export default withAdditionIndex({
       icon: "github",
       children: [
         { type: "button", text: "按钮" },
-        { type: "group", text: "菜单组", children: [{ type: "button", text: "按钮" }] },
+        { type: "divider" },
+        { type: "group", text: "菜单组11111111111", children: [{ type: "button", text: "按钮" }] },
         {
           type: "group",
           text: "菜单组",
@@ -55,8 +56,8 @@ export default withAdditionIndex({
       { type: "button", text: "3", href: "api/3" },
     ],
     "/guide": [
-      { type: "button", text: "参考" },
       { type: "group", text: "侧边栏", children: [{ type: "button", text: "侧边栏" }] },
+      { type: "button", text: "参考" },
       {
         type: "group",
         text: "侧边栏",

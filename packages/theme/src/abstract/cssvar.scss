@@ -98,19 +98,29 @@ $CURRENT_PALETTE: null !default;
 }
 
 @function s($color, $nums) {
-  $disable:      list.nth($nums, 1);
-  $base:         list.nth($nums, 2);
-  $hover:        list.nth($nums, 3);
-  $active:       list.nth($nums, 4);
-  $bg-disabled:  list.nth($nums, 5);
-  $bg:           list.nth($nums, 6);
+  @if list.length($nums) != 8 {
+    @error "s need 8-length nums arr";
+  }
+
+  $bg-disabled:  list.nth($nums, 1);
+  $bg:           list.nth($nums, 2);
+  $bg-hover:     list.nth($nums, 3);
+  $bg-active:    list.nth($nums, 4);
+  $disable:      list.nth($nums, 5);
+  $active:       list.nth($nums, 6);
+  $hover:        list.nth($nums, 7);
+  $base:         list.nth($nums, 8);
 
   @return (
-    disable:     g(string.unquote("#{$color}-#{$disable}")),
-    base:        g(string.unquote("#{$color}-#{$base}")),
-    hover:       g(string.unquote("#{$color}-#{$hover}")),
-    active:      g(string.unquote("#{$color}-#{$active}")),
+    // background
     bg-disabled: g(string.unquote("#{$color}-#{$bg-disabled}")),
     bg:          g(string.unquote("#{$color}-#{$bg}")),
+    bg-hover:    g(string.unquote("#{$color}-#{$bg-hover}")),
+    bg-active:   g(string.unquote("#{$color}-#{$bg-active}")),
+    // foreground
+    disabled:    g(string.unquote("#{$color}-#{$disable}")),
+    hover:       g(string.unquote("#{$color}-#{$hover}")),
+    active:      g(string.unquote("#{$color}-#{$active}")),
+    base:        g(string.unquote("#{$color}-#{$base}")),
   );
 }

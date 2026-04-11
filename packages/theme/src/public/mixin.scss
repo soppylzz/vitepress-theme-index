@@ -1,8 +1,9 @@
-$header-height: 3.5em;
-$sub-nav-height: 2.5em;
-$docs-aside-width: 200px;
+@use "sass:meta";
+@use "sass:list";
+@use "sass:string";
+@use "../abstract" as *;
 
-@mixin useIcon($size: 100%) {
+@mixin useIcon($size: 1.2em) {
   svg {
     width: $size;
     height: $size;
@@ -32,7 +33,7 @@ $docs-aside-width: 200px;
   -webkit-user-select: none;
 }
 
-@mixin useScrollHidden {
+@mixin useScrollHidden() {
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -40,5 +41,62 @@ $docs-aside-width: 200px;
     width: 0;
     height: 0;
     visibility: hidden;
+  }
+}
+
+@mixin useBorder($sides: null, $type: "primary", $width: "base", $style: "solid") {
+  $w: getCssVar("border-width", $width);
+  $c: getCssVar("border", $type);
+
+  $sides-arr: null !default;
+  @if meta.type-of($sides) == "list" {
+    $sides-arr: $sides;
+  } @else {
+    $sides-arr: ($sides);
+  }
+
+  @each $side in $sides-arr {
+    @if $side == null {
+      border: $w string.unquote($style) $c;
+    } @else {
+      border-#{$side}: $w string.unquote($style) $c;
+    }
+  }
+}
+
+@mixin useFlex(
+  $direction: row,
+  $justify: null,
+  $align: null,
+  $gap: null,
+  $wrap: nowrap,
+  $align-content: null
+) {
+  display: flex;
+  flex-direction: $direction;
+  @if $justify != null {
+    justify-content: $justify;
+  }
+  @if $align != null {
+    align-items: $align;
+  }
+  @if $gap != null {
+    gap: getCssVar("gap", $gap);
+  }
+  @if $wrap != null {
+    flex-wrap: $wrap;
+  }
+  @if $wrap != nowrap and $align-content != null {
+    align-content: $align-content;
+  }
+}
+
+@mixin useVisual($is-show: true, $opacity: 100) {
+  @if $is-show {
+    visibility: visible;
+    opacity: getCssVar("opacity", $opacity);
+  } @else {
+    visibility: hidden;
+    opacity: getCssVar("opacity", 0);
   }
 }

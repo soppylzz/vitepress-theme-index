@@ -2,8 +2,30 @@
 @use "../public" as *;
 @use "../abstract" as *;
 
-$github-light-palette: () !default;
-$github-dark-palette: () !default;
+$github-light-palette: (
+  accent-0: #ffffff,
+  accent-1: #f0f2ff,
+  accent-2: #dbe1fc,
+  accent-3: #bac4f5,
+  accent-4: #8fa0eb,
+  accent-5: #6979db,
+  accent-6: #5261c9,
+  accent-7: #424ea8,
+  accent-8: #353e87,
+  accent-9: #283066
+) !default;
+$github-dark-palette: (
+  accent-0: #0f121f,
+  accent-1: #161a2d,
+  accent-2: #1e243d,
+  accent-3: #293252,
+  accent-4: #36426d,
+  accent-5: #475587,
+  accent-6: #5e70aa,
+  accent-7: #7d8fc9,
+  accent-8: #a4b6e6,
+  accent-9: #d2e0ff,
+) !default;
 
 $github-light-palette: deep-merge($base-light-palette, $github-light-palette);
 $github-dark-palette: deep-merge($base-dark-palette, $github-dark-palette);
@@ -11,7 +33,8 @@ $github-dark-palette: deep-merge($base-dark-palette, $github-dark-palette);
 $github-nums: null !default;
 
 @include palette($github-light-palette);
-$github-nums: (3, 5, 6, 7, 1, 0);
+
+$github-nums: (1, 2, 3, 4, 5, 6, 7, 8);
 $github-light: (
   text: (
     primary: g(gray-9),
@@ -20,41 +43,32 @@ $github-light: (
     disable: g(gray-4),
     inverse: g(gray-0)
   ),
-  bg: (
-    primary: g(gray-0),
-    secondary: g(gray-1),
-    tertiary: g(gray-2)
+  link: (
+    base: g(blue-5),
+    hover: g(blue-6),
+    active: g(blue-7),
+    disable: g(gray-4)
   ),
   border: (
     primary: g(gray-3),
     secondary: g(gray-2),
     tertiary: g(gray-1)
   ),
-
-  primary: s("blue", $github-nums),
-  success: s("green", $github-nums),
-  warning: s("orange", $github-nums),
-  danger:  s("red", $github-nums),
-  info:    s("blue", $github-nums),
-
-  accent: (
-    disable: #8c959f,
-    base: #0969da,
-    hover: #0550ae,
-    active: #033d8b,
-    bg-disable: #eaeef2,
-    bg: #ddf4ff
+  bg: (
+    primary: g(gray-0),
+    secondary: g(gray-1),
+    tertiary: g(gray-2)
   ),
-  link: (
-    base: g(blue-5),
-    hover: g(blue-6),
-    active: g(blue-7),
-    disable: g(gray-4)
-  )
+
+  success: s("green", $github-nums),
+  warning: s("yellow", $github-nums),
+  danger:  s("red", $github-nums),
+  info:    s("gray", $github-nums),
+
+  accent:  s("accent", $github-nums)
 );
 
 @include palette($github-dark-palette);
-$github-nums: (7, 5, 4, 3, 2, 9);
 $github-dark: (
   text: (
     primary:   g(gray-9),
@@ -63,37 +77,29 @@ $github-dark: (
     disable:   g(gray-4),
     inverse:   g(gray-0)
   ),
-  bg: (
-    primary:   g(gray-0),
-    secondary: g(gray-1),
-    tertiary:  g(gray-2)
+  link: (
+    base: g(blue-4),
+    hover: g(blue-3),
+    active: g(blue-2),
+    disable: g(gray-5)
   ),
   border: (
     primary:   g(gray-3),
     secondary: g(gray-2),
     tertiary:  g(gray-1)
   ),
-
-  primary: s("blue", $github-nums),
-  success: s("green", $github-nums),
-  warning: s("orange", $github-nums),
-  danger:  s("red", $github-nums),
-  info:    s("purple", $github-nums),
-
-  accent: (
-    disable: #6e7681,
-    base: #2f81f7,
-    hover: #388bfd,
-    active: #58a6ff,
-    bg-disable: #21262d,
-    bg: #051d4d
+  bg: (
+    primary:   g(gray-0),
+    secondary: g(gray-1),
+    tertiary:  g(gray-2)
   ),
-  link: (
-    base: g(blue-4),
-    hover: g(blue-3),
-    active: g(blue-2),
-    disable: g(gray-5)
-  )
+
+  info:    s("blue", $github-nums),
+  success: s("green", $github-nums),
+  warning: s("yellow", $github-nums),
+  danger:  s("red", $github-nums),
+
+  accent:  s("accent", $github-nums),
 );
 
 $github-foundation: () !default;

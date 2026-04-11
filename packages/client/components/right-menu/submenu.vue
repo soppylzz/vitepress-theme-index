@@ -69,23 +69,26 @@ watch(opened, (val) => {
 const ns = useBem("r-menu-submenu");
 const kls = computed(() => ({
   container: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
-  left: ns.e("left-icon"),
-  text: [ns.e("text"), ns.em("text", `align-${props.align}`)],
-  expand: ns.e("expand-icon"),
+  text: [ns.e("text")],
 }));
 </script>
 
 <template>
-  <div v-show="render">
+  <div
+    v-show="render"
+    ref="button"
+    :class="kls.container"
+    @mouseenter="expandFn"
+    @click.stop="expandFn"
+  >
+    <component :is="useIcon(props?.icon)" v-if="props?.icon" />
+    <span :class="kls.text" v-bind="{ [`align-${props.align}`]: true }">{{
+      useText(props.text)
+    }}</span>
+    <component :is="useIcon(props?.expandIcon)" v-if="props?.expandIcon" />
+    <!--  out of dom-flow  -->
     <VtiRightMenu :trigger="props.trigger" :show="show && opened" :coords="coords">
       <slot />
     </VtiRightMenu>
-    <div ref="button" :class="kls.container" @mouseenter="expandFn" @click.stop="expandFn">
-      <span :class="kls.left"><component :is="useIcon(props?.icon)" v-if="props?.icon" /></span>
-      <span :class="kls.text">{{ useText(props.text) }}</span>
-      <span :class="kls.expand"
-        ><component :is="useIcon(props?.expandIcon)" v-if="props?.expandIcon"
-      /></span>
-    </div>
   </div>
 </template>

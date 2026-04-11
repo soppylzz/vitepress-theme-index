@@ -76,7 +76,7 @@ const calculatePosition = async () => {
   const arrowEl = arrowRef.value;
   const arrowRect = arrowEl.getBoundingClientRect();
 
-  const borderWidth = parseFloat(getComputedStyle(arrowEl).borderWidth) || 0;
+  const borderWidth = parseFloat(getComputedStyle(arrowEl).borderWidth) * Math.sqrt(2) || 0;
   const vw = document.documentElement.clientWidth;
   const vh = document.documentElement.clientHeight;
 
@@ -135,7 +135,6 @@ const calculatePosition = async () => {
 const ns = useBem("popper");
 const kls = computed(() => ({
   wrap: ns.b(),
-  trigger: ns.e("trigger"),
   content: [ns.e("content"), ns.em("content", props.size), ns.em("content", props.mode)],
   arrow: [ns.e("arrow"), ns.em("arrow", props.size), ns.em("arrow", currentPlacement.value)],
 }));
@@ -149,9 +148,7 @@ const kls = computed(() => ({
     @mouseleave="handleMouseleave"
     @click="handleClick"
   >
-    <span :class="kls.trigger">
-      <slot name="default" />
-    </span>
+    <slot name="default" />
     <div
       v-if="isVisible && ($slots.content || props.content)"
       ref="contentRef"

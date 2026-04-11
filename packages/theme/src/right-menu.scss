@@ -1,0 +1,180 @@
+@use "sass:map";
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+
+$rm-sizes: (
+  // font, line, weight, padding, border-radius, border-width
+  "small": ("sm", "tight", "light", "sm", "md", "thin"),
+  "medium": ("md", "tight", "light", "md", "lg", "base"),
+  "large": ("md", "normal", "normal", "md", "lg", "base"),
+);
+
+$rm-item-sizes: (
+  // padding, border-radius, min/max-width, gap
+  "small": ("md", "sm", 150px, 300px),
+  "medium": ("lg", "md", 200px, 350px),
+  "large": ("lg", "md", 250px, 400px),
+);
+
+@mixin useRMenuItem() {
+  user-select: none;
+
+  @each $size, $types in $rm-item-sizes {
+    @include m($size) {
+      padding: getCssVar("padding", list.nth($types, 1));
+      border-radius: getCssVar("border-radius", list.nth($types, 2));
+      min-width: getCssVar("min-width", list.nth($types, 3));
+      max-width: getCssVar("max-width", list.nth($types, 4));
+    }
+  }
+}
+
+@mixin useRMenuColor() {
+  &:hover {
+    color: getCssVar("text", "inverse");
+    background-color: getCssVar("accent", "hover");
+  }
+
+  @include when("disabled") {
+    color: getCssVar("text", "secondary");
+  }
+  &:not(.is-disabled) {
+    @include when("selected") {
+      color: getCssVar("text", "inverse");
+      background-color: getCssVar("accent", "active");
+    }
+  }
+}
+
+@mixin useRMenuText() {
+  @each $size, $gap in (
+    "small", "md",
+    "medium", "md",
+    "large", "lg",
+  ) {
+    @include m($size) {
+      gap: getCssVar("gap", $gap);
+    }
+  }
+}
+
+@include b("right-menu") {
+  color: getCssVar("text", "primary");
+  background-color: getCssVar("bg", "primary");
+
+  @include useFlex(column);
+  @include useBorder(null, "primary");
+  @each $size, $types in $rm-sizes {
+    @include m($size) {
+      font-size: getCssVar("font-size", list.nth($types, 1));
+      line-height: getCssVar("line-height", list.nth($types, 2));
+      font-weight: getCssVar("font-weight", list.nth($types, 3));
+      padding: getCssVar("padding", list.nth($types, 4));
+      border-radius: getCssVar("border-radius", list.nth($types, 5));
+      border-width: getCssVar("border-width", list.nth($types, 6));
+    }
+  }
+}
+
+@include b("r-menu-icon") {
+  position: relative;
+  @include useRMenuItem();
+  @include useRMenuColor();
+  @include useFlex(row, center, center);
+
+  width: 2em;
+  height: 2em;
+
+  @include useIcon();
+}
+
+@include b("r-menu-divider") {
+  font-size: 0.6em;
+  color: getCssVar("text", "tertiary");
+
+  @include useFlex(row, center);
+
+  span {
+    padding-inline: 0.5em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    @include useBorder("bottom", "secondary");
+  }
+
+  @include m("align-start") {
+    &::before{ flex: 1; }
+    &::after{ flex: 10; }
+  }
+  @include m("align-center") {
+    &::before,
+    &::after {
+      flex: 1;
+    }
+  }
+  @include m("align-end") {
+    &::before{ flex: 10; }
+    &::after{ flex: 1; }
+  }
+
+  @each $size, $margin in (
+    "small": "xs",
+    "medium": "sm",
+    "large": "sm",
+  ) {
+    @include m($size) {
+      margin-block: getCssVar("margin", $margin);
+    }
+  }
+}
+
+@include b("r-menu-text") {
+  @include useRMenuItem();
+  @include useRMenuColor();
+  @include useIcon();
+  svg {
+    flex-shrink: 0;
+  }
+
+  @include useFlex(row, center);
+  @include useRMenuText();
+
+  @include e("text") {
+    flex: 1;
+    @include useNLine();
+    @each $align in ("start", "center", "end") {
+      &[align-#{$align}] {
+        text-align: $align;
+      }
+    }
+  }
+}
+
+@include b("r-menu-submenu") {
+  @include useRMenuItem();
+  @include useRMenuColor();
+
+  @include useFlex(row, center);
+  @include useRMenuText();
+
+  @include useIcon();
+  svg {
+    flex-shrink: 0;
+  }
+
+  @include e("text") {
+    flex: 1;
+    @include useNLine();
+    @each $align in ("start", "center", "end") {
+      &[align-#{$align}] {
+        text-align: $align;
+      }
+    }
+  }
+}

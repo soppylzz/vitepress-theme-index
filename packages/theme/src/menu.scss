@@ -1,0 +1,126 @@
+@use "sass:map";
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+$size-gaps: (
+  "small": "sm",
+  "medium": "md",
+  "large": "md",
+);
+
+@mixin useMenuGap() {
+  // layer sizes config
+  @each $size, $gap in $size-gaps {
+    @include m($size) {
+      gap: getCssVar("gap", $gap);
+    }
+  }
+}
+
+@include b("menu") {
+  @include useFlex(column);
+  color: getCssVar("text", "secondary");
+  font-weight: getCssVar("font-weight", "medium");
+
+  // global sizes config
+  @each $size, $types in (
+    /* font, line, padding, min-width */
+    "small": ("md", "normal", "md", 100px),
+    "medium": ("md", "normal", "lg", 180px),
+    "large": ("lg", "relaxed", "xl", 200px),
+  ) {
+    @include m($size) {
+      font-size: getCssVar("font-size", list.nth($types, 1));
+      line-height: getCssVar("line-height", list.nth($types, 2));
+      padding: getCssVar("padding", list.nth($types, 3));
+      min-width: list.nth($types, 4);
+    }
+  }
+
+  @include useMenuGap();
+}
+
+@include b("menu-button") {
+  @include useLink();
+  @include useIcon();
+  @include useFlex(row, null, center);
+
+  &>span {
+    flex: 1;
+    @include useNLine(2);
+  }
+
+  font-size: 0.85em;
+  &:hover {
+    color: getCssVar("accent", "hover");
+  }
+  @include when("active") {
+    color: getCssVar("accent", "active");
+  }
+
+  @each $size, $types in (
+    "small": ("sm"),
+    "medium": ("md"),
+    "large": ("md"),
+  ) {
+    @include m($size) {
+      gap: getCssVar("gap", list.nth($types, 1));
+    }
+  }
+}
+
+@include b("menu-divider") {
+  @include useBorder(bottom, "secondary", "thin");
+  @each $size, $gap in $size-gaps {
+    @include m($size) {
+      margin-block: calc(-1 * getCssVar("gap", $gap) / 2);
+    }
+  }
+}
+
+@include b("menu-group") {
+  @include useFlex(column);
+  @include useMenuGap();
+
+  @include e("header") {
+    font-size: 0.95em;
+    color: getCssVar("text", "primary");
+  }
+
+  @include e("button") {
+    cursor: pointer;
+    color: getCssVar("text", "primary");
+    &:hover {
+      color: getCssVar("accent", "hover");
+    }
+    &>span {
+      flex: 1;
+    }
+
+    @include useIcon();
+    @include useNLine();
+
+    @include useFlex(row, space-between, center);
+    @include when("collapsed") {
+      svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  @include e("children") {
+    font-size: 0.9em;
+    @include useFlex(column);
+    @include useMenuGap();
+    @each $size, $spacing in (
+      "small": "md",
+      "medium": "lg",
+      "large": "xl",
+    ) {
+      @include m($size) {
+        padding-left: calc(getCssVar("padding", $spacing) / 2);
+      }
+    }
+  }
+}

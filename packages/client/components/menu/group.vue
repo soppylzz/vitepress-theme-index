@@ -12,10 +12,10 @@ const isExpanded = ref(props.collapsable ? !ctx.value.collapsed : true);
 
 const ns = useBem("menu-group");
 const kls = computed(() => ({
-  wrap: [ns.b(), ns.when("collapsed", props.collapsable && !isExpanded.value)],
-  button: [ns.e("button"), ns.em("button", ctx.value.size)],
-  children: ns.em("children", ctx.value.size),
-  header: ns.em("header", ctx.value.size),
+  wrap: [ns.b(), ns.m(ctx.value.size)],
+  button: [ns.e("button"), ns.when("collapsed", props.collapsable && !isExpanded.value)],
+  header: ns.e("header"),
+  children: [ns.e("children"), ns.em("children", ctx.value.size)],
 }));
 </script>
 
@@ -31,7 +31,7 @@ const kls = computed(() => ({
       </svg>
     </div>
     <div v-else :class="kls.header">
-      <span>{{ useText(props.text) }}</span>
+      {{ useText(props.text) }}
     </div>
     <div v-if="!props.collapsable || isExpanded" :class="kls.children">
       <slot />

@@ -38,17 +38,16 @@ const activateFn = (evt?: MouseEvent) => {
 
 const ns = useBem("r-menu-text");
 const kls = computed(() => ({
-  container: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
-  icon: ns.e("icon"),
-  text: [ns.e("text"), ns.em("text", `align-${props.align}`)],
+  wrap: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
+  text: [ns.e("text")],
 }));
 </script>
 
 <template>
-  <div v-show="render">
-    <div :class="kls.container" @click.stop="activateFn">
-      <span :class="kls.icon"><component :is="useIcon(props.icon)" v-if="props.icon" /></span>
-      <span :class="kls.text">{{ useText(props.text) }}</span>
-    </div>
+  <div v-show="render" :class="kls.wrap" @click.stop="activateFn">
+    <component :is="useIcon(props.icon)" v-if="props.icon" />
+    <span :class="kls.text" v-bind="{ [`align-${props.align}`]: true }">{{
+      useText(props.text)
+    }}</span>
   </div>
 </template>
