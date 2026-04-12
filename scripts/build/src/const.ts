@@ -8,6 +8,7 @@ const clientRoot = resolve(pkgRoot, "client");
 const nodeRoot = resolve(pkgRoot, "node");
 const sharedRoot = resolve(pkgRoot, "shared");
 const themeRoot = resolve(pkgRoot, "theme");
+const cliRoot = resolve(pkgRoot, "cli");
 
 const indexRoot = resolve(pkgRoot, "index");
 
@@ -24,4 +25,5 @@ export {
   indexRoot,
   projDist,
   typeDist,
+  cliRoot,
 };
