@@ -2,7 +2,7 @@ export * from "./use-bem";
 export * from "./use-index";
 export * from "./use-i18n";
 export * from "./use-right-menu";
-export * from "./use-attrs";
+export * from "./use-comp";
 export * from "./use-post";
 export * from "./use-inject";
 export * from "./use-share";

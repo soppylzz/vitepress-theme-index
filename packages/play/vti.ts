@@ -22,6 +22,7 @@ export default withAdditionIndex({
     { type: "space" },
     { type: "button", icon: "github", text: "参考", target: "both", href: "/api/1" },
     { type: "button", text: "指南", target: "both", href: "/guide/1" },
+    { type: "button", text: "指南", target: "both" },
     {
       type: "menu",
       text: "方舟",

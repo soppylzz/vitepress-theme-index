@@ -73,21 +73,21 @@
   $align-content: null
 ) {
   display: flex;
-  flex-direction: $direction;
+  flex-direction: string.unquote($direction);
   @if $justify != null {
-    justify-content: $justify;
+    justify-content: string.unquote($justify);
   }
   @if $align != null {
-    align-items: $align;
+    align-items: string.unquote($align);
   }
   @if $gap != null {
     gap: getCssVar("gap", $gap);
   }
   @if $wrap != null {
-    flex-wrap: $wrap;
+    flex-wrap: string.unquote($wrap);
   }
   @if $wrap != nowrap and $align-content != null {
-    align-content: $align-content;
+    align-content: string.unquote($align-content);
   }
 }
 

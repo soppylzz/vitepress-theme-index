@@ -40,14 +40,14 @@ $github-light: (
     primary: g(gray-9),
     secondary: g(gray-6),
     tertiary: g(gray-5),
-    disable: g(gray-4),
+    disabled: g(gray-4),
     inverse: g(gray-0)
   ),
   link: (
     base: g(blue-5),
     hover: g(blue-6),
     active: g(blue-7),
-    disable: g(gray-4)
+    disabled: g(gray-4)
   ),
   border: (
     primary: g(gray-3),
@@ -74,14 +74,14 @@ $github-dark: (
     primary:   g(gray-9),
     secondary: g(gray-6),
     tertiary:  g(gray-5),
-    disable:   g(gray-4),
+    disabled:   g(gray-4),
     inverse:   g(gray-0)
   ),
   link: (
     base: g(blue-4),
     hover: g(blue-3),
     active: g(blue-2),
-    disable: g(gray-5)
+    disabled: g(gray-5)
   ),
   border: (
     primary:   g(gray-3),

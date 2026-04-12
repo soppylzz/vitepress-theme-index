@@ -8,7 +8,7 @@ interface DrawerProps {
 }
 
 interface DrawerEmits {
-  (e: "onClose"): void;
+  (e: "close"): void;
 }
 
 export type { DrawerProps, DrawerEmits };

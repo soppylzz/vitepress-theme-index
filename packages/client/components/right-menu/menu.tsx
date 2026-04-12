@@ -73,7 +73,8 @@ const VtiRightMenu = defineComponent({
       render: finalRender,
       size,
       state,
-    } = useRMenuItem(props, { render, state: () => props.state });
+      stage,
+    } = useRMenuItem(props, { render, state: () => props.state, selectable: true }, true);
 
     useRightMenu(finalRender);
     useProvidePath({ rect, state });
@@ -82,7 +83,11 @@ const VtiRightMenu = defineComponent({
     return () => {
       if (!render.value) return null;
       return withDirectives(
-        <div ref={menu} class={[ns.b(), ns.m(size.value)]} style={style}>
+        <div
+          ref={menu}
+          class={[ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)]}
+          style={style}
+        >
           {slots.default?.()}
         </div>,
         [[vShow, finalRender.value]]

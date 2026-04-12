@@ -40,7 +40,7 @@
     padding-inline: getCssVar("padding", "2xl");
     padding-block: getCssVar("padding", "3xl");
 
-    @include useFlex(row, null, start, "2xl");
+    @include useFlex(row, null, start);
 
     #vti-docs-content {
       flex: 1;
@@ -53,6 +53,7 @@
 
       $asideToTop: calc($header-height + getCssVar("padding", "3xl"));
 
+      padding-left: getCssVar("padding", "2xl");
       position: sticky;
       top: $asideToTop;
       overflow-y: auto;
@@ -64,6 +65,7 @@
       #vti-docs-aside {
         @include useVisual(false);
         width: 0;
+        padding-left: 0;
       }
     }
   }

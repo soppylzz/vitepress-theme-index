@@ -1,0 +1,69 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("docs-footer") {
+  @include useBorder(top, "primary");
+  @include useFlex(row, space-between, null, $docs-item-space);
+
+  color: getCssVar("text", "secondary");
+  font-size: getCssVar("font-size", "sm");
+  background-color: getCssVar("bg", "secondary");
+
+  padding-block: getCssVar("padding", $docs-space);
+  padding-inline: getCssVar("padding", $docs-item-space);
+
+  @include m("mobile") {
+    flex-direction: column;
+  }
+
+  @include e("block") {
+    @include useFlex(column, null, start);
+
+    &[data-badge] {
+      a {
+        font-size: 0.9em;
+        @include useLink();
+        @include useIcon();
+        @include useUnselect();
+        @include useFlex(row, null, center, "md");
+
+        padding: getCssVar("padding", "md");
+        border-radius: getCssVar("border-radius", "md");
+
+        color: getCssVar("text", "primary");
+        background-color: transparent;
+        &:hover {
+          color: getCssVar("text", "inverse");
+          background-color: getCssVar("link", "hover");
+        }
+      }
+    }
+
+    &[data-info] {
+      span {
+        a {
+          @include useLink();
+          color: getCssVar("link", "base");
+          &:hover {
+            color: getCssVar("link", "hover");
+            text-decoration: underline;
+          }
+          &:active {
+            color: getCssVar("link", "active");
+          }
+        }
+      }
+    }
+
+    @include m("pad", "desktop") {
+      align-items: center;
+      &:first-child {
+        align-items: flex-start;
+      }
+      &:last-child {
+        align-items: flex-end;
+      }
+    }
+  }
+}

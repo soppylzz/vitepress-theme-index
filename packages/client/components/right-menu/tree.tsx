@@ -10,7 +10,8 @@ import {
   VtiRMenuText,
 } from "./items";
 import { hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
-import { omit } from "lodash-unified";
+import { isObject, omit } from "lodash-unified";
+import { pascalCase } from "../../utils";
 
 const rightMenuItemMap: Record<RMenuItemType, Component | undefined> = {
   "sub-menu": VtiRMenuSubMenu,
@@ -20,6 +21,12 @@ const rightMenuItemMap: Record<RMenuItemType, Component | undefined> = {
   text: VtiRMenuText,
   custom: undefined,
 };
+
+function toOnHooks<T extends Record<string, any>>(hooks?: T) {
+  return isObject(hooks)
+    ? Object.fromEntries(Object.entries(hooks).map(([key, hook]) => [`on${pascalCase(key)}`, hook]))
+    : {};
+}
 
 function renderRightMenu(records?: RMenuItemRecord) {
   return Object.entries(records ?? {}).map(([key, ctx]) => {
@@ -35,11 +42,11 @@ function renderRightMenu(records?: RMenuItemRecord) {
 
     const cleanProps = omit(res, "children");
     if (hasOwnProperty(res, "children")) {
-      return createVNode(comp, { key, ...cleanProps, ...hooks }, () =>
+      return createVNode(comp, { key, ...cleanProps, ...toOnHooks(hooks) }, () =>
         renderRightMenu((res?.children ?? {}) as RMenuItemRecord)
       );
     }
-    return createVNode(comp, { key, ...cleanProps, ...hooks });
+    return createVNode(comp, { key, ...cleanProps, ...toOnHooks(hooks) });
   });
 }
 

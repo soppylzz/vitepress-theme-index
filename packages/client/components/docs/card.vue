@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { useBem, useI18n, useLink, usePost, useSite, useText, useShare } from "../../composables";
+import {
+  useBem,
+  useI18n,
+  useLink,
+  usePost,
+  useSite,
+  useText,
+  useShare,
+  useTheme,
+} from "../../composables";
 import { useData } from "vitepress";
-import { computed, onMounted, ref, shallowRef } from "vue";
+import { computed, nextTick, onMounted, ref, shallowRef, watch, watchEffect } from "vue";
 import QRCode from "qrcode";
 
+const { response } = useTheme();
 const { firstCommit, lastCommit } = usePost();
 const { frontmatter } = useData();
 const { license } = useSite();
@@ -18,10 +28,13 @@ const licenseText = computed(() => {
 const isExpand = ref(false);
 const qrContainer = shallowRef<HTMLElement | null>(null);
 
-onMounted(() => {
+watchEffect(() => {
   if (!qrContainer.value) return;
-  QRCode.toCanvas(qrContainer.value, window.location.href, { width: 200 });
+  const width = response.value === "mobile" ? 140 : 180;
+  QRCode.toCanvas(qrContainer.value, window.location.href, { width });
 });
+
+// TODO: use js replace interpolate-size
 
 const ns = useBem("docs-card");
 const kls = computed(() => ({
@@ -30,6 +43,7 @@ const kls = computed(() => ({
   quick: ns.e("quick"),
   license: ns.e("license"),
   share: ns.e("share"),
+  qrcode: [ns.e("qrcode"), ns.when("closed", !isExpand.value)],
 }));
 
 function toggleQrcode() {
@@ -48,11 +62,14 @@ const { shareToMail, copyLink } = useShare();
     <div :class="kls.quick">
       <slot name="vti-docs-card-quick">
         <a>quick test</a>
+        <a>quick test</a>
       </slot>
     </div>
     <div :class="kls.license">
-      {{ t("docs.card.license") }} <a v-bind="licenseAttr">{{ licenseText }}</a>
-      <div>
+      <div id="vti-docs-license">
+        {{ t("docs.card.license") }} <a v-bind="licenseAttr">{{ licenseText }}</a>
+      </div>
+      <div id="vti-docs-share">
         <svg
           id="wechat"
           xmlns="http://www.w3.org/2000/svg"
@@ -83,7 +100,7 @@ const { shareToMail, copyLink } = useShare();
         </svg>
       </div>
     </div>
-    <div v-show="isExpand">
+    <div :class="kls.qrcode">
       <canvas ref="qrContainer" />
     </div>
   </div>

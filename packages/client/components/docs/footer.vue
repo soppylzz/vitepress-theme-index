@@ -12,14 +12,13 @@ const beianAttr = useLink(beian).attr;
 const ns = useBem("docs-footer");
 const kls = computed(() => ({
   wrap: [ns.b(), ns.m(response.value)],
-  info: [ns.e("info"), ns.em("info", response.value)],
-  function: [ns.e("function"), ns.em("function", response.value)],
+  block: [ns.e("block"), ns.em("block", response.value)],
 }));
 </script>
 
 <template>
   <div :class="kls.wrap">
-    <div :class="kls.info">
+    <div :class="kls.block" data-info>
       <span v-if="owner"
         >{{ t("docs.footer.owner") }} <a v-bind="ownerAttr">{{ useText(owner.text) }}</a> @
         {{ new Date(build).getFullYear() }} - {{ new Date().getFullYear() }}</span
@@ -31,7 +30,7 @@ const kls = computed(() => ({
         ></span
       >
     </div>
-    <div :class="kls.function">
+    <div :class="kls.block" data-badge>
       <!--  beian:default button  -->
       <a v-if="beian" v-bind="beianAttr">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

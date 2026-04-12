@@ -3,7 +3,10 @@ import { computed } from "vue";
 import type { RMenuDividerProps } from "../../types";
 import { useBem, useRMenuItem, useText } from "../../composables";
 
-const props = withDefaults(defineProps<RMenuDividerProps>(), { align: "center" });
+const props = withDefaults(defineProps<RMenuDividerProps>(), {
+  align: "center",
+  trigger: true,
+});
 
 const { render, size } = useRMenuItem(props);
 const ns = useBem("r-menu-divider");

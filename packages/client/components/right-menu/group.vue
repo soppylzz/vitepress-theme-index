@@ -7,35 +7,36 @@ const emits = defineEmits<RMenuGroupEmits>();
 const props = withDefaults(defineProps<RMenuGroupProps>(), {
   row: 1,
   column: 4,
+  trigger: true,
+  selectable: true,
 });
-
-useProvidePath();
 
 const { render, state, stage, size, enter, leave } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
-    emits("onTrigger");
+    emits("trigger");
   },
   onEnter: (e) => {
     switchFn(e);
   },
   onSelect: (key) => {
-    emits("onSelect", key);
+    emits("select", key);
   },
-  autoRegister: false,
   selectable: () => props.selectable ?? true,
   state: () => props.state,
 });
+
+useProvidePath({ state });
 
 const show = ref(false);
 const switchFn = (evt: MouseEvent | KeyboardEvent) => {
   if (state.value === "disabled") return;
   if (!show.value) {
-    if (emits("onActivateBefore", evt) !== false) {
-      emits("onActivate", evt);
+    if (emits("activateBefore", evt) !== false) {
+      emits("activate", evt);
     }
   } else {
-    emits("onDeactivate");
+    emits("deactivate");
   }
   show.value = !show.value;
 };
@@ -49,9 +50,9 @@ const _slots = computed(() => {
 
 const ns = useBem("r-menu-group");
 const kls = computed(() => ({
-  wrap: ns.b(),
-  text: [ns.e("text"), ns.em("text", size.value), ns.when(state.value)],
-  container: [ns.em("container", props.mode)],
+  wrap: [ns.b(), ns.m(size.value), ns.m(props.mode), ns.when(stage.value), ns.when(state.value)],
+  text: [ns.e("text"), ns.em("text", size.value)],
+  container: [ns.e("container"), ns.em("container", props.mode), ns.em("container", size.value)],
   button: [
     ns.e("button"),
     ns.em("button", size.value),
@@ -80,7 +81,7 @@ const styl = computed(() => {
     </div>
     <div
       v-if="props.mode === 'component'"
-      :class="[...kls.button]"
+      :class="kls.button"
       @click.stop="switchFn"
       @mouseenter="enter"
       @mouseleave="leave"

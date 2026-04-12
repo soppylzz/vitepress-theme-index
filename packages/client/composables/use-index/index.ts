@@ -17,7 +17,7 @@ function useIcon(icon: IndexIcon) {
       : `VtiI${pascalCase(icon)}`;
 }
 
-function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>) {
+function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>, block: boolean = false) {
   const { site } = useData();
   const rawLink = computed(() => toValue(link));
 
@@ -25,11 +25,15 @@ function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>) {
     () => checkExternal(rawLink.value?.href) || rawLink.value._target === "_blank"
   );
 
-  const attr = computed(() => ({
-    href: rawLink.value?.href ? normalizeLink(site.value, rawLink.value.href) : undefined,
-    target: rawLink.value?._target ?? (isExternal.value ? "_blank" : undefined),
-    rel: isExternal.value ? "noreferrer" : undefined,
-  }));
+  const attr = computed(() =>
+    block
+      ? {}
+      : {
+          href: rawLink.value?.href ? normalizeLink(site.value, rawLink.value.href) : undefined,
+          target: rawLink.value?._target ?? (isExternal.value ? "_blank" : undefined),
+          rel: isExternal.value ? "noreferrer" : undefined,
+        }
+  );
 
   return { attr, isExternal };
 }

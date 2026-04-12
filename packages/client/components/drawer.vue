@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<DrawerProps>(), {
 const content = ref<HTMLElement | null>(null);
 function handleClick(e: MouseEvent) {
   if (!content.value || !content.value.contains(e.target as Node)) {
-    emits("onClose");
+    emits("close");
     model.value = false;
   }
 }

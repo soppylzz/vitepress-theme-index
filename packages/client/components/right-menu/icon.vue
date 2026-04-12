@@ -5,27 +5,32 @@ import { useBem, useIcon, useRMenuItem } from "../../composables";
 import { useRightMenuProvide } from "../../utils";
 
 const emits = defineEmits<RMenuIconEmits>();
-const props = withDefaults(defineProps<RMenuIconProps>(), { closeOnActivate: true });
+const props = withDefaults(defineProps<RMenuIconProps>(), {
+  closeOnActivate: true,
+  trigger: true,
+  selectable: true,
+});
 
 const { close } = useRightMenuProvide();
 const { render, state, stage, size } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
-    emits("onTrigger");
+    emits("trigger");
   },
   onEnter: () => {
     activateFn();
   },
   onSelect: (key) => {
-    emits("onSelect", key);
+    emits("select", key);
   },
   selectable: () => props.selectable ?? true,
   state: () => props.state,
 });
 
 const activateFn = (evt?: MouseEvent) => {
-  if (emits("onActivateBefore", evt) !== false) {
-    emits("onActivate", evt);
+  if (state.value === "disabled") return;
+  if (emits("activateBefore", evt) !== false) {
+    emits("activate", evt);
     if (props.closeOnActivate) {
       close();
     }

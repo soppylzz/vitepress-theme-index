@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import type { BrandProps } from "../types";
-import { useAttrsExist, useBem, useLink, useText } from "../composables";
+import { hasEmitHook, useBem, useLink, useText } from "../composables";
 import { computed } from "vue";
 
-const emit = defineEmits<{ (e: "onActivate"): void }>();
+const emit = defineEmits<{ (e: "activate"): void }>();
 const props = withDefaults(defineProps<BrandProps>(), {
   direction: "row",
   size: "medium",
   href: "/",
 });
-const { existed: hasActivate } = useAttrsExist("onActivate");
-const handleClick = (e: MouseEvent) => {
-  if (hasActivate.value) {
-    emit("onActivate");
-    e.preventDefault();
-  }
-};
-
-const { attr } = useLink({ href: "/" });
+const hasHook = hasEmitHook("activate");
+const { attr } = useLink({ href: "/" }, hasHook);
 const ns = useBem("brand");
 const kls = computed(() => ({
   wrap: ns.b(),
@@ -32,7 +25,7 @@ const kls = computed(() => ({
     :class="kls.wrap"
     :data-size="size"
     :data-direction="direction"
-    @click="handleClick"
+    @click="emit('activate')"
   >
     <img :class="kls.logo" :src="props.brand" alt="Brand" />
     <span :class="kls.text">{{ useText(props.text) }}</span>

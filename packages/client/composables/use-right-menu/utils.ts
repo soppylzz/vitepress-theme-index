@@ -23,23 +23,28 @@ import {
   useMenuNav,
   provideRightMenuContext,
   useRightMenuProvide,
+  parentKeyOf,
 } from "../../utils";
 import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
-type MenuNavOption = Parameters<typeof useTrigger>[1] &
-  Pick<RMenuEventHooks, "onSelect"> &
-  Omit<ToMaybeRefOrGetterState<Partial<MenuNavItem>, "render" | "selectable">, "el"> & {
+type MenuNavOption = Parameters<typeof useTrigger>[1] & {
+  onSelect?: RMenuEventHooks["select"];
+} & Omit<ToMaybeRefOrGetterState<Partial<MenuNavItem>, "render" | "selectable">, "el"> & {
     autoRegister?: boolean;
     state?: MaybeRefOrGetter<MenuItemState>;
   };
 
-function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
+function useRMenuItem(
+  props?: Partial<RMenuBaseProps>,
+  option?: MenuNavOption,
+  debug: boolean = false
+) {
   const ins = getCurrentInstance()!;
 
   const {
     autoRegister = true,
-    selectable = true,
-    state: state_ = "enabled",
+    selectable = false,
+    state: state_ = undefined,
     render: render_ = true,
     onEnter = () => {},
     onSelect = () => {},
@@ -87,13 +92,28 @@ function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
       el: el.value,
       onEnter,
       render: render.value,
-      selectable: (state.value === "enabled" && toValue(selectable)) ?? true,
+      selectable: state.value === "enabled" && toValue(selectable),
     });
     onCleanup(() => delete_(currentKey));
   });
 
-  const enter = () => enable(key.value);
-  const leave = () => blur();
+  let isEnabled: boolean = false;
+  const enter = () => {
+    if (!nav.blockMouse) {
+      enable(key.value);
+      isEnabled = true;
+    }
+  };
+  const move = () => {
+    if (!isEnabled) {
+      enable(key.value);
+      isEnabled = true;
+    }
+  };
+  const leave = () => {
+    if (nav.blockMouse) return;
+    blur();
+  };
 
   if (autoRegister) {
     watchEffect((onCleanup) => {
@@ -101,15 +121,17 @@ function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
       if (el_ instanceof HTMLElement) {
         el_.addEventListener("mouseenter", enter);
         el_.addEventListener("mouseleave", leave);
+        el_.addEventListener("mousemove", move);
         onCleanup(() => {
           el_.removeEventListener("mouseenter", enter);
           el_.removeEventListener("mouseleave", leave);
+          el_.removeEventListener("mousemove", move);
         });
       }
     });
   }
 
-  const opened = computed(() => nav.openKeys.includes(key.value));
+  const opened = computed(() => parentKeyOf(nav.actKey).startsWith(key.value));
   const stage = computed<MenuItemNavState>(() =>
     key.value === nav.actKey ? "selected" : "unselect"
   );

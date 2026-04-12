@@ -9,6 +9,9 @@
 @use "sub-nav";
 @use "toc";
 @use "right-menu";
+@use "card";
+@use "page";
+@use "footer";
 
 @use "popper";
 @use "drawer";
@@ -18,8 +21,8 @@
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 
-@include github(true);
-@include pixelArt();
+@include github();
+@include pixelArt(true);
 
 *,
 *::before,

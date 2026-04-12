@@ -78,8 +78,8 @@ type MenuNavContext = {
   nav: VueReadonly<
     Reactive<{
       actKey: Ref<string>;
-      openKeys: Ref<string[]>;
       isActive: Ref<boolean>;
+      blockMouse: Ref<boolean>;
     }>
   >;
   blur(): void;

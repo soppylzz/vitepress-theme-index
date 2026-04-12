@@ -1,42 +1,47 @@
 @use "sass:map";
+@use "sass:string";
 @use "sass:list";
 @use "abstract" as *;
 @use "public" as *;
 
-
-$rm-sizes: (
-  // font, line, weight, padding, border-radius, border-width
-  "small": ("sm", "tight", "light", "sm", "md", "thin"),
-  "medium": ("md", "tight", "light", "md", "lg", "base"),
-  "large": ("md", "normal", "normal", "md", "lg", "base"),
+$rm-item-radius: (
+  "small": "sm",
+  "medium": "sm",
+  "large": "md",
 );
-
-$rm-item-sizes: (
-  // padding, border-radius, min/max-width, gap
-  "small": ("md", "sm", 150px, 300px),
-  "medium": ("lg", "md", 200px, 350px),
-  "large": ("lg", "md", 250px, 400px),
+$rm-item-space: (
+  "small": "sm",
+  "medium": "md",
+  "large": "md",
+);
+$rm-item-space-lower: (
+  "small": "sm",
+  "medium": "sm",
+  "large": "md",
+);
+$rm-item-width: (
+  "small": 120px,
+  "medium": 150px,
+  "large": 200px,
+);
+$rm-sizes: (
+  // font, weight, padding, border-width, radius
+  "small": ("md", "light", "sm", "thin", "md"),
+  "medium": ("md", "light", "md", "base", "md"),
+  "large": ("lg", "normal", "md", "base", "lg"),
 );
 
 @mixin useRMenuItem() {
-  user-select: none;
-
-  @each $size, $types in $rm-item-sizes {
+  @include useUnselect();
+  @each $size in $index-sizes {
     @include m($size) {
-      padding: getCssVar("padding", list.nth($types, 1));
-      border-radius: getCssVar("border-radius", list.nth($types, 2));
-      min-width: getCssVar("min-width", list.nth($types, 3));
-      max-width: getCssVar("max-width", list.nth($types, 4));
+      padding: getCssVar("padding", map.get($rm-item-space, "#{$size}"));
+      border-radius: getCssVar("border-radius", map.get($rm-item-radius, "#{$size}"));
     }
   }
 }
 
 @mixin useRMenuColor() {
-  &:hover {
-    color: getCssVar("text", "inverse");
-    background-color: getCssVar("accent", "hover");
-  }
-
   @include when("disabled") {
     color: getCssVar("text", "secondary");
   }
@@ -49,18 +54,25 @@ $rm-item-sizes: (
 }
 
 @mixin useRMenuText() {
-  @each $size, $gap in (
-    "small", "md",
-    "medium", "md",
-    "large", "lg",
-  ) {
+  @each $size in $index-sizes {
     @include m($size) {
-      gap: getCssVar("gap", $gap);
+      gap: getCssVar("gap", map.get($rm-item-space, "#{$size}"));
+      min-width: map.get($rm-item-width, "#{$size}");
     }
   }
 }
 
+@mixin useTextAlign() {
+  @each $align in ("start", "center", "end") {
+    &[align-#{$align}] {
+      text-align: string.unquote($align);
+    }
+  }
+}
+
+
 @include b("right-menu") {
+  z-index: getCssVar("z-index", top);
   color: getCssVar("text", "primary");
   background-color: getCssVar("bg", "primary");
 
@@ -69,12 +81,15 @@ $rm-item-sizes: (
   @each $size, $types in $rm-sizes {
     @include m($size) {
       font-size: getCssVar("font-size", list.nth($types, 1));
-      line-height: getCssVar("line-height", list.nth($types, 2));
-      font-weight: getCssVar("font-weight", list.nth($types, 3));
-      padding: getCssVar("padding", list.nth($types, 4));
+      font-weight: getCssVar("font-weight", list.nth($types, 2));
+      padding: getCssVar("padding", list.nth($types, 3));
+      border-width: getCssVar("border-width", list.nth($types, 4));
       border-radius: getCssVar("border-radius", list.nth($types, 5));
-      border-width: getCssVar("border-width", list.nth($types, 6));
     }
+  }
+
+  @include when("selected") {
+    border-color: getCssVar("accent", "active");
   }
 }
 
@@ -84,17 +99,14 @@ $rm-item-sizes: (
   @include useRMenuColor();
   @include useFlex(row, center, center);
 
-  width: 2em;
-  height: 2em;
-
   @include useIcon();
 }
 
 @include b("r-menu-divider") {
-  font-size: 0.6em;
+  font-size: 0.7em;
   color: getCssVar("text", "tertiary");
 
-  @include useFlex(row, center);
+  @include useFlex(row, null, center);
 
   span {
     padding-inline: 0.5em;
@@ -105,7 +117,7 @@ $rm-item-sizes: (
   &::before,
   &::after {
     content: "";
-    @include useBorder("bottom", "secondary");
+    @include useBorder("bottom", "secondary", "thin");
   }
 
   @include m("align-start") {
@@ -123,11 +135,7 @@ $rm-item-sizes: (
     &::after{ flex: 1; }
   }
 
-  @each $size, $margin in (
-    "small": "xs",
-    "medium": "sm",
-    "large": "sm",
-  ) {
+  @each $size, $margin in $rm-item-space-lower {
     @include m($size) {
       margin-block: getCssVar("margin", $margin);
     }
@@ -142,17 +150,13 @@ $rm-item-sizes: (
     flex-shrink: 0;
   }
 
-  @include useFlex(row, center);
+  @include useFlex(row, null, center);
   @include useRMenuText();
 
   @include e("text") {
     flex: 1;
     @include useNLine();
-    @each $align in ("start", "center", "end") {
-      &[align-#{$align}] {
-        text-align: $align;
-      }
-    }
+    @include useTextAlign();
   }
 }
 
@@ -160,7 +164,7 @@ $rm-item-sizes: (
   @include useRMenuItem();
   @include useRMenuColor();
 
-  @include useFlex(row, center);
+  @include useFlex(row, null, center);
   @include useRMenuText();
 
   @include useIcon();
@@ -171,9 +175,84 @@ $rm-item-sizes: (
   @include e("text") {
     flex: 1;
     @include useNLine();
-    @each $align in ("start", "center", "end") {
-      &[align-#{$align}] {
-        text-align: $align;
+    @include useTextAlign();
+  }
+}
+
+@include b("r-menu-group") {
+  color: getCssVar("text", "primary");
+  @include useFlex(column);
+
+  @each $size in $index-sizes {
+    @include m($size) {
+      border-radius: getCssVar("border-radius", map.get($rm-item-radius, "#{$size}"));
+    }
+  }
+
+  @include useBorder(null, "secondary", "base");
+  border-color: transparent;
+
+  @include m("component") {
+
+  }
+
+  @include m("icon") {
+    @include when("selected") {
+      border-color: getCssVar("accent", "active");
+    }
+  }
+
+  @include e("text") {
+    font-size: 0.9em;
+    text-align: start;
+    color: getCssVar("text", "secondary");
+
+    @include useNLine();
+    @include useFlex(row, null, center);
+
+    @each $size, $margin in $rm-item-space-lower {
+      @include m($size) {
+        margin: getCssVar("margin", $margin);
+      }
+    }
+  }
+
+  @include e("container") {
+    @include m("component") {
+      @include useFlex(column);
+    }
+    @include m("icon") {
+      display: grid;
+      gap: getCssVar("rmenu-group-icon-gap");
+
+      &>div {
+        margin: auto;
+      }
+    }
+    @each $size, $gap in $rm-item-space-lower {
+      @include m($size) {
+        #{getCssVarName("rmenu-group-icon-gap")}: getCssVar("gap", $gap);
+      }
+    }
+  }
+
+  @include e("button") {
+    flex-shrink: 0;
+    justify-self: center;
+
+    @include useIcon();
+    @include useRMenuColor();
+    @include useFlex(column, center, center);
+
+    @include when("expanded") {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    @each $size in $index-sizes {
+      @include m($size) {
+        border-radius: getCssVar("border-radius", map.get($rm-item-radius, "#{$size}"));
       }
     }
   }

@@ -1,31 +1,24 @@
 <script setup lang="ts">
 import type { NavButtonProps } from "../../types";
-import { useAttrsExist, useBem, useIcon, useLink, useText } from "../../composables";
+import { hasEmitHook, useBem, useIcon, useLink, useText } from "../../composables";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
 import { computed } from "vue";
 import { VtiPopper } from "../public";
 import { useRoute } from "vitepress";
 
-const emit = defineEmits<{ (e: "onActivate"): void }>();
+const emit = defineEmits<{ (e: "activate"): void }>();
 const props = withDefaults(defineProps<NavButtonProps>(), { delay: 300 });
 
-const { existed: hasActivate } = useAttrsExist("onActivate");
 const route = useRoute();
-const { attr } = useLink(props);
+const hasHook = hasEmitHook("activate");
+const { attr } = useLink(props, hasHook);
 
 const isIcon = computed(() => !!props?.icon && !props.text);
 const isText = computed(() => hasOwnProperty(props, "text") && !!props.text);
-const isActive = computed(() => !hasActivate.value && route.path.startsWith(attr.value.href));
+const isActive = computed(() => !hasHook && route.path.startsWith(attr.value.href));
 const hasTooltip = computed(
   () => hasOwnProperty(props, "content") && !!useText(props.content)?.trim()
 );
-
-const handleClick = (e: MouseEvent) => {
-  if (hasActivate.value) {
-    emit("onActivate");
-    e.preventDefault();
-  }
-};
 
 const ns = useBem("nav-button");
 const kls = computed(() => ({
@@ -41,7 +34,7 @@ const kls = computed(() => ({
 
 <template>
   <div :class="kls.wrap">
-    <a v-if="isText" v-bind="attr" :class="kls.link" @click="handleClick">
+    <a v-if="isText" v-bind="attr" :class="kls.link" @click="emit('activate')">
       <component :is="useIcon(props.icon)" v-if="props?.icon" />
       <span>{{ useText(props.text) }}</span>
     </a>
@@ -53,11 +46,11 @@ const kls = computed(() => ({
         :content="props.content"
         :delay="props.delay"
       >
-        <a v-bind="attr" :class="kls.link" @click="handleClick">
+        <a v-bind="attr" :class="kls.link" @click="emit('activate')">
           <component :is="useIcon(props.icon)" />
         </a>
       </VtiPopper>
-      <a v-else v-bind="attr" :class="kls.link" @click="handleClick">
+      <a v-else v-bind="attr" :class="kls.link" @click="emit('activate')">
         <component :is="useIcon(props.icon)" />
       </a>
     </template>

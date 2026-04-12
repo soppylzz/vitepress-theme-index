@@ -12,8 +12,9 @@ const currentEventPath = ref<EventTarget[] | null>(null);
 const navItems = new Map<string, MenuNavItem>();
 
 const actKey = ref("");
-const openKeys = ref<string[]>([]);
 const isActive = ref<boolean>(false);
+
+const blockMouse = ref(false);
 
 /* =============== nav utils =============== */
 function matchTrigger(path: EventTarget[], trigger: MenuTrigger) {
@@ -35,11 +36,9 @@ function useNavState() {
 function useNavCleaner() {
   const blur = () => {
     actKey.value = "";
-    openKeys.value.pop();
   };
   const reset = () => {
     actKey.value = "";
-    openKeys.value = [];
   };
   const close = () => {
     reset();
@@ -58,7 +57,6 @@ function useNavWriter() {
   const enable = (key: string) => {
     if (!navItems.has(key)) return;
     actKey.value = key;
-    openKeys.value.push(key);
   };
   const set = (key: string, value: MenuNavItem) => {
     navItems.set(key, value);
@@ -108,12 +106,10 @@ function firstEnabled() {
 function useNavMove() {
   function moveSibling(direction: -1 | 1) {
     const ack = actKey.value;
-    const { blur } = useNavCleaner();
     const { enable } = useNavWriter();
     if (!ack) {
       const first = firstEnabled();
       if (first) {
-        blur();
         enable(first);
       }
       return;
@@ -124,13 +120,11 @@ function useNavMove() {
 
     const index = siblings.findIndex(([k]) => k === ack);
     const next = (index + direction + siblings.length) % siblings.length;
-    blur();
     enable(siblings[next][0]);
   }
 
   function enterChild() {
     const parent = actKey.value;
-    const { blur } = useNavCleaner();
     const { enable } = useNavWriter();
 
     if (!parent) return;
@@ -138,17 +132,14 @@ function useNavMove() {
       .filter(([k, item]) => parentKeyOf(k) === parent && isSelectable(item))
       .sort(compareItem);
     if (!children.length) return;
-    blur();
     enable(children[0][0]);
   }
 
   function leaveParent() {
     const parent = parentKeyOf(actKey.value);
-    const { blur } = useNavCleaner();
     const { enable } = useNavWriter();
 
     if (parent) {
-      blur();
       enable(parent);
     }
   }
@@ -164,6 +155,16 @@ function installMenuNav(app: App) {
   };
 
   const keyboardFn = async (e: KeyboardEvent) => {
+    if (!blockMouse.value) {
+      blockMouse.value = true;
+      window.addEventListener(
+        "mousemove",
+        () => {
+          blockMouse.value = false;
+        },
+        { once: true }
+      );
+    }
     if (!isActive.value) return;
 
     const { moveSibling, enterChild, leaveParent } = useNavMove();
@@ -232,8 +233,8 @@ function useMenuNav(): MenuNavContext {
     nav: readonly(
       reactive({
         actKey,
-        openKeys,
         isActive,
+        blockMouse,
       })
     ),
     ...useNavCleaner(),
@@ -248,4 +249,5 @@ export {
   useNavWriter,
   useNavState,
   useNavMove,
+  parentKeyOf,
 };

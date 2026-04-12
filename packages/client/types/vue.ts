@@ -1,4 +1,4 @@
-import type { Component, ComputedRef, MaybeRefOrGetter, readonly } from "vue";
+import type { ComputedRef, MaybeRefOrGetter, readonly } from "vue";
 import type { UnionToIntersection } from "@vitepress-theme-index/shared";
 
 type VueReadonly<T extends object> = ReturnType<typeof readonly<T>>;

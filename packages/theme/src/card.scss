@@ -1,0 +1,91 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("docs-card") {
+  display: block;
+  @include useIcon();
+  @include useBorder(null, "primary");
+
+  overflow: hidden;
+  border-radius: getCssVar("border-radius", $docs-radius);
+  background-color: getCssVar("bg", "secondary");
+  font-size: getCssVar("font-size", "md");
+  margin: getCssVar("margin", $docs-space);
+
+  & a {
+    @include useLink();
+  }
+
+  @include e("times") {
+    font-size: 0.8em;
+    color: getCssVar("text", "primary");
+    letter-spacing: getCssVar("letter-spacing", "wide");
+
+    margin: getCssVar("padding", $docs-space);
+    @include useFlex(row, space-between, center);
+  }
+
+  @include e("quick") {
+    margin: getCssVar("padding", $docs-space);
+    @include useFlex(row, center, center, $docs-item-space, "flex-wrap", "center");
+  }
+
+  @include e("license") {
+    color: getCssVar("text", "primary");
+
+    $license-pad: getCssVar("padding", $docs-space);
+    padding: $license-pad;
+    padding-bottom: calc($license-pad / 2);
+
+    @include useFlex(row, space-between, center);
+    @include useBorder(top, "primary");
+
+    #vti-docs-license {
+      font-style: italic;
+      @include useUnselect();
+      font-weight: getCssVar("font-weight", "semibold");
+      a {
+        font-weight: getCssVar("font-weight", "normal");
+      }
+      &:hover {
+        color: getCssVar("accent", "hover");
+      }
+      @include useFlex(row, null, center, "sm");
+    }
+
+    #vti-docs-share {
+      @include useFlex(row, null, center, "sm");
+      svg:hover {
+        color: getCssVar("accent", "hover");
+      }
+    }
+  }
+
+  @include e("qrcode") {
+    transition: all ease 1s;
+    overflow: hidden;
+
+    $qrcode-pad: getCssVar("padding", $docs-space);
+    padding-bottom: $qrcode-pad;
+    padding-top: calc($qrcode-pad / 2);
+
+    @include useFlex(row, center, center);
+
+    interpolate-size: allow-keywords;
+    height: auto;
+    canvas {
+      transition: inherit;
+      transform: scale(1);
+    }
+    @include useVisual();
+    @include when("closed") {
+      height: 0;
+      padding-bottom: 0;
+      canvas {
+        transform: scale(0);
+      }
+      @include useVisual(false);
+    }
+  }
+}

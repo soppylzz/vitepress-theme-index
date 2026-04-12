@@ -1,0 +1,63 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("docs-page") {
+  // default:pad, desktop
+  color: getCssVar("text", "primary");
+  font-size: getCssVar("font-size", "md");
+  margin: getCssVar("margin", $docs-space);
+  @include useFlex(row, space-between, null, $docs-space);
+
+  @include e("button") {
+    flex: 1;
+    background-color: getCssVar("bg", "secondary");
+    border-radius: getCssVar("border-radius", $docs-radius);
+    padding: getCssVar("padding", $docs-item-space);
+
+    @include useBorder(null, "primary");
+    &:hover {
+      border-color: getCssVar("accent", "hover");
+      a>span:first-child {
+        color: getCssVar("text", "primary");
+      }
+      a>span:last-child {
+        color: getCssVar("accent", "hover");
+      }
+    }
+
+    a {
+      @include useLink();
+      span:first-child {
+        font-size: 0.8em;
+        color: getCssVar("text", "secondary");
+        letter-spacing: getCssVar("letter-spacing", "wider");
+      }
+      span:last-child {
+        @include useNLine(2);
+        line-height: getCssVar("line-height", "relaxed");
+      }
+
+      &[data-prev] {
+        @include useFlex(column, null, flex-start, $docs-item-space);
+      }
+      &[data-next] {
+        @include useFlex(column, null, flex-end, $docs-item-space);
+      }
+    }
+
+    @include when("hidden") {
+      visibility: hidden;
+    }
+  }
+
+  @include when("column") {
+    flex-direction: column;
+
+    @include e("button") {
+      @include when("hidden") {
+        display: none;
+      }
+    }
+  }
+}

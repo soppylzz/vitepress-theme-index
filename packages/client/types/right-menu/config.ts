@@ -4,21 +4,21 @@ import type { IndexActivateEvent, IndexIcon, IndexSize, IndexText } from "../glo
 import type { MenuItemAlign } from "./unit";
 import type { EmitsTypeFromHooks } from "../vue";
 
-interface RMenuDividerProps extends /* @vue-ignore */ RMenuBaseProps {
+interface RMenuDividerProps extends RMenuBaseProps {
   text?: IndexText;
   align?: MenuItemAlign;
 }
-interface RMenuGroupProps extends /* @vue-ignore */ RMenuEventProps {
+interface RMenuGroupProps extends RMenuEventProps {
   mode: "component" | "icon";
   text?: IndexText;
   row?: number;
   column?: number;
 }
-interface RMenuIconProps extends /* @vue-ignore */ RMenuEventProps {
+interface RMenuIconProps extends RMenuEventProps {
   icon: IndexIcon;
   closeOnActivate?: boolean;
 }
-interface RMenuSubMenuProps extends /* @vue-ignore */ RMenuEventProps {
+interface RMenuSubMenuProps extends RMenuEventProps {
   text: IndexText;
   activateEvent?: IndexActivateEvent;
   align?: MenuItemAlign;
@@ -26,7 +26,7 @@ interface RMenuSubMenuProps extends /* @vue-ignore */ RMenuEventProps {
   size?: IndexSize;
   expandIcon?: IndexIcon;
 }
-interface RMenuTextProps extends /* @vue-ignore */ RMenuEventProps {
+interface RMenuTextProps extends RMenuEventProps {
   text: IndexText;
   icon?: IndexIcon;
   align?: MenuItemAlign;

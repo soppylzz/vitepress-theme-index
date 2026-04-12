@@ -1,24 +1,21 @@
 <script setup lang="ts">
 import type { MenuButtonProps } from "../../types";
-import { useBem, useText, useLink, useIcon, useAttrsExist } from "../../composables";
+import { useBem, useText, useLink, useIcon, hasEmitHook } from "../../composables";
 import { computed } from "vue";
 import { useMenuItem } from "../context";
 
 const props = defineProps<MenuButtonProps>();
-const emit = defineEmits<{ (e: "onActivate"): void }>();
+const emit = defineEmits<{ (e: "activate"): void }>();
 
-const { existed: hasActivate } = useAttrsExist("onActivate");
+const hasHook = hasEmitHook("activate");
 const { isActive, ctx, setActive } = useMenuItem();
 
-const handleClick = (e: MouseEvent) => {
+const handleClick = () => {
   setActive();
-  if (hasActivate.value) {
-    emit("onActivate");
-    e.preventDefault();
-  }
+  emit("activate");
 };
 
-const { attr } = useLink(props);
+const { attr } = useLink(props, hasHook);
 const ns = useBem("menu-button");
 const kls = computed(() => ({
   wrap: [ns.b(), ns.m(ctx.value.size), ns.when("active", isActive.value)],

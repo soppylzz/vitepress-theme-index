@@ -12,18 +12,18 @@ interface RMenuEventProps extends RMenuBaseProps {
 
 /* =============== hooks =============== */
 interface RMenuBaseHooks {
-  onTrigger?: () => void;
+  trigger?: () => void;
 }
 
 interface RMenuEventHooks extends RMenuBaseHooks {
-  onActivateBefore?: (evt?: MouseEvent | KeyboardEvent) => boolean | void;
-  onActivate?: (evt?: MouseEvent | KeyboardEvent) => void;
+  activateBefore?: (evt?: MouseEvent | KeyboardEvent) => boolean | void;
+  activate?: (evt?: MouseEvent | KeyboardEvent) => void;
 
-  onSelect?: (key?: string) => void;
+  select?: (key?: string) => void;
 }
 
 interface RMenuExpandHooks extends RMenuEventHooks {
-  onDeactivate?: () => void;
+  deactivate?: () => void;
 }
 
-export type { RMenuBaseProps, RMenuBaseHooks, RMenuEventProps, RMenuEventHooks, RMenuExpandHooks };
+export type { RMenuBaseProps, RMenuEventProps, RMenuEventHooks, RMenuExpandHooks };

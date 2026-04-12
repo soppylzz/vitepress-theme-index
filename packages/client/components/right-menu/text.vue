@@ -7,6 +7,8 @@ import { useRightMenuProvide } from "../../utils";
 const emits = defineEmits<RMenuTextEmits>();
 const props = withDefaults(defineProps<RMenuTextProps>(), {
   align: "start",
+  trigger: true,
+  selectable: true,
   closeOnActivate: true,
 });
 
@@ -14,22 +16,23 @@ const { close } = useRightMenuProvide();
 const { render, state, stage, size } = useRMenuItem(props, {
   onChanged: (val) => {
     if (!val) return;
-    emits("onTrigger");
+    emits("trigger");
   },
   onEnter: () => {
     activateFn();
   },
   onSelect: (key) => {
-    emits("onSelect", key);
+    emits("select", key);
   },
-  selectable: () => props.selectable ?? true,
+  selectable: () => props.selectable,
   state: () => props.state,
 });
 
 const activateFn = (evt?: MouseEvent) => {
-  const canActivate = emits("onActivateBefore", evt) !== false;
+  if (state.value === "disabled") return;
+  const canActivate = emits("activateBefore", evt) !== false;
   if (canActivate) {
-    emits("onActivate", evt);
+    emits("activate", evt);
     if (props.closeOnActivate) {
       close();
     }
