@@ -73,6 +73,7 @@ const injectLogger = createLogger("inject");
 const rightMenuLogger = createLogger("right-menu");
 const renderLogger = createLogger("render");
 const runtimeLogger = createLogger("runtime");
+const cliLogger = createLogger("cli");
 
 export {
   buildLogger,
@@ -81,5 +82,6 @@ export {
   rightMenuLogger,
   renderLogger,
   runtimeLogger,
+  cliLogger,
   IndexError,
 };

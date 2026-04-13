@@ -1,0 +1,9 @@
+{
+  "name": "@vitepress-theme-index/cli",
+  "private": true,
+  "author": "soppylzz",
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "dev": ""
+  }
+}

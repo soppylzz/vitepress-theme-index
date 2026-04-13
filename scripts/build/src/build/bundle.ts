@@ -1,6 +1,15 @@
 import { resolve } from "node:path";
 import { builtinModules } from "node:module";
-import { clientRoot, pkgRoot, nodeRoot, projDist, projRoot, sharedRoot } from "../const";
+import {
+  clientRoot,
+  pkgRoot,
+  nodeRoot,
+  projDist,
+  projRoot,
+  sharedRoot,
+  cliRoot,
+  cliDist,
+} from "../const";
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
 import glob from "fast-glob";
@@ -60,6 +69,26 @@ function generateOutputs(
     },
   ];
   return defaultOutputs.filter((option) => option.format && formats.includes(option.format));
+}
+
+async function buildCli() {
+  const input = resolve(cliRoot, "index.ts");
+
+  await buildPackage({
+    name: "@vitepress-theme-index/cli",
+    input: {
+      input,
+      external: generateExternals([...builtinModules, "node:"]),
+      treeshake,
+    },
+    output: [
+      {
+        format: "esm",
+        dir: cliDist,
+        entryFileNames: "",
+      },
+    ],
+  });
 }
 
 async function buildShared() {

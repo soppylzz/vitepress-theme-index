@@ -24,6 +24,7 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
         }
         case "broad":
         default: {
+          // TODO: add prefix limit
           const patterns = ["!**/node_modules/**", `/**/${i18n.file}`];
           return `${baseExportCode} export const data = import.meta.glob(${JSON.stringify(patterns)}, { eager: true, import: "default"})`;
         }

@@ -22,7 +22,7 @@ const kls = computed(() => ({
       <span v-if="owner"
         >{{ t("docs.footer.owner") }} <a v-bind="ownerAttr">{{ useText(owner.text) }}</a> @
         {{ new Date(build).getFullYear() }} - {{ new Date().getFullYear() }}</span
-      >
+      >feat
       <span
         >{{ t("docs.footer.theme") }}
         <a href="https://github.com/soppylzz/vitepress-theme-index" target="_blank"
