@@ -5,10 +5,13 @@
   "author": "soppylzz",
   "type": "module",
   "scripts": {
-    "cli:dev": "node ./cli.mjs --dev"
+    "cli:dev": "node ./cli.mjs -d"
   },
   "peerDependencies": {
     "vitepress": "^1.6.0"
   },
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "dependencies": {
+    "vitepress": "^1.6.0"
+  }
 }

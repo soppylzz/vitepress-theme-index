@@ -18,7 +18,7 @@ async function query(): Promise<IndexCliOptions> {
   const folder = await safe(
     text({
       message: "vitepress directory (where your docs are stored)?",
-      initialValue: "./docs",
+      placeholder: "./docs",
       defaultValue: "./docs",
     })
   );
@@ -34,7 +34,7 @@ async function query(): Promise<IndexCliOptions> {
   const i18n = await safe(
     confirm({
       message: "enable i18n multi-language support?",
-      initialValue: false,
+      initialValue: true,
     })
   );
 

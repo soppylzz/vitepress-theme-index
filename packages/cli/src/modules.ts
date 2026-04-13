@@ -1,5 +1,5 @@
 import type { CliModule } from "./type";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import fs from "fs-extra";
 import ejs from "ejs";
 import { copyFolderRecursive, getLangTargetPath, getSupportLangs } from "./utils";
@@ -7,52 +7,45 @@ import { PATHS, getEjsData, getVtiData } from "./const";
 import { INDEX_ADDITION_NAME, INDEX_CONFIG_NAME } from "@vitepress-theme-index/shared";
 
 function createPackage(): CliModule {
+  const TARGET_PKG = resolve(process.cwd(), "package.json");
+  let refPkg: any = null;
+
   return {
     name: "packageJson",
-    async validate(ctx) {
-      const pkgPath = resolve(process.cwd(), "package.json");
-      const pkgExists = fs.existsSync(pkgPath);
+    validate(ctx) {
+      // check reference
+      refPkg = !ctx.options.dev
+        ? fs.readJsonSync(PATHS.themePackageJson)
+        : fs.readJsonSync(TARGET_PKG)
+      if (!refPkg?.peerDependencies?.vitepress) return ["DEP_NOT_FOUND", "unable to find deps in package.json"]
 
+      // check target
+      const pkgExists = fs.existsSync(TARGET_PKG);
       ctx.metadata.pkgFound = pkgExists;
-      ctx.pkgData = pkgExists ? fs.readJsonSync(pkgPath) : { name: ctx.options.siteName };
+      ctx.pkgData = pkgExists ? fs.readJsonSync(TARGET_PKG) : { name: ctx.options.siteName, scripts: {} };
+      ctx.pkgData.scripts ??= {};
 
-      if (!ctx.pkgData.scripts) ctx.pkgData.scripts = {};
       return true;
     },
-    async create(ctx) {
+    create(ctx) {
       const { options, pkgData } = ctx;
-      const prefix = options.prefix as string;
-      const { folder } = options;
+      const { folder = ".", prefix: prefixRaw, dev } = options;
+      const prefix = prefixRaw ? `${prefixRaw}:`: "";
 
-      pkgData!.scripts![`${prefix}:dev`] = `vitepress dev ${folder}`;
-      pkgData!.scripts![`${prefix}:build`] = `vitepress build ${folder}`;
-      pkgData!.scripts![`${prefix}:preview`] = `vitepress preview ${folder}`;
+      pkgData!.scripts[`${prefix}dev`] = `vitepress dev ${folder}`;
+      pkgData!.scripts[`${prefix}build`] = `vitepress build ${folder}`;
+      pkgData!.scripts[`${prefix}preview`] = `vitepress preview ${folder}`;
 
       const depsToAdd: Record<string, string> = {};
 
-      if (!options.dev) {
-        const themePkg = fs.readJsonSync(PATHS.themePackageJson);
-        if (themePkg.peerDependencies?.vitepress) {
-          depsToAdd["vitepress"] = themePkg.peerDependencies.vitepress;
-        }
-        depsToAdd["vitepress-theme-index"] = themePkg.version || "latest";
-      } else {
-        const pkgPath = resolve(process.cwd(), "package.json");
-        if (fs.existsSync(pkgPath)) {
-          const cwdPkg = fs.readJsonSync(pkgPath);
-          if (cwdPkg.dependencies?.vitepress)
-            depsToAdd["vitepress"] = cwdPkg.dependencies.vitepress;
-          if (cwdPkg.dependencies?.["vitepress-theme-index"]) {
-            depsToAdd["vitepress-theme-index"] = cwdPkg.dependencies["vitepress-theme-index"];
-          }
-        }
-      }
-
+      depsToAdd["vitepress"] = refPkg.peerDependencies.vitepress
+      depsToAdd["vitepress-theme-index"] = refPkg.version || "latest";
       ctx.depsToAdd = depsToAdd;
+
       if (!options.dev) {
         pkgData!.dependencies ??= {};
         Object.assign(pkgData!.dependencies, depsToAdd);
-        fs.writeJsonSync(resolve(process.cwd(), "package.json"), pkgData, { spaces: 2 });
+        fs.writeJsonSync(TARGET_PKG, pkgData, { spaces: 2 });
       }
     },
     postCreate(ctx) {
@@ -64,12 +57,24 @@ function createPackage(): CliModule {
 }
 
 function createMarkdown(): CliModule {
+  let targetPath: string | null = null;
+
   return {
     name: "markdowns",
-    async create(ctx) {
-      const { folder, mode, i18n } = ctx.options;
+    validate(ctx) {
+      targetPath = resolve(process.cwd(), ctx.options.folder || ".")
+      const indexMd = resolve(targetPath, "index.md");
+      if (fs.existsSync(indexMd)) {
+        return [
+          "MARKDOWN_EXISTS",
+          `index.md already exists in ${relative(process.cwd(), indexMd)}`,
+        ]
+      }
+      return true
+    },
+    create(ctx) {
+      const { mode, i18n } = ctx.options;
       const langs = getSupportLangs(i18n);
-      const targetPath = resolve(process.cwd(), folder);
       const templatePath = PATHS.getDocTemplate(mode);
 
       for (const lang of langs) {
@@ -82,11 +87,23 @@ function createMarkdown(): CliModule {
 }
 
 function createScripts(): CliModule {
+  let targetPath: string | null = null;
+
   return {
     name: "scripts",
+    validate(ctx) {
+      targetPath = resolve(process.cwd(), ctx.options.folder || ".");
+      const vitepressDir = resolve(targetPath, ".vitepress");
+      if (fs.existsSync(vitepressDir)) {
+        return [
+          "SCRIPTS_EXISTS",
+          `.vitepress already exists in ${relative(process.cwd(), vitepressDir)}`
+        ];
+      }
+      return true;
+    },
     async create(ctx) {
-      const { folder, i18n, useTs, siteName } = ctx.options;
-      const targetPath = resolve(process.cwd(), folder);
+      const {i18n, useTs, siteName } = ctx.options;
       const vitepressPath = resolve(targetPath, ".vitepress");
       const templatePath = PATHS.script;
 
