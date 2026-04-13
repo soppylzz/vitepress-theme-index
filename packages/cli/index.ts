@@ -1,4 +1,5 @@
-import { intro, text, select, confirm, outro, spinner, isCancel, cancel } from "@clack/prompts";
+import { cliLogger } from "@vitepress-theme-index/shared";
+import { queryByClackPrompt } from "./utils";
 
 interface IndexCliOptions {
   folder: string;
@@ -11,6 +12,11 @@ interface IndexCliOptions {
   dev?: boolean;
 }
 
-async function generate(args: any) {
-  intro("vitepress with theme-index cli");
+async function cli() {
+  const options = await queryByClackPrompt();
 }
+
+cli().catch((err) => {
+  cliLogger.error(err);
+  process.exit(1);
+});

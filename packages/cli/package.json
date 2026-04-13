@@ -3,7 +3,8 @@
   "private": true,
   "author": "soppylzz",
   "packageManager": "pnpm@10.12.4",
+  "type": "module",
   "scripts": {
-    "dev": ""
+    "cli:dev": "node ./cli.mjs --dev"
   }
 }

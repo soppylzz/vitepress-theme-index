@@ -1,0 +1,19 @@
+{
+  "archive": "ARCHIVE",
+  "reference": {
+    "header": "REFERENCE",
+    "side": "API Reference",
+    "theme": "Theme API",
+    "plugin": "Plugin API"
+  },
+  "guide": {
+    "header": "GUIDE",
+    "markdown": "Markdown Example"
+  },
+  "quick": {
+    "header": "QUICK",
+    "github": "GitHub",
+    "issue": "GitHub Issues",
+    "releases": "Theme Releases"
+  }
+}
