@@ -1,19 +1,9 @@
 import { cliLogger } from "@vitepress-theme-index/shared";
-import { queryByClackPrompt } from "./utils";
-
-interface IndexCliOptions {
-  folder: string;
-  siteName: string;
-  i18n: boolean;
-  ts: boolean;
-  mode: "docs" | "blog";
-  addScript: boolean;
-  prefix: string;
-  dev?: boolean;
-}
+import { query, scaffold } from "./src";
 
 async function cli() {
-  const options = await queryByClackPrompt();
+  const options = await query();
+  await scaffold(options);
 }
 
 cli().catch((err) => {

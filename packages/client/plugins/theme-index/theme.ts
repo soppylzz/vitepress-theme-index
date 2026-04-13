@@ -4,7 +4,9 @@ import { isArray, isNumber, merge, omit } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
   IndexClientThemeConfig,
+  IndexPreset,
   IndexResponse,
+  IndexThemeMode,
   ResolvedIndexClientThemeConfig,
   UserIndexClientThemeConfig,
 } from "../../types";
@@ -13,14 +15,9 @@ import { pluginLogger } from "@vitepress-theme-index/shared";
 
 const defaultThemeConfig = {
   breakPoint: [768, 1280],
-  font: {
-    size: 16,
-    family: "",
-  },
-  theme: {
-    preset: "default",
-    mode: "auto",
-  },
+  fontSize: 16,
+  preset: "default",
+  mode: "auto",
 } as const satisfies ResolvedIndexClientThemeConfig;
 
 function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>) {
@@ -36,19 +33,18 @@ function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>)
   return { response, update };
 }
 
-function createThemeAction(theme: IndexClientThemeConfig["theme"]) {
-  const available: Record<keyof typeof theme, string[]> = {
-    mode: [...indexThemeMode],
-    preset: [...indexPreset],
+function createThemeAction(theme: IndexClientThemeConfig) {
+  const available = {
+    preset: indexPreset,
+    mode: indexThemeMode,
   };
-  const set = <K extends keyof IndexClientThemeConfig["theme"]>(key: K, val: (typeof theme)[K]) =>
-    (theme[key] = val);
-  const cycle = <K extends keyof IndexClientThemeConfig["theme"]>(key: K, step: -1 | 1) => {
-    const list = available[key];
-    const current = theme[key];
-    theme[key] = list[(list.indexOf(current) + step + list.length) % list.length] as any;
+  const setPreset = (preset: IndexPreset) => {
+    theme.preset = preset;
   };
-  return { set, cycle };
+  const setMode = (mode: IndexThemeMode) => {
+    theme.mode = mode;
+  };
+  return { available, setPreset, setMode };
 }
 
 function isValidBreakPoint(breakPoint: IndexClientThemeConfig["breakPoint"]) {
@@ -82,7 +78,7 @@ function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeC
   const ctx = reactive(resolved);
 
   const { response, update } = createResponsive(toRef(ctx, "breakPoint"));
-  const actions = createThemeAction(ctx.theme);
+  const actions = createThemeAction(ctx);
 
   if (!import.meta.env.SSR) {
     window.addEventListener("resize", update, { passive: true });

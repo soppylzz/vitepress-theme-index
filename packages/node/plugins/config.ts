@@ -8,7 +8,6 @@ import type {
 } from "../types";
 import { importAliasEnvs } from "../types";
 import {
-  CONFIG_PATTERN,
   DEFAULT_IMPORT_CONFIG,
   DEFAULT_PLUGIN_CONFIG,
   NODE_EXTENSIONS,
@@ -21,6 +20,7 @@ import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
 import {
+  INDEX_CONFIG_NAME,
   setupIndexErrorInterceptor,
   pluginLogger,
   resolveDefineAble,
@@ -66,7 +66,7 @@ async function loadPluginConfig(
       return isConfigFile(absPath, extensions) ? absPath : null;
     }
     for (const ext of extensions) {
-      const maybeFile = resolve(process.cwd(), dir, `${CONFIG_PATTERN}${ext}`);
+      const maybeFile = resolve(process.cwd(), dir, `${INDEX_CONFIG_NAME}${ext}`);
       if (isConfigFile(maybeFile, extensions)) return maybeFile;
     }
     return null;

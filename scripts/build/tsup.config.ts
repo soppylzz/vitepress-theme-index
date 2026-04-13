@@ -6,4 +6,5 @@ export default defineConfig({
   format: ["cjs"],
   external: ["rollup"],
   entry: ["src/run.ts"],
+  sourceMap: true,
 });

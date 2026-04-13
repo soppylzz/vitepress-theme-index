@@ -13,7 +13,6 @@ function provideSubNavContext() {
     isExpand.value = !isExpand.value;
   }
   function closeToc() {
-    console.log("close");
     isExpand.value = false;
   }
 

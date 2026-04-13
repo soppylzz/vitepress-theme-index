@@ -1,9 +1,8 @@
 import type { IndexImportPluginConfig, ResolvedIndexPluginConfig } from "./types";
 import type { PostMetaInfo } from "@vitepress-theme-index/shared";
+import { INDEX_ADDITION_NAME } from "@vitepress-theme-index/shared";
 
-const DEFAULT_NAME = "vti";
 const PLUGIN_PREFIX = "vitepress-theme-index";
-const CONFIG_PATTERN = "index.config";
 const NODE_EXTENSIONS = [".js", ".mjs", ".cjs"] as const;
 const VITE_EXTENSIONS = [".ts", ".mts", ".js", ".mjs", ".cjs"] as const;
 
@@ -19,9 +18,9 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
     mode: "broad",
     rootLocale: "zh-cn",
     datetimeFormats: undefined,
-    file: `${DEFAULT_NAME}.json`,
+    file: `${INDEX_ADDITION_NAME}.json`,
   },
-  addition: { name: DEFAULT_NAME },
+  addition: { name: INDEX_ADDITION_NAME },
   meta: {
     cache: {
       enable: true,
@@ -44,9 +43,7 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
 };
 
 export {
-  DEFAULT_NAME,
   PLUGIN_PREFIX,
-  CONFIG_PATTERN,
   VITE_EXTENSIONS,
   NODE_EXTENSIONS,
   DEFAULT_IMPORT_CONFIG,

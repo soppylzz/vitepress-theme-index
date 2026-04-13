@@ -41,7 +41,7 @@ class IndexError extends Error {
   }
 
   static is(error: unknown): error is IndexError {
-    return !!(error as IndexError)[INDEX_ERROR_SYMBOL];
+    return error instanceof IndexError || !!(error as IndexError)[INDEX_ERROR_SYMBOL];
   }
 
   custom(showStack: boolean = true) {
@@ -61,8 +61,9 @@ function createLogger(scoped: string) {
 
   return {
     ...logger,
-    error: (msg: string): never => {
-      throw new IndexError(msg, prefixedScoped);
+    error: (msg: Error | string): never => {
+      const message = msg instanceof Error ? msg.message : msg;
+      throw new IndexError(message, prefixedScoped);
     },
   };
 }

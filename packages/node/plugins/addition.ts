@@ -1,6 +1,6 @@
 import type { Plugin } from "vite";
-import { VIRTUAL_INDEX_ADDITION_PKG } from "@vitepress-theme-index/shared";
-import { PLUGIN_PREFIX, DEFAULT_NAME, VITE_EXTENSIONS } from "../const";
+import { INDEX_ADDITION_NAME, VIRTUAL_INDEX_ADDITION_PKG } from "@vitepress-theme-index/shared";
+import { PLUGIN_PREFIX, VITE_EXTENSIONS } from "../const";
 import type { IndexPluginContext } from "../types";
 
 const addVirtualId = VIRTUAL_INDEX_ADDITION_PKG;
@@ -15,7 +15,7 @@ function createAdditionPlugin(ctx: IndexPluginContext): Plugin {
     load(id) {
       if (id !== addResolvedId) return;
       const { addition } = ctx?.ctx ?? {};
-      const name = addition?.name || DEFAULT_NAME;
+      const name = addition?.name || INDEX_ADDITION_NAME;
       const patterns = [
         "!**/node_modules/**",
         ...VITE_EXTENSIONS.map((ext) => `/**/${name}${ext}`),

@@ -11,7 +11,7 @@ async function safe<T>(p: Promise<T | symbol>): Promise<T> {
   return res;
 }
 
-async function queryByClackPrompt(): Promise<IndexCliOptions> {
+async function query(): Promise<IndexCliOptions> {
   intro("vitepress with theme-index");
   const args = mri(process.argv.slice(2));
 
@@ -73,7 +73,6 @@ async function queryByClackPrompt(): Promise<IndexCliOptions> {
       })
     );
   }
-  outro("test");
 
   return {
     folder,
@@ -87,4 +86,4 @@ async function queryByClackPrompt(): Promise<IndexCliOptions> {
   };
 }
 
-export { queryByClackPrompt };
+export { query };

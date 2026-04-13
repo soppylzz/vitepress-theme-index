@@ -1,4 +1,4 @@
-import { buildClient, buildNode, buildShared, buildStyles } from "./build";
+import { buildCli, buildClient, buildNode, buildShared, buildStyles } from "./build";
 import { indexRoot, projDist, projRoot, typeDist } from "./const";
 import { run } from "./utils";
 import { copy } from "fs-extra";
@@ -33,6 +33,7 @@ const buildTypes = async () => {
 async function build() {
   await run("pnpm", ["run", "clean:dist"]);
   // build js
+  await buildCli();
   await buildShared();
   await buildClient();
   await buildNode();

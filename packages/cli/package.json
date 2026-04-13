@@ -1,10 +1,14 @@
 {
   "name": "@vitepress-theme-index/cli",
   "private": true,
+  "version": "0.0.1-test",
   "author": "soppylzz",
-  "packageManager": "pnpm@10.12.4",
   "type": "module",
   "scripts": {
     "cli:dev": "node ./cli.mjs --dev"
-  }
+  },
+  "peerDependencies": {
+    "vitepress": "^1.6.0"
+  },
+  "packageManager": "pnpm@10.12.4"
 }

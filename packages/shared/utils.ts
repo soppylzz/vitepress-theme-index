@@ -41,6 +41,9 @@ const VIRTUAL_INDEX_ADDITION_PKG = "virtual:index-addition";
 const VIRTUAL_INDEX_SEARCH_PKG = "virtual:index-search";
 const VIRTUAL_INDEX_ARCHIVE_PKG = "virtual:index-archive";
 
+const INDEX_CONFIG_NAME = "vti.config";
+const INDEX_ADDITION_NAME = "vti.addition";
+
 export {
   ensureArray,
   escapeRegex,
@@ -53,4 +56,6 @@ export {
   VIRTUAL_INDEX_ADDITION_PKG,
   VIRTUAL_INDEX_SEARCH_PKG,
   VIRTUAL_INDEX_ARCHIVE_PKG,
+  INDEX_CONFIG_NAME,
+  INDEX_ADDITION_NAME,
 };

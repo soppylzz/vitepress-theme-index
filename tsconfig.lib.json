@@ -12,5 +12,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["packages", "packages/client/vti.d.ts"],
-  "exclude": ["node_modules", "dist", "packages/play", "template", "bin"]
+  "exclude": ["node_modules", "dist", "packages/play"]
 }

@@ -1,15 +1,6 @@
 import { resolve } from "node:path";
 import { builtinModules } from "node:module";
-import {
-  clientRoot,
-  pkgRoot,
-  nodeRoot,
-  projDist,
-  projRoot,
-  sharedRoot,
-  cliRoot,
-  cliDist,
-} from "../const";
+import { clientRoot, pkgRoot, nodeRoot, projDist, projRoot, sharedRoot, cliRoot } from "../const";
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
 import glob from "fast-glob";
@@ -18,12 +9,14 @@ import { rewriteImports } from "../utils";
 
 import type { ModuleFormat, Plugin } from "rollup";
 import { default as nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
 import postcss from "rollup-plugin-postcss";
 
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 
+const cliEntry = "cli.mjs";
 const sourcemap: boolean = false;
 const treeshake: boolean = false;
 const tsconfigPath = resolve(projRoot, "tsconfig.lib.json");
@@ -71,6 +64,15 @@ function generateOutputs(
   return defaultOutputs.filter((option) => option.format && formats.includes(option.format));
 }
 
+async function copyCliTemplate() {
+  const cliFiles = await glob(["template/**/*", `${cliEntry}`]);
+
+  cliFiles.forEach((cliFile) => {
+    // const dest = join()
+    // console.log(cliFile);
+  });
+}
+
 async function buildCli() {
   const input = resolve(cliRoot, "index.ts");
 
@@ -84,11 +86,24 @@ async function buildCli() {
     output: [
       {
         format: "esm",
-        dir: cliDist,
-        entryFileNames: "",
+        dir: cliRoot,
+        preserveModules: false,
+        entryFileNames: cliEntry,
+        sourcemap,
+        banner: "#!/usr/bin/env node",
       },
     ],
+    plugins: [
+      nodeResolve({ extensions: [".mjs", ".js", ".ts"] }),
+      commonjs(),
+      esbuild({
+        tsconfig: tsconfigPath,
+        platform: "node",
+      }),
+    ],
   });
+
+  await copyCliTemplate();
 }
 
 async function buildShared() {
@@ -174,4 +189,4 @@ async function buildClient() {
   });
 }
 
-export { buildShared, buildClient, buildNode, buildPackage };
+export { buildCli, buildShared, buildClient, buildNode, buildPackage };

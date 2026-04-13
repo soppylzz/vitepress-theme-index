@@ -55,6 +55,12 @@
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.23",
     "@types/lodash-es": "^4.17.12",
-    "vue-i18n": "^11.2.8"
+    "@types/cross-spawn": "^6.0.6",
+    "@types/ejs": "^3.1.5",
+    "vue-i18n": "^11.2.8",
+    "cross-spawn": "^7.0.6",
+    "ejs": "^5.0.2",
+    "mri": "^1.2.0",
+    "@clack/prompts": "^1.2.0"
   }
 }
