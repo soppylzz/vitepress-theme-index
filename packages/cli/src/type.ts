@@ -8,6 +8,7 @@ interface IndexCliOptions {
   useTs: boolean;
   mode: "docs" | "blog";
   addScript: boolean;
+  autoInstall: boolean;
   dev?: boolean;
 }
 

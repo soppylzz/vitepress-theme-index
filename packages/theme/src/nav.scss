@@ -142,7 +142,7 @@
     }
 
     margin-block: getCssVar("margin", "lg");
-    padding-inline: getCssVar("padding", "lg");
+    padding-inline: getCssVar("padding", "md");
 
     &:hover {
       color: getCssVar("accent", "hover");

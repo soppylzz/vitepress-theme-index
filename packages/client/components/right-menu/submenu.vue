@@ -28,27 +28,43 @@ const updatePosition = async () => {
   coords.value = [clientRect.right, clientRect.top];
 };
 
-const expandFn = debounce(async (evt: MouseEvent | KeyboardEvent) => {
-  if (state.value === "disabled") return;
-  if (evt.type !== "keydown" && evt.type !== props.activateEvent) return;
-  if (props.activateEvent === "click" && evt.type === "mouseenter") return;
-  if (!show.value) {
-    if (emits("activateBefore", evt) !== false) {
-      emits("activate", evt);
-      show.value = true;
-      await updatePosition();
-    }
-  }
-}, 100);
-
-const closeFn = () => {
+const doClose = () => {
   if (!show.value) return;
-  expandFn.cancel();
   emits("deactivate");
   show.value = false;
 };
 
-useProvidePath({ rect }, { onClose: closeFn });
+const doExpand = async (evt: MouseEvent | KeyboardEvent) => {
+  if (state.value === "disabled") return;
+  if (evt.type !== "keydown" && evt.type !== props.activateEvent) return;
+  if (props.activateEvent === "click" && evt.type === "mouseenter" && show.value) {
+    doClose();
+    return;
+  }
+  if (
+    emits("activateBefore", evt) !== false &&
+    !(props.activateEvent === "click" && evt.type === "mouseenter")
+  ) {
+    emits("activate", evt);
+    show.value = true;
+    await updatePosition();
+  }
+};
+
+const dbExpand = debounce(doExpand, 100);
+const dbClose = debounce(doClose, 500);
+
+const expandFn = (evt: MouseEvent | KeyboardEvent) => {
+  dbClose.cancel();
+  if (!show.value) dbExpand(evt);
+};
+
+const closeFn = (evt: MouseEvent | KeyboardEvent) => {
+  dbExpand.cancel();
+  dbClose();
+};
+
+useProvidePath({ rect }, { onClose: doClose });
 
 const { enterChild } = useNavMove();
 const { render, state, size, stage, opened } = useRMenuItem(props, {
@@ -60,7 +76,7 @@ const { render, state, size, stage, opened } = useRMenuItem(props, {
     emits("select", key);
   },
   onEnter: async (e) => {
-    await expandFn(e);
+    await doExpand(e);
     enterChild();
   },
   selectable: () => props.selectable,
@@ -92,7 +108,14 @@ const kls = computed(() => ({
 </script>
 
 <template>
-  <div v-show="render" ref="button" :class="kls.wrap" @mouseenter="expandFn" @click.stop="expandFn">
+  <div
+    v-show="render"
+    ref="button"
+    :class="kls.wrap"
+    @mouseenter="expandFn"
+    @mouseleave="closeFn"
+    @click.stop="expandFn"
+  >
     <component :is="useIcon(props?.icon)" v-if="props?.icon" />
     <span :class="kls.text" v-bind="{ [`align-${props.align}`]: true }">
       {{ useText(props.text) }}

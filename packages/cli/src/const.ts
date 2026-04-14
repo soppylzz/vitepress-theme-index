@@ -19,7 +19,7 @@ const I18N_CONFIG = {
       markdown: "markdown示例",
     },
     quick: {
-      header: "快速跳转",
+      header: "链接",
       github: "Github",
       issue: "Github 问题",
       releases: "主题发布",
@@ -27,19 +27,19 @@ const I18N_CONFIG = {
   },
   en: {
     route: "/en",
-    archive: "Archive",
+    archive: "ARCH",
     reference: {
-      header: "Reference",
+      header: "API",
       side: "API Reference",
       theme: "Theme API",
       plugin: "Plugin API",
     },
     guide: {
-      header: "Guide",
+      header: "GUIDE",
       markdown: "Markdown Example",
     },
     quick: {
-      header: "Quick Links",
+      header: "LINKS",
       github: "GitHub",
       issue: "GitHub Issues",
       releases: "Theme Releases",

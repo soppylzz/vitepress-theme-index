@@ -15,6 +15,9 @@ const ns = useBem("nav-menu");
 const isHeaderMode = computed(() => props.container === "header");
 const isScreenMode = computed(() => props.container === "screen");
 
+const hasIcon = computed(() => !!props?.icon);
+const hasText = computed(() => !!props?.text);
+
 const kls = computed(() => ({
   wrap: [ns.b(), ns.m(props.container)],
   trigger: [
@@ -27,7 +30,7 @@ const kls = computed(() => ({
 </script>
 
 <template>
-  <div :class="kls.wrap">
+  <div v-if="hasText || hasIcon" :class="kls.wrap">
     <VtiPopper
       v-if="isHeaderMode"
       mode="block"
@@ -36,8 +39,8 @@ const kls = computed(() => ({
       :activate-event="props.activateEvent"
     >
       <div :class="kls.trigger">
-        <component :is="useIcon(props.icon)" v-if="props?.icon" />
-        <span>{{ useText(props.text) }}</span>
+        <component :is="useIcon(props.icon)" v-if="hasIcon" />
+        <span v-if="hasText">{{ useText(props.text) }}</span>
       </div>
       <template #content>
         <VtiMenu size="small" is-collapsed>

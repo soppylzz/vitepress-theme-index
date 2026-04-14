@@ -10,11 +10,12 @@ import type {
   NavItemConfig,
   NavItemType,
 } from "../../types";
-import { VtiNavButton, VtiNavMenu, VtiNavSwitch } from "./items";
 import { ensureArray, hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
 import { renderMenuItems } from "../menu";
-import VtiBrand from "../brand.vue";
 import { useRoute } from "vitepress";
+
+import { VtiNavButton, VtiNavLocale, VtiNavMenu, VtiNavSwitch } from "./items";
+import VtiBrand from "../brand.vue";
 
 const ns = useBem("nav");
 const bems = {
@@ -168,11 +169,21 @@ const VtiNav = defineComponent({
                 .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
                 .filter((item) => !!item)
             }
+            {renderNavItem("pre-locale", { type: "divider" }, { current, container: "header" })!}
+            <VtiNavLocale />
             {withDirectives(
-              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" })!,
+              <>
+                {
+                  renderNavItem(
+                    "pre-switch",
+                    { type: "divider" },
+                    { current, container: "header" }
+                  )!
+                }
+                <VtiNavSwitch v-model={open.value} />
+              </>,
               [[vShow, current === "mobile"]]
             )}
-            {withDirectives(<VtiNavSwitch v-model={open.value} />, [[vShow, current === "mobile"]])}
           </div>
           {
             /* screen container */

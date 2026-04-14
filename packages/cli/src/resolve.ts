@@ -17,7 +17,9 @@ async function scaffold(options: IndexCliOptions) {
         const result = await module.validate(ctx);
         if (result === true) continue;
 
-        const [code, msg] = isArray(result) ? result : ["UNKNOWN", `validation failed in ${index}th module.`];
+        const [code, msg] = isArray(result)
+          ? result
+          : ["UNKNOWN", `validation failed in ${index}th module.`];
         validateErrors.push({ name: module.name, code, msg });
       }
     }
@@ -27,7 +29,6 @@ async function scaffold(options: IndexCliOptions) {
       ctx.metadata.validationFailed = true;
       ctx.metadata.validateErrors = validateErrors;
       await outputMetadata(ctx);
-
     } else {
       outro("scaffolding completed!");
       for (const mod of manager) {
@@ -37,7 +38,7 @@ async function scaffold(options: IndexCliOptions) {
         if (mod?.postCreate) await mod.postCreate(ctx);
       }
       await outputMetadata(ctx);
-      await installDependencies(options);
+      if (options.autoInstall) await installDependencies(options);
     }
   } catch (err) {
     cliLogger.error(err);

@@ -55,10 +55,17 @@ async function query(): Promise<IndexCliOptions> {
     })
   );
 
+  const autoInstall = await safe(
+    confirm({
+      message: "use pm install after create?",
+      initialValue: false,
+    })
+  );
+
   const addScript = await safe(
     confirm({
       message: "add vitepress scripts to package.json?",
-      initialValue: true,
+      initialValue: false,
     })
   );
 
@@ -82,6 +89,7 @@ async function query(): Promise<IndexCliOptions> {
     mode,
     addScript,
     prefix,
+    autoInstall,
     dev: args.dev || args.d,
   };
 }

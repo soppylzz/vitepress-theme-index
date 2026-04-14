@@ -9,8 +9,9 @@ import {
   useShare,
   useTheme,
 } from "../../composables";
+import { VtiTag } from "../public";
 import { useData } from "vitepress";
-import { computed, nextTick, onMounted, ref, shallowRef, watch, watchEffect } from "vue";
+import { computed, ref, shallowRef, watchEffect } from "vue";
 import QRCode from "qrcode";
 
 const { response } = useTheme();
@@ -35,7 +36,6 @@ watchEffect(() => {
 });
 
 // TODO: use js replace interpolate-size
-
 const ns = useBem("docs-card");
 const kls = computed(() => ({
   wrap: ns.b(),
@@ -61,8 +61,7 @@ const { shareToMail, copyLink } = useShare();
     </div>
     <div :class="kls.quick">
       <slot name="vti-docs-card-quick">
-        <a>quick test</a>
-        <a>quick test</a>
+        <VtiTag text="123" />
       </slot>
     </div>
     <div :class="kls.license">

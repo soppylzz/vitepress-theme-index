@@ -20,7 +20,7 @@ interface NavThemeProps {
 }
 
 interface NavMenuProps {
-  text: IndexText;
+  text?: IndexText;
   icon?: IndexIcon;
   container?: NavContainer;
   activateEvent?: IndexActivateEvent;
