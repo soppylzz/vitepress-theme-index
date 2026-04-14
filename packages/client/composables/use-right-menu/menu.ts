@@ -34,6 +34,7 @@ function defineDynamicMenu<Records extends RMenuItemRecord>(
 
   if (!ins) {
     rightMenuLogger.error("`defineDynamicMenu` must be used in setup script");
+    return;
   }
 
   let el: HTMLElement | null = null;

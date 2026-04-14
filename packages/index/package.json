@@ -8,6 +8,7 @@
     "vitepress",
     "vitepress-theme"
   ],
+  "type": "module",
   "main": "./dist/node/index.mjs",
   "module": "./dist/node/index.cjs",
   "types": "./dist/index.d.ts",
@@ -32,6 +33,9 @@
       "require": "./dist/shared/index.cjs"
     },
     "./theme/*": "./dist/theme/*"
+  },
+  "bin": {
+    "vti": "bin/vti.js"
   },
   "peerDependencies": {
     "vitepress": "^1.6.0",

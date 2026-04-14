@@ -15,6 +15,7 @@ const indexRoot = resolve(pkgRoot, "index");
 const projDist = resolve(projRoot, "dist", "dist");
 const typeDist = resolve(projRoot, "dist", "types", "packages");
 const cliDist = resolve(projDist, "cli");
+const indexDist = resolve(indexRoot, "dist");
 
 export {
   projRoot,
@@ -28,4 +29,5 @@ export {
   typeDist,
   cliRoot,
   cliDist,
+  indexDist,
 };

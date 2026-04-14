@@ -31,7 +31,7 @@ const VtiSidebar = defineComponent({
         return withDirectives(
           <VtiDrawer
             modelValue={trigger.value}
-            onUpdate:modelValue={(v) => (trigger.value = v)}
+            onUpdate:modelValue={(v: boolean) => (trigger.value = v)}
             placement={"left"}
             size={"medium"}
             resizable

@@ -10,6 +10,7 @@ type NavItemShow = true | MaybeArray<IndexResponse>;
 type NavButtonProps = {
   text?: IndexText;
   icon?: IndexIcon;
+  baseUrl?: string;
   container?: NavContainer;
 } & IndexLink &
   Omit<PopperProps, "placement" | "size" | "mode" | "activateEvent" | "autoPlace">;

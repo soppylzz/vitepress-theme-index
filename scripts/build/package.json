@@ -4,7 +4,8 @@
   "author": "soppylzz",
   "packageManager": "pnpm@10.12.4",
   "scripts": {
-    "build:pipe": "tsup && node ./dist/run.js"
+    "build:cli": "tsup && node ./dist/run.js --mode cli",
+    "build:full": "tsup && node ./dist/run.js --mode full"
   },
   "devDependencies": {
     "rimraf": "^6.1.2",

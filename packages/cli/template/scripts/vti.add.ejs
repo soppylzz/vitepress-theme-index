@@ -1,0 +1,59 @@
+import { withAdditionIndex } from "vitepress-theme-index";
+
+export default withAdditionIndex({
+  site: {
+    siteName: "<%= siteName %>",
+    owner: {
+      text: "soppylzz",
+      href: "https://github.com/soppylzz",
+    },
+    license: {
+      text: "CC BY-NC-SA 4.0",
+      href: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    }
+  },
+  nav: [
+    {type: "space"},
+    {type: "button", text: "<%= archive %>", target: "both", href: "<%= route %>/archive"},
+    {type: "button", text: "<%= reference.header %>", target: "both", baseUrl: "<%= route %>/api", href: "<%= route %>/api/theme"},
+    {type: "button", text: "<%= guide.header %>", target: "both", baseUrl: "<%= route %>/guide", href: "<%= route %>/guide/md-example"},
+    {
+      type: "menu",
+      text: "<%= quick.header %>",
+      target: "both",
+      children: [
+        {
+          type: "group",
+          text: "<%= quick.github %>",
+          children: [
+            { type: "button", text: "<%= quick.issue %>", href: "https://github.com/soppylzz/vitepress-theme-index/issues" },
+            { type: "button", text: "<%= quick.releases %>", href: "https://github.com/soppylzz/vitepress-theme-index/releases" },
+          ]
+        }
+      ]
+    },
+    { type: "divider" },
+    {
+      type: "button",
+      icon: "github",
+      href: "https://github.com/soppylzz/vitepress-theme-index",
+      content: "vitepress-theme-index",
+    },
+  ],
+  sidebar: {
+    "<%= route %>/api": [
+      {
+        type: "group",
+        text: "<%= reference.side %>",
+        collapsable: false,
+        children: [
+          { type: "button", text: "<%= reference.theme %>", href: "<%= route %>/api/theme" },
+          { type: "button", text: "<%= reference.plugin %>", href: "<%= route %>/api/plugin" }
+        ]
+      }
+    ],
+    "<%= route %>/guide": [
+      { type: "button", text: "<%= guide.markdown %>", href: "<%= route %>/guide/md-example" },
+    ],
+  }
+})

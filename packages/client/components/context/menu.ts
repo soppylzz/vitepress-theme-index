@@ -14,13 +14,16 @@ type MenuContext = {
   setActive(key: string): void;
 };
 
-const MenuContextKey: InjectionKey<MenuContext> = Symbol("MenuContext");
+const MenuContextKey: InjectionKey<MenuContext | null> = Symbol("MenuContext");
 
 function buildMenuKey(parent: string | null, uid: number) {
   return parent ? `${parent}-${uid}` : `${uid}`;
 }
 
-function mergeMenuProps<T extends MenuProps>(raw: MenuProps, mix: Partial<T>) {
+function mergeMenuProps<T extends MenuProps>(
+  raw: MenuProps | null,
+  mix?: Partial<T>
+): Required<MenuProps> {
   return {
     ...mix,
     size: mix?.size || raw?.size || "medium",
@@ -35,19 +38,22 @@ function createMenuContext<T extends MenuProps>(props?: Partial<T>): MenuContext
     activeKey.value = key;
   }
 
-  const ctx = computed<MenuState>(() => ({
-    level: 0,
-    parentKey: "",
-    activeKey: activeKey.value,
-    ...mergeMenuProps(undefined, props),
-  }));
+  const ctx = computed(
+    () =>
+      ({
+        level: 0,
+        parentKey: "",
+        activeKey: activeKey.value,
+        ...mergeMenuProps(null, props),
+      }) as MenuState
+  );
 
   return { ctx, setActive };
 }
 
 function provideMenuContext<T extends MenuProps>(props?: T) {
   const uid = getCurrentInstance()!.uid;
-  const parent = inject<MenuContext>(MenuContextKey, null);
+  const parent = inject(MenuContextKey, null);
 
   if (!parent) {
     provide(MenuContextKey, createMenuContext(props));
@@ -70,7 +76,7 @@ function provideMenuContext<T extends MenuProps>(props?: T) {
 
 function useMenuItem() {
   const uid = getCurrentInstance()!.uid;
-  const { setActive, ctx } = useInject(MenuContextKey);
+  const { setActive, ctx } = useInject(MenuContextKey)!;
 
   const ctxRef = computed(() => toValue(ctx));
   const key = computed(() => buildMenuKey(ctxRef.value.parentKey, uid));

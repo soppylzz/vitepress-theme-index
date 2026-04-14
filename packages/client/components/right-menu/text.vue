@@ -26,7 +26,7 @@ const { render, state, stage, size } = useRMenuItem(props, {
   },
   selectable: () => props.selectable,
   state: () => props.state,
-});
+})!;
 
 const activateFn = (evt?: MouseEvent) => {
   if (state.value === "disabled") return;

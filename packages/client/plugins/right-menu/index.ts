@@ -114,7 +114,7 @@ function useDynamicModeSetup(
 
 /* =============== plugin =============== */
 function createIndexRightMenu<Records extends RMenuItemRecord = never>(
-  config?: UserIndexRightMenuConfig<Records>
+  config: UserIndexRightMenuConfig<Records>
 ) {
   const resolved = resolveIndexMenuConfig(config);
 
@@ -131,7 +131,7 @@ function installRightMenu<Records extends RMenuItemRecord = never>(
   ctx: EnhanceAppContext,
   config?: UserIndexRightMenuConfig<Records>
 ) {
-  const menu = createIndexRightMenu(config);
+  const menu = createIndexRightMenu(config ?? {});
   ctx.app.use(menu);
 }
 

@@ -79,6 +79,7 @@ function renderContentByType(
       const comp = navItemMap[type];
       if (!comp) {
         renderLogger.error(`unknown nav item type: ${type}`);
+        return null;
       }
       const cleanProps = omit(res, ["children", "show"]);
       if (type === "menu") {
@@ -98,6 +99,7 @@ function renderNavItem(
 ): VNode | null {
   if (!checkRender(config, ctx.container)) return null;
   const vnode = renderContentByType(key, config, ctx);
+  if (!vnode) return null;
   if (ctx.container === "screen") return vnode;
 
   const visible = computeVisible(config, ctx);
@@ -151,10 +153,15 @@ const VtiNav = defineComponent({
         .filter((item) => checkRender(item, "screen"))
         .filter((item) => checkIconButton(item));
 
+      const brandComp = () =>
+        siteName && siteName.value ? (
+          <VtiBrand text={siteName.value} brand={brand?.value} size={"medium"} />
+        ) : null;
+
       return (
         <div class={kls.wrapper}>
           <div class={kls.header}>
-            {<VtiBrand text={siteName.value} brand={brand.value} size={"medium"} />}
+            {brandComp()}
             {
               /* header container */
               nav.value
@@ -162,7 +169,7 @@ const VtiNav = defineComponent({
                 .filter((item) => !!item)
             }
             {withDirectives(
-              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" }),
+              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" })!,
               [[vShow, current === "mobile"]]
             )}
             {withDirectives(<VtiNavSwitch v-model={open.value} />, [[vShow, current === "mobile"]])}

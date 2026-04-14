@@ -17,7 +17,7 @@ async function installI18n(ctx: EnhanceAppContext) {
     globalInjection: true,
     locale: initialLocale,
     fallbackLocale: initialLocale,
-    datetimeFormats,
+    datetimeFormats: datetimeFormats as any,
     messages,
   });
   ctx.app.use(i18n);

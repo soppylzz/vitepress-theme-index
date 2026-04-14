@@ -1,8 +1,8 @@
-import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
+import type { BuildI18nViewConfig, IndexIcon, IndexLink, IndexSiteConfig } from "../../types";
 import { indexClientThemeKey, indexNavKey, indexSidebarKey, indexSiteKey } from "../../types";
 import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
 import { isObject, isString } from "lodash-unified";
-import type { MaybeRefOrGetter } from "vue";
+import type { ComputedRef, MaybeRefOrGetter } from "vue";
 import { computed, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
@@ -17,12 +17,15 @@ function useIcon(icon: IndexIcon) {
       : `VtiI${pascalCase(icon)}`;
 }
 
-function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>, block: boolean = false) {
+function useLink<T extends IndexLink>(
+  link?: MaybeRefOrGetter<T | null | undefined>,
+  block: boolean = false
+) {
   const { site } = useData();
   const rawLink = computed(() => toValue(link));
 
   const isExternal = computed(
-    () => checkExternal(rawLink.value?.href) || rawLink.value._target === "_blank"
+    () => checkExternal(rawLink.value?.href) || rawLink.value?._target === "_blank"
   );
 
   const attr = computed(() =>
@@ -38,16 +41,16 @@ function useLink<T extends IndexLink>(link: MaybeRefOrGetter<T>, block: boolean 
   return { attr, isExternal };
 }
 
-function useMaybeI18nData<T>(raw: BuildI18nViewConfig<T>, defaultVal?: T) {
+function useMaybeI18nData<T, D = undefined>(raw: BuildI18nViewConfig<T>, defaultVal?: D) {
   const { localeIndex } = useI18n(); // 你的国际化 hook
 
-  return computed<T>(() => {
+  return computed(() => {
     if (!isObject(raw) || !hasOwnProperty(raw, "i18n") || !raw.i18n) {
       return raw as T;
     }
     const items = raw.items as Record<string, T>;
     return items?.[localeIndex.value] ?? items?.root ?? defaultVal;
-  });
+  }) as ComputedRef<D extends undefined ? T | undefined : T>;
 }
 
 function useMaybeI18nDataWithRoute<T>(
@@ -58,6 +61,7 @@ function useMaybeI18nDataWithRoute<T>(
   const route = useRoute();
 
   return computed(() => {
+    if (!withRoute.value) return {};
     return Object.fromEntries(
       Object.entries(withRoute.value).filter(([path, _]) => route.path.startsWith(path))
     );
@@ -79,7 +83,8 @@ const useSidebar = () => {
 };
 const useSite = () => {
   const raw = useInject(indexSiteKey);
-  return useSplitRefs(useMaybeI18nData(raw));
+  const res = useMaybeI18nData(raw, {});
+  return useSplitRefs(res);
 };
 
 export { useIcon, useLink, useNav, useTheme, useSite, useSidebar, flatArrayWithRoute };

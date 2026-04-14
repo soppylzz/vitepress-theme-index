@@ -9,7 +9,7 @@ function useInject<T>(key: string | InjectionKey<T>, defaultVal?: T, errMsg?: st
     if (!isUndefined(defaultVal)) return defaultVal;
     injectLogger.error(errMsg || `inject failed, unable to find ${String(key)} provides`);
   }
-  return val;
+  return val!;
 }
 
 export { useInject };

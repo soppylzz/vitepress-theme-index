@@ -7,7 +7,7 @@ import { VtiPopper } from "../public";
 import { useRoute } from "vitepress";
 
 const emit = defineEmits<{ (e: "activate"): void }>();
-const props = withDefaults(defineProps<NavButtonProps>(), { delay: 300 });
+const props = withDefaults(defineProps<NavButtonProps>(), { delay: 300, container: "header" });
 
 const route = useRoute();
 const hasHook = hasEmitHook("activate");
@@ -15,7 +15,9 @@ const { attr } = useLink(props, hasHook);
 
 const isIcon = computed(() => !!props?.icon && !props.text);
 const isText = computed(() => hasOwnProperty(props, "text") && !!props.text);
-const isActive = computed(() => !hasHook && route.path.startsWith(attr.value.href));
+const isActive = computed(() => {
+  return !hasHook && !!props?.baseUrl && route.path.startsWith(props?.baseUrl);
+});
 const hasTooltip = computed(
   () => hasOwnProperty(props, "content") && !!useText(props.content)?.trim()
 );
@@ -38,7 +40,7 @@ const kls = computed(() => ({
       <component :is="useIcon(props.icon)" v-if="props?.icon" />
       <span>{{ useText(props.text) }}</span>
     </a>
-    <template v-else>
+    <template v-else-if="isIcon">
       <VtiPopper
         v-if="hasTooltip"
         size="small"
@@ -47,11 +49,11 @@ const kls = computed(() => ({
         :delay="props.delay"
       >
         <a v-bind="attr" :class="kls.link" @click="emit('activate')">
-          <component :is="useIcon(props.icon)" />
+          <component :is="useIcon(props.icon!)" />
         </a>
       </VtiPopper>
       <a v-else v-bind="attr" :class="kls.link" @click="emit('activate')">
-        <component :is="useIcon(props.icon)" />
+        <component :is="useIcon(props.icon!)" />
       </a>
     </template>
   </div>

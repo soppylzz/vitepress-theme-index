@@ -74,7 +74,7 @@ const VtiRightMenu = defineComponent({
       size,
       state,
       stage,
-    } = useRMenuItem(props, { render, state: () => props.state, selectable: true }, true);
+    } = useRMenuItem(props, { render, state: () => props.state, selectable: true });
 
     useRightMenu(finalRender);
     useProvidePath({ rect, state });

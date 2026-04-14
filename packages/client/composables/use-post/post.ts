@@ -12,11 +12,9 @@ function usePost() {
     pluginLogger.error("unable find default archive data");
   }
 
-  return useSplitRefs(() =>
-    overall.find((item) => normalizeLink(site.value, item.path) === route.path)
-  );
+  return useSplitRefs(() => {
+    return overall.find((item) => normalizeLink(site.value, item.path) === route.path);
+  });
 }
 
-function usePagination() {}
-
-export { usePagination, usePost };
+export { usePost };

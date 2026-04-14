@@ -38,6 +38,7 @@ function renderRightMenu(records?: RMenuItemRecord) {
     const comp = rightMenuItemMap[type];
     if (!comp) {
       renderLogger.error(`unknown menu item type: ${type}`);
+      return;
     }
 
     const cleanProps = omit(res, "children");

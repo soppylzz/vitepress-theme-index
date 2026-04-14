@@ -179,10 +179,10 @@ const VtiToc = defineComponent({
         {headers.value.map((h) => (
           <a
             key={h.slug}
-            ref={(el) =>
+            ref={(el: any) =>
               el ? itemRefs.value.set(h.slug, el as HTMLElement) : itemRefs.value.delete(h.slug)
             }
-            onClick={(e) => {
+            onClick={(e: MouseEvent) => {
               e.preventDefault();
               ctx?.closeToc?.();
               scrollToId(h.slug);

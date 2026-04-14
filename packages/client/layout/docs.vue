@@ -14,7 +14,7 @@ import type { IndexSize } from "../types";
 
 const menu = ref(false);
 const { response } = useTheme();
-const { hasToc } = useLayout();
+const { hasToc, hasSidebar } = useLayout();
 const tocSize = computed<IndexSize>(() => (response.value === "mobile" ? "small" : "medium"));
 
 const ns = useBem("docs");
@@ -27,7 +27,7 @@ const kls = computed(() => ({
 
 <template>
   <div :class="kls.wrap">
-    <div :class="kls.sidebar">
+    <div v-if="hasSidebar" :class="kls.sidebar">
       <VtiSidebar v-model="menu" />
     </div>
     <div id="vti-docs-main">
@@ -40,8 +40,8 @@ const kls = computed(() => ({
           <VtiDocsCard />
           <VtiDocsPage />
         </div>
-        <div id="vti-docs-aside">
-          <VtiToc v-if="hasToc" size="large" />
+        <div v-if="hasToc" id="vti-docs-aside">
+          <VtiToc size="large" />
         </div>
       </div>
       <VtiDocsFooter />

@@ -5,26 +5,8 @@ import type { AdditionDataOptions, EjsDataOptions } from "./type";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const I18N_CONFIG = {
-  en: {
-    archive: "Archive",
-    reference: {
-      header: "Reference",
-      side: "API Reference",
-      theme: "Theme API",
-      plugin: "Plugin API",
-    },
-    guide: {
-      header: "Guide",
-      markdown: "Markdown Example",
-    },
-    quick: {
-      header: "Quick Links",
-      github: "GitHub",
-      issue: "GitHub Issues",
-      releases: "Theme Releases",
-    },
-  },
   zh: {
+    route: "",
     archive: "归档",
     reference: {
       header: "参考",
@@ -41,6 +23,26 @@ const I18N_CONFIG = {
       github: "Github",
       issue: "Github 问题",
       releases: "主题发布",
+    },
+  },
+  en: {
+    route: "/en",
+    archive: "Archive",
+    reference: {
+      header: "Reference",
+      side: "API Reference",
+      theme: "Theme API",
+      plugin: "Plugin API",
+    },
+    guide: {
+      header: "Guide",
+      markdown: "Markdown Example",
+    },
+    quick: {
+      header: "Quick Links",
+      github: "GitHub",
+      issue: "GitHub Issues",
+      releases: "Theme Releases",
     },
   },
 } as const;
@@ -60,7 +62,8 @@ const PATHS = {
     return resolve(this.template, mode);
   },
   get themePackageJson() {
-    return resolve(__dirname, "../package.json");
+    // vitepress-theme-index/package.json
+    return resolve(__dirname, "../../package.json");
   },
 } as const;
 
@@ -72,8 +75,8 @@ function getEjsData(options: EjsDataOptions) {
     siteName,
     i18n: i18n
       ? {
-          root: { label: "English", lang: "en" },
-          zh: { label: "简体中文", lang: "zh" },
+          root: { label: "简体中文", lang: "zh-CN" },
+          en: { label: "English", lang: "en-US" },
         }
       : null,
     ...translations,

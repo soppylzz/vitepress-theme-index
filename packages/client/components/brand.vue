@@ -27,7 +27,7 @@ const kls = computed(() => ({
     :data-direction="direction"
     @click="emit('activate')"
   >
-    <img :class="kls.logo" :src="props.brand" alt="Brand" />
+    <img v-if="props.brand" :class="kls.logo" :src="props.brand" alt="Brand" />
     <span :class="kls.text">{{ useText(props.text) }}</span>
   </a>
 </template>

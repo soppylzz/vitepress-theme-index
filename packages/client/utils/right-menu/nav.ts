@@ -211,7 +211,7 @@ function installMenuNav(app: App) {
 }
 
 function useTrigger<T extends { trigger?: MenuTrigger }>(
-  props: T,
+  props?: T,
   options?: {
     onChanged?: WatchCallback<boolean, boolean>;
   }

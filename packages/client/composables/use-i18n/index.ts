@@ -14,7 +14,7 @@ function useI18n() {
   const { t, d } = useVueI18n();
 
   const { site, localeIndex, hash, page } = useData();
-  const translate = (key: string, plural?: number) => t(key, plural);
+  const translate = (key: string | number, plural?: number) => t(key, plural as any);
   const datetime = (value: number | Date, format: I18nDatetimeFormatKey = "short") =>
     d(value, format);
 

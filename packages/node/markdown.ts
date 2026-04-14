@@ -15,8 +15,8 @@ function withIndexMarkdown(config: MarkdownOptions = {}): MarkdownOptions {
     config: (md) => {
       // disable vitepress default theme
       const containerRules = (md.block.ruler as any).__rules__
-        .map((rule) => rule.name)
-        .filter((name) => name.startsWith("container_"));
+        .map((rule: any) => rule.name)
+        .filter((name: string) => name.startsWith("container_"));
       md.block.ruler.disable(containerRules);
       md.renderer.rules.fence = function (...args) {
         const [tokens, idx] = args;

@@ -148,10 +148,10 @@ export function createConfigPlugin(
         const { filePath } = await loadPluginConfig(ctx, resolved, plugins);
         const { viteServer } = ctx;
 
-        if (!viteServer) return;
+        if (!viteServer || !filePath || !ctx?.cwd) return;
         viteServer.watcher.add(filePath).on("change", async (file) => {
           pluginLogger.info(
-            `config file ${relative(ctx.cwd, file)} changed, invalidate sub-plugins...`
+            `config file ${relative(ctx.cwd!, file)} changed, invalidate sub-plugins...`
           );
           await loadPluginConfig(ctx, resolved, plugins);
 

@@ -16,7 +16,7 @@ function useRightMenuRoot(render: MaybeRef<boolean>) {
 
   provide(rightMenuPrivateKey, key);
   const { set } = useNavState();
-  const { close } = useRightMenuProvide();
+  const close = useRightMenuProvide().close!;
 
   watch(
     () => toValue(render),
@@ -26,7 +26,7 @@ function useRightMenuRoot(render: MaybeRef<boolean>) {
     { immediate: true }
   );
 
-  const isInside = (cache: Record<string, HTMLElement>, e: MouseEvent) =>
+  const isInside = (cache: Record<string, HTMLElement> | undefined, e: MouseEvent) =>
     Object.values(cache || {}).some((dom) => dom?.contains(e.target as Node));
 
   const clickFn = (e: MouseEvent) => {
@@ -49,42 +49,57 @@ function useRightMenuRoot(render: MaybeRef<boolean>) {
     e.stopPropagation();
   };
 
+  let isInstallEvent: boolean = false;
   onMounted(() => {
-    const el: HTMLElement = ins.proxy.$el!;
-    if (!(el instanceof HTMLElement)) {
+    const el = ins?.proxy?.$el;
+    if (el instanceof HTMLElement) {
+      isInstallEvent = true;
+      closerCache.set(key, { [key]: el });
+      window.addEventListener("click", clickFn);
+      window.addEventListener("keydown", keyboardFn);
+      window.addEventListener("contextmenu", contextFn, { capture: true });
+    } else {
       rightMenuLogger.error("`useRightMenuRoot` does not support fragment components");
     }
-    closerCache.set(key, { [key]: el });
-    window.addEventListener("click", clickFn);
-    window.addEventListener("keydown", keyboardFn);
-    window.addEventListener("contextmenu", contextFn, { capture: true });
   });
   onUnmounted(() => {
-    closerCache.delete(key);
-    window.removeEventListener("click", clickFn);
-    window.removeEventListener("keydown", keyboardFn);
-    window.removeEventListener("contextmenu", contextFn, { capture: true });
+    if (isInstallEvent) {
+      closerCache.delete(key);
+      window.removeEventListener("click", clickFn);
+      window.removeEventListener("keydown", keyboardFn);
+      window.removeEventListener("contextmenu", contextFn, { capture: true });
+    }
   });
 }
 
 function useRightMenuChild(..._: any[]) {
   const ins = getCurrentInstance()!;
-  const key = generateKey(ins);
   const root = inject(rightMenuPrivateKey);
+  const key = generateKey(ins);
+
+  if (!root) {
+    rightMenuLogger.error("unable to find root key in rightMenuChild");
+  }
+
+  let isInstallEvent: boolean = false;
 
   onMounted(() => {
-    const el: HTMLElement = ins.proxy.$el!;
-    if (!(el instanceof HTMLElement)) {
+    const el = ins?.proxy?.$el;
+    if (el instanceof HTMLElement) {
+      isInstallEvent = true;
+      const parentCache = closerCache.get(root) ?? {};
+      parentCache[key] = el;
+      closerCache.set(root, parentCache);
+    } else {
       rightMenuLogger.error("`useRightMenuChild` does not support fragment components");
     }
-    const parentCache = closerCache.get(root) ?? {};
-    parentCache[key] = el;
-    closerCache.set(root, parentCache);
   });
   onUnmounted(() => {
-    const parentCache = closerCache.get(root);
-    if (parentCache) {
-      delete parentCache[key];
+    if (isInstallEvent) {
+      const parentCache = closerCache.get(root);
+      if (parentCache) {
+        delete parentCache[key];
+      }
     }
   });
 }

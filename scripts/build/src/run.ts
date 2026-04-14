@@ -1,51 +1,75 @@
-import { buildCli, buildClient, buildNode, buildShared, buildStyles } from "./build";
-import { indexRoot, projDist, projRoot, typeDist } from "./const";
-import { run } from "./utils";
-import { copy } from "fs-extra";
-import { readFile, writeFile } from "fs/promises";
-import { resolve } from "node:path";
-import glob from "fast-glob";
+import { buildCli, buildClient, buildNode, buildShared, buildResources } from "./build";
 import { buildLogger } from "@vitepress-theme-index/shared";
+import { cliRoot, indexDist, projDist, projRoot } from "./const";
+import { copy } from "fs-extra";
+import { resolve } from "node:path";
+import mri from "mri";
+import glob from "fast-glob";
+import { rimraf } from "rimraf";
 
-const buildTypes = async () => {
-  // build dts by tsc
-  await run("pnpm", ["run", "build:types"]);
-  // rewrite dts
-  const rewriteFile = async (filePath: string) => {
-    let content = await readFile(filePath, "utf-8");
-    // transform @-import to package self-import
-    content = content.replace("@vitepress-theme-index", "vitepress-theme-index");
-    await writeFile(filePath, content, "utf-8");
-  };
-  const filePaths = await glob("**/*.d.ts", { cwd: typeDist, absolute: true });
-  await Promise.all(
-    filePaths.map(async (path) => {
-      await rewriteFile(path);
-    })
-  );
-  // copy to dist
-  await copy(typeDist, projDist);
-  await copy(resolve(indexRoot, "index.d.ts"), resolve(projDist, "index.d.ts"));
-  await copy(resolve(projRoot, "README.md"), resolve(indexRoot, "README.md"));
-  await copy(resolve(projRoot, "LICENSE"), resolve(indexRoot, "LICENSE"));
-};
-
-async function build() {
-  await run("pnpm", ["run", "clean:dist"]);
-  // build js
-  await buildCli();
-  await buildShared();
-  await buildClient();
-  await buildNode();
-  // build dts
-  await buildTypes();
-  // build style
-  await buildStyles();
-  // copy to publish
-  await copy(projDist, resolve(indexRoot, "dist"));
+interface IndexBuildOptions {
+  mode: "full" | "cli";
 }
 
-build().catch((err) => {
+async function cleanCli() {
+  const delFiles = await glob("**/*", {
+    cwd: cliRoot,
+    dot: true,
+    absolute: true,
+    onlyFiles: false, // should clean dir
+    ignore: [
+      "node_modules/**/*",
+      "template/**/*",
+      "src/**/*",
+      "node_modules",
+      "template",
+      "src",
+      "package.json",
+      "index.ts",
+    ],
+  });
+  await rimraf(delFiles);
+}
+
+async function cleanFull() {
+  await cleanCli();
+  await rimraf([
+    indexDist,
+    resolve(projRoot, "dist"),
+    resolve(indexDist, "LICENSE"),
+    resolve(indexDist, "README.md"),
+  ]);
+}
+
+async function build(options: Partial<IndexBuildOptions>) {
+  const { mode = "full" } = options;
+
+  switch (mode) {
+    case "cli": {
+      await cleanCli();
+      await buildCli(true);
+      break;
+    }
+    case "full":
+    default: {
+      await cleanFull();
+      // build js-bundle
+      await buildCli(false);
+
+      await buildShared();
+      await buildClient();
+      await buildNode();
+
+      // build assistance resources
+      await buildResources();
+      // copy to publish
+      await copy(projDist, indexDist);
+    }
+  }
+}
+
+const args = mri<IndexBuildOptions>(process.argv.slice(2));
+build(args).catch((err) => {
   buildLogger.error(err);
   process.exit(1);
 });

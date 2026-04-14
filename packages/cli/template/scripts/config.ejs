@@ -6,5 +6,5 @@ export default defineConfig({
   cleanUrls: true,
   markdown: withIndexMarkdown(),
   vite: { plugins: [vitepressThemeIndex()] },
-  locales: <%- JSON.stringify(i18n, null, 2) %>,
+  locales: <%- JSON.stringify(i18n, null, 2).replace(/"([^"]+)":/g, '$1:') %>,
 });

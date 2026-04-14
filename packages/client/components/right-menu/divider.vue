@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<RMenuDividerProps>(), {
   trigger: true,
 });
 
-const { render, size } = useRMenuItem(props);
+const { render, size } = useRMenuItem(props)!;
 const ns = useBem("r-menu-divider");
 const kls = computed(() => ({
   block: [ns.b(), ns.m(size.value), ns.m(`align-${props.align}`)],

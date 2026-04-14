@@ -19,10 +19,11 @@ const kls = computed(() => ({
 <template>
   <div :class="kls.wrap">
     <div :class="kls.block" data-info>
-      <span v-if="owner"
-        >{{ t("docs.footer.owner") }} <a v-bind="ownerAttr">{{ useText(owner.text) }}</a> @
-        {{ new Date(build).getFullYear() }} - {{ new Date().getFullYear() }}</span
-      >feat
+      <span v-if="owner">
+        {{ t("docs.footer.owner") }} <a v-bind="ownerAttr">{{ useText(owner.text) }}</a> @
+        {{ build ? new Date(build).getFullYear() : new Date().getFullYear() }} -
+        {{ new Date().getFullYear() }}
+      </span>
       <span
         >{{ t("docs.footer.theme") }}
         <a href="https://github.com/soppylzz/vitepress-theme-index" target="_blank"

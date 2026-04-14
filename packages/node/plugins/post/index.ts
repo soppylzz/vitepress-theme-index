@@ -12,7 +12,7 @@ const searchResolvedId = `\0${searchVirtualId}`;
 const archiveResolvedId = `\0${archiveVirtualId}`;
 
 function createMetaPlugin(ctx: IndexPluginContext): Plugin {
-  let config: MetaConfig;
+  let config: MetaConfig | undefined;
   let datas: ReturnType<IndexPostBuilder["build"]> | null = null;
 
   return {
@@ -20,6 +20,7 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
     buildStart: {
       sequential: true,
       async handler() {
+        if (!ctx?.ctx) return;
         config = ctx.ctx.meta;
         const cache = await loadMetaCache(config);
         const builder = await new IndexPostBuilder().use(ctx.ctx.plugins);
@@ -33,9 +34,9 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
     },
     load(id) {
       if (id === searchResolvedId)
-        return `export default ${JSON.stringify(datas.searchIndex ?? {})};`;
+        return `export default ${JSON.stringify(datas?.searchIndex ?? {})};`;
       if (id === archiveResolvedId)
-        return `export default ${JSON.stringify(datas.archives ?? {})};`;
+        return `export default ${JSON.stringify(datas?.archives ?? {})};`;
       return;
     },
   };

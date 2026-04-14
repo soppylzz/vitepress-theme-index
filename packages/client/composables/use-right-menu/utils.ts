@@ -34,11 +34,7 @@ type MenuNavOption = Parameters<typeof useTrigger>[1] & {
     state?: MaybeRefOrGetter<MenuItemState>;
   };
 
-function useRMenuItem(
-  props?: Partial<RMenuBaseProps>,
-  option?: MenuNavOption,
-  debug: boolean = false
-) {
+function useRMenuItem(props?: Partial<RMenuBaseProps>, option?: MenuNavOption) {
   const ins = getCurrentInstance()!;
 
   const {
@@ -53,8 +49,12 @@ function useRMenuItem(
 
   const { ctx } = useRightMenuProvide();
   const { trigger } = useTrigger(props, hooks);
+  if (!ctx) {
+    rightMenuLogger.error("useRMenuItem required ctx");
+    return;
+  }
 
-  const size = computed(() => ctx.value.size);
+  const size = computed(() => ctx.value.size ?? "medium");
   const state = computed(() => {
     const raw = toValue(state_);
     if (raw === "disabled") return "disabled";
@@ -62,7 +62,9 @@ function useRMenuItem(
   });
 
   const key = computed(() => [...ctx.value.path, ins.uid].join(navSeparator));
-  const render = computed(() => trigger.value && toValue(render_));
+  const render = computed(() => {
+    return trigger.value && (toValue(render_) ?? false);
+  });
 
   const { nav, blur } = useMenuNav();
   const { set, delete_, enable } = useNavWriter();
@@ -143,13 +145,14 @@ function useProvidePath(...[provides, hooks, _]: Parameters<typeof provideRightM
   const ins = getCurrentInstance();
   if (!ins) {
     rightMenuLogger.error("`useMenuNav` must be used in setup script");
+    return;
   }
 
-  const { ctx } = useRightMenuProvide();
+  const { ctx } = useRightMenuProvide()!;
   provideRightMenuContext(
     {
       ...provides,
-      path: () => [...ctx.value.path, `${ins.uid}`],
+      path: () => [...ctx!.value.path, `${ins.uid}`],
     },
     hooks
   );

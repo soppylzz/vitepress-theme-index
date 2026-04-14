@@ -22,7 +22,7 @@ function withPrefix(prefix: string, path: string): string {
   return `${cleanBase}/${cleanPath}`;
 }
 
-function normalizeLink(site: SiteData, url: string) {
+function normalizeLink(site: SiteData, url?: string) {
   if (!url) return url;
   if (checkExternal(url)) return url;
 

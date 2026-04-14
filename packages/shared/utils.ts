@@ -18,7 +18,7 @@ function hasOwnProperty<T extends object, K extends PropertyKey>(
 }
 
 function clearObject(obj: object) {
-  Object.keys(obj).forEach((key) => delete obj[key]);
+  Object.keys(obj).forEach((key) => delete (obj as any)[key]);
 }
 
 async function resolveDefineAble<T>(config: DefineAble<T>) {
@@ -42,7 +42,7 @@ const VIRTUAL_INDEX_SEARCH_PKG = "virtual:index-search";
 const VIRTUAL_INDEX_ARCHIVE_PKG = "virtual:index-archive";
 
 const INDEX_CONFIG_NAME = "vti.config";
-const INDEX_ADDITION_NAME = "vti.addition";
+const INDEX_ADDITION_NAME = "vti.add";
 
 export {
   ensureArray,

@@ -16,25 +16,27 @@ interface UseReactiveProxyOptions<T extends object> {
   getters?: { [K in keyof T]?: (source?: T[K] | undefined, override?: T[K] | undefined) => T[K] };
 }
 
-function useReactiveProxy<
-  T extends UnwrapNestedRefs<object>,
-  Options extends UseReactiveProxyOptions<T>,
->(source: T, options?: Options) {
-  const proxy = reactive<Partial<T>>({});
-  const _state = reactive<T>({ ...source });
+function useReactiveProxy<T extends object, Options extends UseReactiveProxyOptions<T>>(
+  source: UnwrapNestedRefs<T>,
+  options?: Options
+) {
+  const proxy = reactive<Record<string, any>>({});
+  const _state = reactive<UnwrapNestedRefs<T>>({ ...source });
 
-  const { setters = {} as any, getters = {} as any } = options || {};
+  const { setters = {}, getters = {} } = options || {};
 
   function setFn(key: any, val: any, payload?: any) {
-    proxy[key] = hasOwnProperty(setters, key) ? setters[key](proxy[key], val, payload) : val;
+    proxy[key] = hasOwnProperty(setters, key)
+      ? (setters as any)[key](proxy[key], val, payload)
+      : val;
   }
 
   function getFn(key: any) {
-    _state[key] = hasOwnProperty(getters, key)
-      ? getters[key](source[key], proxy[key])
+    (_state as any)[key] = hasOwnProperty(getters, key)
+      ? (getters as any)[key]((source as any)[key], proxy[key])
       : isUndefined(proxy[key])
         ? proxy[key]
-        : source[key];
+        : (source as any)[key];
   }
 
   watch(
@@ -51,20 +53,12 @@ function useReactiveProxy<
     clearObject(proxy);
   }
 
-  function set(
-    obj: Partial<T>,
-    payloads?: { [K in keyof T]?: Parameters<Options["setters"][K]>[2] }
-  ): void;
-  function set<K extends keyof T>(
-    key: K,
-    val: T[K],
-    payload?: Parameters<Options["setters"][K]>[2]
-  ): void;
-
+  function set(obj: Partial<T>, payloads?: any): void;
+  function set<K extends keyof T>(key: K, val: T[K], payload?: any): void;
   function set(arg1: any, arg2: any, arg3?: any) {
     if (isObject(arg1)) {
       Object.entries(arg1).forEach(([key, val]) => {
-        setFn(key, val, arg3[key]);
+        setFn(key, val, arg2?.[key]);
       });
     } else {
       setFn(arg1, arg2, arg3);
@@ -73,18 +67,13 @@ function useReactiveProxy<
   return { state: readonly(_state), set, reset };
 }
 
-type ReactiveProxy<
-  T extends UnwrapNestedRefs<object>,
-  Options extends UseReactiveProxyOptions<T>,
-> = ReturnType<typeof useReactiveProxy<T, Options>>;
-
 function useCachedComputed<Key extends object, Value extends object>(): CachedComputedRef<
   Key,
   Value
 > {
   const cache = new WeakMap<Key, Value>();
   const actKey = ref<Key | null>(null);
-  const native = computed(() => cache.get(actKey.value));
+  const native = computed(() => cache.get(actKey.value)) as CachedComputedRef<Key, Value>;
 
   const customFn = {
     enable(key: Key) {
@@ -112,13 +101,16 @@ function useCachedComputed<Key extends object, Value extends object>(): CachedCo
   return Object.assign(native, customFn);
 }
 
-function useSplitRefs<T extends object>(val: MaybeRefOrGetter<T>) {
-  const initialKeys = Object.keys(toValue(val));
-  const result = {} as { [K in keyof T]: ComputedRef<T[K]> };
+function useSplitRefs<T extends object>(val: MaybeRefOrGetter<T | undefined>) {
+  const initial = toValue(val);
+  if (!initial) return {} as { [K in keyof T]: undefined };
+
+  const initialKeys = Object.keys(initial);
+  const result = {} as { [K in keyof T]?: ComputedRef<T[K]> | undefined };
 
   for (const key of initialKeys) {
     result[key as keyof T] = computed(() => {
-      const target = toValue(val);
+      const target = toValue(val)!;
       return target[key as keyof T];
     });
   }
@@ -138,5 +130,5 @@ function useSplitRefs<T extends object>(val: MaybeRefOrGetter<T>) {
   return result;
 }
 
-export type { ReactiveProxy, CachedComputedRef };
+export type { CachedComputedRef };
 export { useReactiveProxy, useCachedComputed, useSplitRefs };

@@ -1,4 +1,4 @@
-import { cancel, confirm, intro, isCancel, outro, select, text } from "@clack/prompts";
+import { cancel, confirm, intro, isCancel, select, text } from "@clack/prompts";
 import type { IndexCliOptions } from "./type";
 import mri from "mri";
 
@@ -18,8 +18,8 @@ async function query(): Promise<IndexCliOptions> {
   const folder = await safe(
     text({
       message: "vitepress directory (where your docs are stored)?",
-      placeholder: "./docs",
-      defaultValue: "./docs",
+      placeholder: ".",
+      defaultValue: ".",
     })
   );
 

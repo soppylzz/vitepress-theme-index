@@ -1,2 +1,2 @@
 export * from "./bundle";
-export * from "./style";
+export * from "./resource";

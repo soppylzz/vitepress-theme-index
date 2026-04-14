@@ -15,7 +15,7 @@ const rootProvide: Partial<IndexMenuProvideContext> = {
 
 function useRightMenuProvide() {
   const inSetup = !!getCurrentInstance();
-  return inSetup ? inject(indexRightMenuProvideKey) : rootProvide;
+  return (inSetup ? inject(indexRightMenuProvideKey) : rootProvide)!;
 }
 
 function provideRightMenuContext(
@@ -27,6 +27,7 @@ function provideRightMenuContext(
   const provideFn = app?.provide ?? (inSetup ? provide : undefined);
   if (!provideFn) {
     rightMenuLogger.error("unable to find provideFn");
+    return;
   }
 
   const parent = useRightMenuProvide();

@@ -1,11 +1,21 @@
 import { resolve } from "node:path";
 import { builtinModules } from "node:module";
-import { clientRoot, pkgRoot, nodeRoot, projDist, projRoot, sharedRoot, cliRoot } from "../const";
+import {
+  clientRoot,
+  pkgRoot,
+  nodeRoot,
+  projDist,
+  projRoot,
+  sharedRoot,
+  cliRoot,
+  cliDist,
+} from "../const";
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
 import glob from "fast-glob";
 import type { RollupRewriteImportsOptions } from "../utils";
 import { rewriteImports } from "../utils";
+import fs from "fs-extra";
 
 import type { ModuleFormat, Plugin } from "rollup";
 import { default as nodeResolve } from "@rollup/plugin-node-resolve";
@@ -64,16 +74,7 @@ function generateOutputs(
   return defaultOutputs.filter((option) => option.format && formats.includes(option.format));
 }
 
-async function copyCliTemplate() {
-  const cliFiles = await glob(["template/**/*", `${cliEntry}`]);
-
-  cliFiles.forEach((cliFile) => {
-    // const dest = join()
-    // console.log(cliFile);
-  });
-}
-
-async function buildCli() {
+async function buildCli(isDev: boolean = false) {
   const input = resolve(cliRoot, "index.ts");
 
   await buildPackage({
@@ -100,10 +101,34 @@ async function buildCli() {
         tsconfig: tsconfigPath,
         platform: "node",
       }),
+      rewriteImports({
+        rewrites: isDev
+          ? []
+          : [
+              {
+                source: "@vitepress-theme-index/shared",
+                target: "../shared", // has different chunkDir
+                entryFileName: "index",
+              },
+            ],
+      }),
     ],
   });
 
-  await copyCliTemplate();
+  if (!isDev) {
+    const cliFiles = await glob("template/**/*", {
+      cwd: cliRoot,
+      absolute: false,
+      onlyFiles: true,
+    });
+
+    fs.copySync(resolve(cliRoot, cliEntry), resolve(cliDist, cliEntry));
+    cliFiles.forEach((file) => {
+      const srcPath = resolve(cliRoot, file);
+      const destPath = resolve(cliDist, file);
+      fs.copySync(srcPath, destPath, { overwrite: true });
+    });
+  }
 }
 
 async function buildShared() {

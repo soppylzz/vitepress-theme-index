@@ -21,8 +21,8 @@
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 
-@include github();
-@include pixelArt(true);
+@include github(true);
+@include pixelArt();
 
 *,
 *::before,

@@ -17,7 +17,7 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
   i18n: {
     mode: "broad",
     rootLocale: "zh-cn",
-    datetimeFormats: undefined,
+    datetimeFormats: {},
     file: `${INDEX_ADDITION_NAME}.json`,
   },
   addition: { name: INDEX_ADDITION_NAME },

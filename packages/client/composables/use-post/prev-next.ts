@@ -12,7 +12,7 @@ function getValidInternalItems(items: MenuItemConfig[]): MenuLinkItem[] {
       if (isValid) list.push(item);
       return;
     }
-    if (item.type === "group" && item?.children.length) {
+    if (item.type === "group" && item?.children?.length) {
       item.children.forEach(traverse);
     }
   }

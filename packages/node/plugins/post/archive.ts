@@ -51,7 +51,7 @@ class IndexPostBuilder {
           const keysRaw = plugin.extract(post);
           const targetArchive = archives[plugin.name];
 
-          if (isNull(keysRaw)) continue;
+          if (isNull(keysRaw) || isUndefined(keysRaw)) continue;
 
           for (const key of ensureArray(keysRaw)) {
             const safeKey = key.trim();

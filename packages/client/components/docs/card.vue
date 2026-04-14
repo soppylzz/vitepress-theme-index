@@ -56,8 +56,8 @@ const { shareToMail, copyLink } = useShare();
 <template>
   <div :class="kls.wrap">
     <div :class="kls.times">
-      <span>{{ t("docs.card.firstUpdate") }} {{ d(firstCommit, "date") }}</span>
-      <span>{{ t("docs.card.lastUpdate") }} {{ d(lastCommit, "date") }}</span>
+      <span>{{ t("docs.card.firstUpdate") }} {{ firstCommit && d(firstCommit, "date") }}</span>
+      <span>{{ t("docs.card.lastUpdate") }} {{ lastCommit && d(lastCommit, "date") }}</span>
     </div>
     <div :class="kls.quick">
       <slot name="vti-docs-card-quick">

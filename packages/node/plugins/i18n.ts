@@ -14,9 +14,10 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
       return id === i18nVirtualId ? i18nResolvedId : undefined;
     },
     load(id) {
+      if (!ctx?.ctx) return;
       if (id !== i18nResolvedId) return;
-      const { i18n } = ctx?.ctx ?? {};
 
+      const { i18n } = ctx.ctx;
       const baseExportCode = `export const config = ${JSON.stringify(pick(i18n, ["mode", "rootLocale", "datetimeFormat"]) ?? {})};`;
       switch (i18n.mode) {
         case "mixin": {
@@ -33,7 +34,7 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
     handleHotUpdate({ file, server }) {
       const { i18n } = ctx?.ctx ?? {};
 
-      if (i18n?.mode !== "mixin" && file.endsWith(`${i18n.file}.json`)) {
+      if (i18n && i18n?.mode !== "mixin" && file.endsWith(`${i18n.file}.json`)) {
         const mod = server.moduleGraph.getModuleById(i18nResolvedId);
         if (mod) server.moduleGraph.invalidateModule(mod);
         server.ws.send({ type: "full-reload", path: "*" });
