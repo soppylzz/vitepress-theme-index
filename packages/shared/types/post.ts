@@ -1,4 +1,4 @@
-import type { MaybeArray } from "./utils";
+type SearchIndex = Array<{ id: string; content: string }>;
 
 interface GitInfo {
   firstCommit: number;
@@ -6,23 +6,36 @@ interface GitInfo {
   isFallback: boolean;
 }
 
-interface PostMetaInfo extends GitInfo {
+interface PostRawData extends PostInfo {
+  content: string;
+}
+
+interface PostInfo extends GitInfo {
   path: string;
   hash: string;
-  content: string;
   frontmatter: Record<string, any>;
 }
 
-type IndexPostArchives = Record<string, Omit<PostMetaInfo, "content">[]>;
-interface IndexPostPlugin {
-  name: string;
-  extract: (post: PostMetaInfo) => MaybeArray<string> | null | undefined;
-  postProcess?: (map: IndexPostArchives) => IndexPostArchives;
-}
+type ArchiveData = Record<string, PostInfo[]>;
+type ArchiveStat = {
+  pageSize: number;
+  record: Record<
+    string,
+    {
+      url: string;
+      total: number;
+    }
+  >;
+};
 
-type IndexSearchIndex = Array<{
-  id: string;
-  content: string;
-}>;
+type ArchiveAllStats = Record<string, ArchiveStat>;
 
-export type { PostMetaInfo, GitInfo, IndexPostPlugin, IndexPostArchives, IndexSearchIndex };
+export type {
+  SearchIndex,
+  GitInfo,
+  PostInfo,
+  PostRawData,
+  ArchiveData,
+  ArchiveStat,
+  ArchiveAllStats,
+};

@@ -35,7 +35,7 @@
     "./theme/*": "./dist/theme/*"
   },
   "bin": {
-    "vti": "bin/vti.js"
+    "vti": "dist/cli/cli.mjs"
   },
   "peerDependencies": {
     "vitepress": "^1.6.0",

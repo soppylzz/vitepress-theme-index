@@ -36,9 +36,12 @@ export default withAdditionIndex({
     {
       type: "button",
       icon: "github",
+      show: ["desktop", "pad"],
       href: "https://github.com/soppylzz/vitepress-theme-index",
       content: "vitepress-theme-index",
     },
+    { type: "divider", show: ["pad", "desktop"] },
+    { type: "locale" }
   ],
   sidebar: {
     "<%= route %>/api": [

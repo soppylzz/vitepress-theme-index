@@ -1,9 +1,5 @@
-<script setup lang="ts">
-import { useI18n } from "../composables";
-
-const { currentRoutes } = useI18n();
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div>{{ currentRoutes }}</div>
+  <div />
 </template>

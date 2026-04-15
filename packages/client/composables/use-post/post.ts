@@ -1,19 +1,15 @@
 import { useInject } from "../use-inject";
-import { indexArchiveKey } from "../../types";
+import { indexOverallKey } from "../../types";
 import { useData, useRoute } from "vitepress";
 import { normalizeLink, useSplitRefs } from "../../utils";
-import { pluginLogger } from "@vitepress-theme-index/shared";
 
 function usePost() {
   const { site } = useData();
   const route = useRoute();
-  const overall = useInject(indexArchiveKey)["timeline"]["overall"];
-  if (!overall) {
-    pluginLogger.error("unable find default archive data");
-  }
+  const all = useInject(indexOverallKey);
 
   return useSplitRefs(() => {
-    return overall.find((item) => normalizeLink(site.value, item.path) === route.path);
+    return all.find((item) => normalizeLink(site.value, item.path) === route.path);
   });
 }
 

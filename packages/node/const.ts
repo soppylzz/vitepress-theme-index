@@ -1,5 +1,5 @@
 import type { IndexImportPluginConfig, ResolvedIndexPluginConfig } from "./types";
-import type { PostMetaInfo } from "@vitepress-theme-index/shared";
+import type { PostRawData } from "@vitepress-theme-index/shared";
 import { INDEX_ADDITION_NAME } from "@vitepress-theme-index/shared";
 
 const PLUGIN_PREFIX = "vitepress-theme-index";
@@ -24,19 +24,25 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
   meta: {
     cache: {
       enable: true,
-      file: "./.vitepress/cache/vti/vti-meta.json",
+      pageSize: 1,
       concurrency: 32,
       defaultLast: "now",
+      dir: "vti",
     },
     exclude: ["**/node_modules/**", ".vitepress/**"],
     include: ["**/*.md"],
   },
   plugins: [
     {
-      name: "timeline",
-      extract(post: PostMetaInfo) {
-        const date = new Date(post.firstCommit);
-        return [isNaN(date.getTime()) ? "unknown" : date.getFullYear().toString(), "overall"];
+      name: "en:archive",
+      extract(post: PostRawData) {
+        return /^en\//.test(post.path) ? "post" : undefined;
+      },
+    },
+    {
+      name: "zh:archive",
+      extract(post: PostRawData) {
+        return !/^(en)\//.test(post.path) ? "post" : undefined;
       },
     },
   ],

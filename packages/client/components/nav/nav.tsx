@@ -30,6 +30,7 @@ interface NavRenderContext {
 const navItemMap: Record<NavItemType, Component | undefined> = {
   button: VtiNavButton,
   menu: VtiNavMenu,
+  locale: VtiNavLocale,
   divider: undefined,
   space: undefined,
   custom: undefined,
@@ -163,27 +164,14 @@ const VtiNav = defineComponent({
         <div class={kls.wrapper}>
           <div class={kls.header}>
             {brandComp()}
-            {
-              /* header container */
-              nav.value
-                .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
-                .filter((item) => !!item)
-            }
-            {renderNavItem("pre-locale", { type: "divider" }, { current, container: "header" })!}
-            <VtiNavLocale />
+            {nav.value
+              .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
+              .filter((item) => !!item)}
             {withDirectives(
-              <>
-                {
-                  renderNavItem(
-                    "pre-switch",
-                    { type: "divider" },
-                    { current, container: "header" }
-                  )!
-                }
-                <VtiNavSwitch v-model={open.value} />
-              </>,
+              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" })!,
               [[vShow, current === "mobile"]]
             )}
+            {withDirectives(<VtiNavSwitch v-model={open.value} />, [[vShow, current === "mobile"]])}
           </div>
           {
             /* screen container */

@@ -35,6 +35,7 @@ type BuildNavConfig<T extends NavItemType, Props = never> = ([Props] extends [ne
 
 type NavSpaceConfig = BuildNavConfig<"space">;
 type NavDividerConfig = BuildNavConfig<"divider">;
+type NavLocaleConfig = BuildNavConfig<"locale">;
 type NavButtonConfig = BuildNavConfig<"button", NavButtonProps> & { onActivate?: () => void };
 type NavMenuConfig = BuildNavConfig<"menu", NavMenuProps> & { children?: MenuItemConfig[] };
 
@@ -45,7 +46,8 @@ type NavItemConfig =
   | NavSpaceConfig
   | NavDividerConfig
   | NavButtonConfig
-  | NavCustomConfig;
+  | NavCustomConfig
+  | NavLocaleConfig;
 type NavItemType = NavItemConfig["type"];
 
 type IndexNavConfig = BuildI18nViewConfig<NavItemConfig[]>;

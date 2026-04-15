@@ -14,24 +14,18 @@ export default withAdditionIndex({
   },
   nav: [
     { type: "space" },
-    { type: "button", text: "Archive", target: "both", href: "/en/archive" },
+    { type: "button", text: "ARCH", target: "both", href: "/en/archive" },
+    { type: "button", text: "API", target: "both", baseUrl: "/en/api", href: "/en/api/theme" },
     {
       type: "button",
-      text: "Reference",
-      target: "both",
-      baseUrl: "/en/api",
-      href: "/en/api/theme",
-    },
-    {
-      type: "button",
-      text: "Guide",
+      text: "GUIDE",
       target: "both",
       baseUrl: "/en/guide",
       href: "/en/guide/md-example",
     },
     {
       type: "menu",
-      text: "Quick Links",
+      text: "LINKS",
       target: "both",
       children: [
         {
@@ -52,13 +46,16 @@ export default withAdditionIndex({
         },
       ],
     },
-    { type: "divider" },
+    { type: "divider", show: ["desktop", "pad"] },
     {
       type: "button",
       icon: "github",
+      show: ["desktop", "pad"],
       href: "https://github.com/soppylzz/vitepress-theme-index",
       content: "vitepress-theme-index",
     },
+    { type: "divider", show: ["pad", "desktop"] },
+    { type: "locale" },
   ],
   sidebar: {
     "/en/api": [

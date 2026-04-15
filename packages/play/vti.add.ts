@@ -19,7 +19,7 @@ export default withAdditionIndex({
     { type: "button", text: "指南", target: "both", baseUrl: "/guide", href: "/guide/md-example" },
     {
       type: "menu",
-      text: "快速跳转",
+      text: "链接",
       target: "both",
       children: [
         {
@@ -40,13 +40,16 @@ export default withAdditionIndex({
         },
       ],
     },
-    { type: "divider" },
+    { type: "divider", show: ["desktop", "pad"] },
     {
       type: "button",
       icon: "github",
+      show: ["desktop", "pad"],
       href: "https://github.com/soppylzz/vitepress-theme-index",
       content: "vitepress-theme-index",
     },
+    { type: "divider", show: ["pad", "desktop"] },
+    { type: "locale" },
   ],
   sidebar: {
     "/api": [

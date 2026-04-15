@@ -36,10 +36,11 @@ function isNode() {
 
 /* ==================== shared const ==================== */
 // just serve for build&node, can't be use `await import(VIRTUAL_INDEX_CONFIG_PKG)` in client side
-const VIRTUAL_INDEX_I18N_PKG = "virtual:index-i18n";
-const VIRTUAL_INDEX_ADDITION_PKG = "virtual:index-addition";
-const VIRTUAL_INDEX_SEARCH_PKG = "virtual:index-search";
-const VIRTUAL_INDEX_ARCHIVE_PKG = "virtual:index-archive";
+const INDEX_I18N_PKG = "virtual:index-i18n";
+const INDEX_ADDITION_PKG = "virtual:index-addition";
+const INDEX_SEARCH_PKG = "virtual:index-search";
+const INDEX_ARCHIVE_PKG = "virtual:index-archive";
+const INDEX_OVERALL_PKG = "virtual:index-overall";
 
 const INDEX_CONFIG_NAME = "vti.config";
 const INDEX_ADDITION_NAME = "vti.add";
@@ -52,10 +53,11 @@ export {
   clearObject,
   isBrowser,
   isNode,
-  VIRTUAL_INDEX_I18N_PKG,
-  VIRTUAL_INDEX_ADDITION_PKG,
-  VIRTUAL_INDEX_SEARCH_PKG,
-  VIRTUAL_INDEX_ARCHIVE_PKG,
   INDEX_CONFIG_NAME,
   INDEX_ADDITION_NAME,
+  INDEX_I18N_PKG,
+  INDEX_ADDITION_PKG,
+  INDEX_SEARCH_PKG,
+  INDEX_ARCHIVE_PKG,
+  INDEX_OVERALL_PKG,
 };

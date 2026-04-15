@@ -169,6 +169,7 @@
 @include b("nav-switch") {
   @include useIcon();
   @include useFlex(row, center, center);
+  padding-inline: getCssVar("padding", "md");
 
   color: getCssVar("text", "primary");
   :hover {

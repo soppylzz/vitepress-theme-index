@@ -5,8 +5,8 @@ import type { LimitFunction } from "p-limit";
 import pLimit from "p-limit";
 import { simpleGit } from "simple-git";
 import { createHash } from "node:crypto";
-import { dirname, relative } from "node:path";
-import type { GitInfo, PostMetaInfo } from "@vitepress-theme-index/shared";
+import { dirname, relative, resolve } from "node:path";
+import type { GitInfo, PostRawData } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger } from "@vitepress-theme-index/shared";
 import { readFile, stat } from "fs/promises";
 import * as os from "node:os";
@@ -64,7 +64,11 @@ async function getGitInfo(
   });
 }
 
-async function generateMetaCache(files: string[], config: MetaConfig): Promise<MetaCache> {
+async function generateMetaCache(
+  files: string[],
+  config: MetaConfig,
+  cacheFile: string
+): Promise<MetaCache> {
   const { cache } = config;
   const limit = pLimit(Math.min(cache.concurrency, os.cpus().length * 2));
   const gitLimit = pLimit(4);
@@ -74,7 +78,7 @@ async function generateMetaCache(files: string[], config: MetaConfig): Promise<M
 
   const metas = await Promise.all(
     fileStats.map((fileStat) =>
-      limit(async (): Promise<PostMetaInfo> => {
+      limit(async (): Promise<PostRawData> => {
         const content = await readFile(fileStat.path, "utf8");
         const { data: frontmatter } = matter(content);
         const gitInfo = await getGitInfo(fileStat.path, cache.defaultLast, gitLimit, fileStat);
@@ -99,8 +103,8 @@ async function generateMetaCache(files: string[], config: MetaConfig): Promise<M
   };
 
   if (cache.enable) {
-    await fs.ensureDir(dirname(cache.file));
-    await fs.writeJSON(cache.file, cached, { spaces: 2 });
+    await fs.ensureDir(dirname(cacheFile));
+    await fs.writeJSON(cacheFile, cached, { spaces: 2 });
   }
 
   return cached;
@@ -112,10 +116,11 @@ export async function loadMetaCache(config: MetaConfig): Promise<MetaCache> {
     cwd: process.cwd(),
     ignore: ensureArray(config.exclude),
   });
+  const cacheFile = resolve(process.cwd(), ".vitepress", "cache", config.cache.dir, "vti-raw.json");
 
-  if (config.cache.enable && (await fs.pathExists(config.cache.file))) {
+  if (config.cache.enable && (await fs.pathExists(cacheFile))) {
     try {
-      const cached: MetaCache = await fs.readJSON(config.cache.file);
+      const cached: MetaCache = await fs.readJSON(cacheFile);
 
       const fileStats = await Promise.all(files.map((f) => utils.stat(f)));
       const currentHash = utils.generateQuickHashKey(fileStats);
@@ -129,5 +134,5 @@ export async function loadMetaCache(config: MetaConfig): Promise<MetaCache> {
     }
   }
   pluginLogger.warn("cache check failed, re-generating...");
-  return await generateMetaCache(files, config);
+  return await generateMetaCache(files, config, cacheFile);
 }

@@ -1,19 +1,19 @@
 import type { IndexPluginContext, MetaConfig } from "../../types";
 import type { Plugin } from "vite";
 import { PLUGIN_PREFIX } from "../../const";
-import { VIRTUAL_INDEX_ARCHIVE_PKG, VIRTUAL_INDEX_SEARCH_PKG } from "@vitepress-theme-index/shared";
+import {
+  INDEX_ARCHIVE_PKG,
+  INDEX_OVERALL_PKG,
+  INDEX_SEARCH_PKG,
+} from "@vitepress-theme-index/shared";
 import { IndexPostBuilder } from "./archive";
 import { loadMetaCache } from "./meta";
-
-const searchVirtualId = VIRTUAL_INDEX_SEARCH_PKG;
-const archiveVirtualId = VIRTUAL_INDEX_ARCHIVE_PKG;
-
-const searchResolvedId = `\0${searchVirtualId}`;
-const archiveResolvedId = `\0${archiveVirtualId}`;
+import { resolve } from "node:path";
 
 function createMetaPlugin(ctx: IndexPluginContext): Plugin {
   let config: MetaConfig | undefined;
-  let datas: ReturnType<IndexPostBuilder["build"]> | null = null;
+  let builder: IndexPostBuilder | null = null;
+  let datas: Awaited<ReturnType<IndexPostBuilder["build"]>> | null = null;
 
   return {
     name: `${PLUGIN_PREFIX}/post`,
@@ -23,23 +23,33 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
         if (!ctx?.ctx) return;
         config = ctx.ctx.meta;
         const cache = await loadMetaCache(config);
-        const builder = await new IndexPostBuilder().use(ctx.ctx.plugins);
-        datas = builder.build(cache.posts);
+        builder = await new IndexPostBuilder(config).use(ctx.ctx.plugins);
+
+        const workDir = ctx.viteConfig.isProduction
+          ? resolve(ctx.viteConfig.publicDir, config.cache.dir)
+          : resolve(process.cwd(), ".vitepress", "cache", config.cache.dir);
+
+        datas = await builder.build(
+          cache.posts,
+          workDir,
+          ctx.viteConfig.isProduction
+            ? `/${config.cache.dir}`
+            : `/.vitepress/cache/${config.cache.dir}`
+        );
       },
     },
     resolveId(id) {
-      if (id === searchVirtualId) return searchVirtualId;
-      if (id === archiveVirtualId) return archiveResolvedId;
-      return undefined;
+      if ([INDEX_ARCHIVE_PKG, INDEX_SEARCH_PKG, INDEX_OVERALL_PKG].includes(id)) return id;
     },
     load(id) {
-      if (id === searchResolvedId)
-        return `export default ${JSON.stringify(datas?.searchIndex ?? {})};`;
-      if (id === archiveResolvedId)
-        return `export default ${JSON.stringify(datas?.archives ?? {})};`;
-      return;
+      const virtualMap = {
+        [INDEX_ARCHIVE_PKG]: datas?.statRecord,
+        [INDEX_OVERALL_PKG]: datas?.allPostInfo,
+        [INDEX_SEARCH_PKG]: datas?.searchIndex,
+      };
+      if (id in virtualMap) return `export default ${JSON.stringify(virtualMap[id] ?? {})};`;
     },
   };
 }
 
-export { createMetaPlugin, searchResolvedId, archiveResolvedId };
+export { createMetaPlugin };

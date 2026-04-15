@@ -3,10 +3,10 @@ import type {
   DeepRequired,
   I18NConfig,
   MaybeArray,
-  PostMetaInfo,
-  IndexErrorInterceptor,
-  IndexPostPlugin,
   DefineAble,
+  PostRawData,
+  ArchiveData,
+  IndexErrorInterceptor,
 } from "@vitepress-theme-index/shared";
 import type { Alias, ResolvedConfig, ViteDevServer } from "vite";
 
@@ -31,8 +31,9 @@ interface MetaConfig {
   include: MaybeArray<string>;
   exclude: MaybeArray<string>;
   cache: {
-    file: string;
     enable: boolean;
+    dir: string;
+    pageSize: number;
     concurrency: number;
     defaultLast: DefaultLast;
   };
@@ -41,7 +42,7 @@ interface MetaConfig {
 interface MetaCache {
   hashKey: string;
   generate: number;
-  posts: PostMetaInfo[];
+  posts: PostRawData[];
 }
 
 type IndexPluginConfig = {
@@ -61,17 +62,25 @@ type ResolvedIndexPluginConfig = DeepRequired<Omit<IndexPluginConfig, "i18n">> &
   i18n: Required<IndexPluginConfig["i18n"]>;
 };
 
+/* ==================== plugin ==================== */
+interface IndexPostPlugin {
+  name: string;
+  pageSize?: number;
+  extract: (post: PostRawData) => MaybeArray<string> | null | undefined;
+  postProcess?: (map: ArchiveData) => ArchiveData;
+}
+
 /* ==================== context ==================== */
 type IndexPluginContext = Partial<{
   viteServer: ViteDevServer;
   viteConfig: ResolvedConfig;
   // vitepress-theme-index
   ctx: ResolvedIndexPluginConfig;
-  cwd: string;
 }>;
 
 export { importAliasEnvs };
 export type {
+  IndexPostPlugin,
   DefaultLast,
   MetaCache,
   MetaConfig,

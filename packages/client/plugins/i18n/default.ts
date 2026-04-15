@@ -5,8 +5,8 @@ const defaultMessage = {
     prev: "上一页",
     next: "下一页",
     footer: {
-      owner: "Maintained by",
-      theme: "Powered by",
+      owner: "维护者",
+      theme: "主题",
     },
     card: {
       firstUpdate: "初次更新",
@@ -14,9 +14,10 @@ const defaultMessage = {
       license: "许可协议",
     },
   },
-  "sub-nav": {
+  nav: {
     menu: "菜单",
     toc: "页面导航",
+    locale: "语言",
   },
 } satisfies LocaleMessages;
 

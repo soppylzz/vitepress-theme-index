@@ -20,6 +20,11 @@ import { isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
 import {
+  INDEX_ADDITION_PKG,
+  INDEX_ARCHIVE_PKG,
+  INDEX_I18N_PKG,
+  INDEX_OVERALL_PKG,
+  INDEX_SEARCH_PKG,
   INDEX_CONFIG_NAME,
   setupIndexErrorInterceptor,
   pluginLogger,
@@ -27,9 +32,6 @@ import {
 } from "@vitepress-theme-index/shared";
 import fs from "fs-extra";
 import { concat, merge } from "lodash-unified";
-import { i18nResolvedId } from "./i18n";
-import { addResolvedId } from "./addition";
-import { archiveResolvedId, searchResolvedId } from "./post";
 
 const PKG_ROOT = resolve(fileURLToPath(import.meta.url), "..", "..", "..");
 const CLIENT_MOD = resolve(PKG_ROOT, "client");
@@ -148,15 +150,21 @@ export function createConfigPlugin(
         const { filePath } = await loadPluginConfig(ctx, resolved, plugins);
         const { viteServer } = ctx;
 
-        if (!viteServer || !filePath || !ctx?.cwd) return;
+        if (!viteServer || !filePath) return;
         viteServer.watcher.add(filePath).on("change", async (file) => {
           pluginLogger.info(
-            `config file ${relative(ctx.cwd!, file)} changed, invalidate sub-plugins...`
+            `config file ${relative(process.cwd(), file)} changed, invalidate sub-plugins...`
           );
           await loadPluginConfig(ctx, resolved, plugins);
 
           invalidateModes(
-            [i18nResolvedId, addResolvedId, searchResolvedId, archiveResolvedId],
+            [
+              INDEX_I18N_PKG,
+              INDEX_ADDITION_PKG,
+              INDEX_SEARCH_PKG,
+              INDEX_ARCHIVE_PKG,
+              INDEX_OVERALL_PKG,
+            ],
             viteServer
           );
           viteServer.ws.send({ type: "full-reload", path: "*" });

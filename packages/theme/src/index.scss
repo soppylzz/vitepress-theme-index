@@ -16,6 +16,7 @@
 @use "popper";
 @use "drawer";
 @use "menu";
+@use "tag";
 
 @include createFontFace("Monaco", "./assets/Monaco.ttf");
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");

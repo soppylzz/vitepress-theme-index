@@ -1,17 +1,23 @@
 import type {
+  ArchiveAllStats,
+  ArchiveData,
+  ArchiveStat,
   DefineAble,
-  IndexPostArchives,
-  IndexPostPlugin,
-  IndexSearchIndex,
-  PostMetaInfo,
+  PostInfo,
+  PostRawData,
+  SearchIndex,
 } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger, resolveDefineAble } from "@vitepress-theme-index/shared";
-import { isNull, isUndefined } from "lodash-unified";
+import type { IndexPostPlugin, MetaConfig } from "../../types";
+import { join, resolve } from "node:path";
+import fs from "fs-extra";
+import { rimraf } from "rimraf";
 
 class IndexPostBuilder {
   private plugins: IndexPostPlugin[] = [];
-  private searchIndex: IndexSearchIndex = [];
   private registeredNames = new Set<string>();
+
+  constructor(private config: MetaConfig) {}
 
   public async use(plugin: DefineAble<IndexPostPlugin>[]) {
     const plugins = await Promise.all(
@@ -32,49 +38,91 @@ class IndexPostBuilder {
     return this;
   }
 
-  public build(posts: PostMetaInfo[]) {
-    const archives = {} as Record<string, IndexPostArchives>;
+  public async build(posts: PostRawData[], workDir: string, baseUrl: string) {
+    pluginLogger.info(`🌘 start building index with ${posts.length} posts`);
+
+    const searchIndex: SearchIndex = [];
+    const allPostInfo: PostInfo[] = [];
+
+    posts.forEach((post) => {
+      const { content, ...postInfo } = post;
+      searchIndex.push({ id: postInfo.hash, content: content });
+      allPostInfo.push(postInfo);
+    });
+
+    const statRecord = {} as ArchiveAllStats;
+
     for (const plugin of this.plugins) {
-      archives[plugin.name] = {};
+      try {
+        pluginLogger.info(`processing plugin: ${plugin.name}`);
+        const data = this.collectArchiveData(plugin, posts);
+        statRecord[plugin.name] = await this.buildPages(
+          data,
+          resolve(workDir, plugin.name),
+          join(baseUrl, plugin.name)
+        );
+      } catch (e) {
+        pluginLogger.error(e);
+      }
     }
+
+    pluginLogger.info("🌕 build completed!");
+    return { searchIndex, statRecord, allPostInfo };
+  }
+
+  private collectArchiveData(plugin: IndexPostPlugin, posts: PostRawData[]) {
+    const data: ArchiveData = {};
 
     for (const post of posts) {
-      const { content, ...archivePost } = post;
+      const { content, ...info } = post;
+      const rawKeys = plugin.extract(post);
+      if (!rawKeys) continue;
 
-      this.searchIndex.push({
-        id: archivePost.hash,
-        content: content,
-      });
+      for (const key of ensureArray(rawKeys)) {
+        const safeKey = key.trim();
+        if (!safeKey) continue;
+        (data[safeKey] ??= []).push(info);
+      }
+    }
 
-      for (const plugin of this.plugins) {
-        try {
-          const keysRaw = plugin.extract(post);
-          const targetArchive = archives[plugin.name];
+    return plugin?.postProcess ? plugin?.postProcess(data) : data;
+  }
 
-          if (isNull(keysRaw) || isUndefined(keysRaw)) continue;
+  private async buildPages(
+    data: ArchiveData,
+    saveDir: string,
+    pluginUrl: string
+  ): Promise<ArchiveStat> {
+    const record: ArchiveStat["record"] = {};
+    const pageSize = this.config.cache.pageSize || 10;
+    const writeTasks: Promise<void>[] = [];
 
-          for (const key of ensureArray(keysRaw)) {
-            const safeKey = key.trim();
-            if (isNull(safeKey) || isUndefined(safeKey)) continue;
+    await rimraf(saveDir);
 
-            if (!targetArchive[safeKey]) {
-              targetArchive[safeKey] = [];
-            }
-            targetArchive[safeKey].push(archivePost);
+    for (const [type, postList] of Object.entries(data)) {
+      if (!postList.length || !type.trim()) continue;
+
+      const total = Math.ceil(postList.length / pageSize);
+      const typeUrl = join(pluginUrl, type.trim());
+      const typeDir = resolve(saveDir, type);
+
+      writeTasks.push(
+        (async () => {
+          await fs.ensureDir(typeDir);
+          for (let i = 0; i < total; i++) {
+            const pageData = postList.slice(i * pageSize, (i + 1) * pageSize);
+            const filePath = resolve(typeDir, `${i + 1}.json`);
+
+            await fs.writeJSON(filePath, pageData, { spaces: 2 });
           }
-        } catch {
-          // silent skip
-        }
-      }
+        })()
+      );
+
+      record[type] = { total, url: typeUrl };
     }
 
-    for (const plugin of this.plugins) {
-      if (plugin?.postProcess) {
-        archives[plugin.name] = plugin.postProcess(archives[plugin.name]);
-      }
-    }
-
-    return { archives, searchIndex: this.searchIndex };
+    await Promise.all(writeTasks);
+    return { pageSize, record };
   }
 }
 

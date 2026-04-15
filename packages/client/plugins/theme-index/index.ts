@@ -1,6 +1,6 @@
 import type { EnhanceAppContext } from "vitepress";
 import type { IndexClientConfig } from "../../types";
-import { indexArchiveKey } from "../../types";
+import { indexOverallKey, indexArchiveKey } from "../../types";
 import { installI18n, setupI18n } from "../i18n";
 import { installRightMenu } from "../right-menu";
 import { installIcons } from "../icon";
@@ -9,8 +9,10 @@ import { installAdditions } from "../views";
 import { installGsap } from "./gsap";
 
 async function installPostData({ app }: EnhanceAppContext) {
-  const archives = (await import("virtual:index-archive")).default;
-  app.provide(indexArchiveKey, archives);
+  const stats = (await import("virtual:index-archive")).default;
+  const all = (await import("virtual:index-overall")).default;
+  app.provide(indexArchiveKey, stats);
+  app.provide(indexOverallKey, all);
 }
 
 /* =============== main =============== */

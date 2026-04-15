@@ -7,7 +7,7 @@ import { createI18nPlugin } from "./i18n";
 import { createAdditionPlugin } from "./addition";
 import { createMetaPlugin } from "./post";
 
-const ctx: IndexPluginContext = { cwd: process.cwd() };
+const ctx: IndexPluginContext = {};
 function createPluginContext(): Plugin {
   return {
     name: `${PLUGIN_PREFIX}/base`,

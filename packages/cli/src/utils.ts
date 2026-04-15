@@ -38,7 +38,7 @@ const getLangTargetPath = (rootPath: string, lang: "zh" | "en"): string => {
 async function installDependencies(options: IndexCliOptions): Promise<void> {
   const pm = detectPackageManager();
   const colorI = chalk.bold.cyan(`${pm} install`);
-  const colorPkg = chalk.gray(resolve(process.cwd(), "package.json"))
+  const colorPkg = chalk.gray(resolve(process.cwd(), "package.json"));
 
   if (options.dev) {
     consola.log(`${chalk.green("Installing dependencies... ")}${chalk.gray("[simulated]")}`);
@@ -52,18 +52,15 @@ async function installDependencies(options: IndexCliOptions): Promise<void> {
     consola.log(`${chalk.green("Installing dependencies...")}`);
     consola.log(`Running: ${colorI} in ${colorPkg}\n`);
 
-    const result = spawn.sync(
-      pm,
-      ["install"],
-      {
-        cwd: process.cwd(),
-        stdio: "inherit"
-      });
+    const result = spawn.sync(pm, ["install"], {
+      cwd: process.cwd(),
+      stdio: "inherit",
+    });
 
     if (result.error || result.status !== 0) {
       cliLogger.error(result.error ?? `Package manager exited with code ${result.status}`);
     }
-    consola.log(chalk.green("Dependencies installed successfully!"))
+    consola.log(chalk.green("Dependencies installed successfully!"));
   }
 }
 
@@ -71,27 +68,27 @@ async function outputMetadata(ctx: HookContext): Promise<void> {
   const { options, metadata, depsToAdd } = ctx;
 
   if (metadata.validationFailed && metadata.validateErrors) {
-    const msg = metadata.validateErrors.map((error) =>
-      `\t${chalk.bold(`[${error.name}]`)} ${error.msg} ${chalk.gray(error.code)}`
-    ).join("\n");
+    const msg = metadata.validateErrors
+      .map((error) => `\t${chalk.bold(`[${error.name}]`)} ${error.msg} ${chalk.gray(error.code)}`)
+      .join("\n");
     cliLogger.error(`${chalk.red.bold("Validate failed:")}\n${msg}`);
   }
 
   consola.log(chalk.cyan("📋 Configuration summary:"));
-  consola.log(chalk.gray('─'.repeat(50)));
+  consola.log(chalk.gray("─".repeat(50)));
 
   if (metadata.pkgFound) {
-    consola.log(`Found existing package.json`)
+    consola.log(`Found existing package.json`);
   } else {
-    consola.log(`Create new package.json`)
+    consola.log(`Create new package.json`);
   }
 
   consola.log(`Created theme files in: ${chalk.bold(options.folder)}`);
-  consola.log(`Generated config files ${
-    options.useTs 
-      ? chalk.bgBlueBright("TypeScript") 
-      : chalk.bgYellowBright("JavaScript"
-      )}\n`);
+  consola.log(
+    `Generated config files ${
+      options.useTs ? chalk.bgBlueBright("TypeScript") : chalk.bgYellowBright("JavaScript")
+    }\n`
+  );
 
   if (depsToAdd && Object.keys(depsToAdd).length > 0) {
     consola.log(`${chalk.cyan("📦 Dependencies to be added:")}`);
@@ -102,4 +99,11 @@ async function outputMetadata(ctx: HookContext): Promise<void> {
   }
 }
 
-export { copyFolderRecursive, detectPackageManager, getSupportLangs, getLangTargetPath, outputMetadata, installDependencies };
+export {
+  copyFolderRecursive,
+  detectPackageManager,
+  getSupportLangs,
+  getLangTargetPath,
+  outputMetadata,
+  installDependencies,
+};

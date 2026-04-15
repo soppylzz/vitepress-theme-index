@@ -8,7 +8,13 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: ["**/dist/", "packages/play", "**/node_modules/", "pnpm-lock.yaml"],
+    ignores: [
+      "**/dist/",
+      "packages/play",
+      "**/node_modules/",
+      "pnpm-lock.yaml",
+      "packages/cli/cli.mjs",
+    ],
   },
   {
     languageOptions: {

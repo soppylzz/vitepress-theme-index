@@ -26,7 +26,7 @@ const kls = computed(() => ({
 <template>
   <div v-if="response === 'mobile' || (response === 'pad' && hasToc)" :class="kls.wrap">
     <div v-if="response === 'mobile'" :class="kls.button" @click="toggleMenu">
-      <span>{{ t("sub-nav.menu") }}</span>
+      <span>{{ t("nav.menu") }}</span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
         <!--! Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc. -->
         <path
@@ -36,7 +36,7 @@ const kls = computed(() => ({
     </div>
     <div v-if="hasToc">
       <div :class="kls.button" @click="toggleToc">
-        <span>{{ t("sub-nav.toc") }}</span>
+        <span>{{ t("nav.toc") }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
           <!--! Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc. -->
           <path

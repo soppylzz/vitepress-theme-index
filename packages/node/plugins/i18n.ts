@@ -1,21 +1,18 @@
 import type { Plugin } from "vite";
 import type { IndexPluginContext } from "../types";
-import { VIRTUAL_INDEX_I18N_PKG } from "@vitepress-theme-index/shared";
+import { INDEX_I18N_PKG } from "@vitepress-theme-index/shared";
 import { PLUGIN_PREFIX } from "../const";
 import { pick } from "lodash-unified";
-
-const i18nVirtualId = VIRTUAL_INDEX_I18N_PKG;
-const i18nResolvedId = `\0${i18nVirtualId}`;
 
 function createI18nPlugin(ctx: IndexPluginContext): Plugin {
   return {
     name: `${PLUGIN_PREFIX}/i18n`,
     resolveId(id) {
-      return id === i18nVirtualId ? i18nResolvedId : undefined;
+      return id === INDEX_I18N_PKG ? id : undefined;
     },
     load(id) {
       if (!ctx?.ctx) return;
-      if (id !== i18nResolvedId) return;
+      if (id !== INDEX_I18N_PKG) return;
 
       const { i18n } = ctx.ctx;
       const baseExportCode = `export const config = ${JSON.stringify(pick(i18n, ["mode", "rootLocale", "datetimeFormat"]) ?? {})};`;
@@ -35,7 +32,7 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
       const { i18n } = ctx?.ctx ?? {};
 
       if (i18n && i18n?.mode !== "mixin" && file.endsWith(`${i18n.file}.json`)) {
-        const mod = server.moduleGraph.getModuleById(i18nResolvedId);
+        const mod = server.moduleGraph.getModuleById(INDEX_I18N_PKG);
         if (mod) server.moduleGraph.invalidateModule(mod);
         server.ws.send({ type: "full-reload", path: "*" });
       }
@@ -43,4 +40,4 @@ function createI18nPlugin(ctx: IndexPluginContext): Plugin {
   };
 }
 
-export { createI18nPlugin, i18nResolvedId };
+export { createI18nPlugin };

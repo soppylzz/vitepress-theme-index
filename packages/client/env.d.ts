@@ -11,13 +11,19 @@ declare module "virtual:index-addition" {
 }
 
 declare module "virtual:index-archive" {
-  import type { IndexPostArchives } from "@vitepress-theme-index/shared";
-  const archives: Record<string, IndexPostArchives>;
-  export default archives;
+  import type { ArchiveAllStats } from "@vitepress-theme-index/shared";
+  const stats: ArchiveAllStats;
+  export default stats;
 }
 
 declare module "virtual:index-search" {
-  import type { IndexSearchIndex } from "@vitepress-theme-index/shared";
-  const searchIndex: IndexSearchIndex;
-  export default searchIndex;
+  import type { SearchIndex } from "@vitepress-theme-index/shared";
+  const search: SearchIndex;
+  export default search;
+}
+
+declare module "virtual:index-overall" {
+  import type { PostInfo } from "@vitepress-theme-index/shared";
+  const infos: PostInfo[];
+  export default infos;
 }
