@@ -1,7 +1,124 @@
-@use "sass:map";
 @use "abstract" as *;
 @use "public" as *;
 
 @include b("drawer") {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
+  z-index: 10000;
+  background-color: red;
+  backdrop-filter: blur(2px);
+  @include useScrollHidden();
+
+  @include e("content") {
+    position: absolute;
+    overflow: auto;
+    background-color: getCssVar("bg", "primary");
+    @include useScrollHidden();
+
+    @include m("left") {
+      left: 0;
+      top: 0;
+      height: 100%;
+    }
+
+    @include m("right") {
+      right: 0;
+      top: 0;
+      height: 100%;
+    }
+
+    @include m("top") {
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    @include m("bottom") {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    @include m("small") {
+      width: 250px;
+      height: 250px;
+    }
+
+    @include m("medium") {
+      width: 350px;
+      height: 350px;
+    }
+
+    @include m("large") {
+      width: 450px;
+      height: 450px;
+    }
+  }
+
+  @include e("dragger") {
+    position: absolute;
+    background-color: transparent;
+    @include useUnselect();
+    cursor: grab;
+
+    @include when("resizable") {
+      background-color: getCssVar("bg", "secondary");
+
+      &:hover {
+        background-color: getCssVar("bg", "tertiary");
+      }
+    }
+
+    @include m("left") {
+      right: 0;
+      top: 0;
+      width: getCssVar("padding", "xs");
+      height: 100%;
+      cursor: ew-resize;
+    }
+
+    @include m("right") {
+      left: 0;
+      top: 0;
+      width: getCssVar("padding", "xs");
+      height: 100%;
+      cursor: ew-resize;
+    }
+
+    @include m("top") {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: getCssVar("padding", "xs");
+      cursor: ns-resize;
+    }
+
+    @include m("bottom") {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: getCssVar("padding", "xs");
+      cursor: ns-resize;
+    }
+
+    @include m("small") {
+      width: 6px;
+      height: 6px;
+    }
+
+    @include m(medium) {
+      width: 8px;
+      height: 8px;
+    }
+
+    @include m(large) {
+      width: 10px;
+      height: 10px;
+    }
+  }
 }
