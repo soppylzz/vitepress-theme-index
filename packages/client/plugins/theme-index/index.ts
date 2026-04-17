@@ -7,6 +7,7 @@ import { installIcons } from "../icon";
 import { installTheme } from "./theme";
 import { installAdditions } from "../views";
 import { installGsap } from "./gsap";
+import { isBrowser } from "@vitepress-theme-index/shared";
 
 async function installPostData({ app }: EnhanceAppContext) {
   const stats = (await import("virtual:index-archive")).default;
@@ -28,7 +29,9 @@ async function installIndex(ctx: EnhanceAppContext, config: IndexClientConfig) {
 }
 
 export function setupIndex() {
-  setupI18n();
+  if (isBrowser()) {
+    setupI18n();
+  }
 }
 
 export { installIndex };

@@ -25,7 +25,6 @@ async function installI18n(ctx: EnhanceAppContext) {
 }
 
 export function setupI18n() {
-  // Must be called at the top of a `setup` function
   const { locale } = useI18n();
   const { localeIndex } = useData();
 

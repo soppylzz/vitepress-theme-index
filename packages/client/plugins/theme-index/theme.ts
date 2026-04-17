@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import { computed, reactive, ref, toRef } from "vue";
+import { nextTick, computed, reactive, ref, toRef } from "vue";
 import { isArray, isNumber, merge, omit } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
@@ -11,7 +11,7 @@ import type {
   UserIndexClientThemeConfig,
 } from "../../types";
 import { indexClientThemeKey, indexThemeMode, indexPreset } from "../../types";
-import { pluginLogger } from "@vitepress-theme-index/shared";
+import { isBrowser, pluginLogger } from "@vitepress-theme-index/shared";
 
 const defaultThemeConfig = {
   breakPoint: [768, 1280],
@@ -21,9 +21,9 @@ const defaultThemeConfig = {
 } as const satisfies ResolvedIndexClientThemeConfig;
 
 function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>) {
-  const width = ref<number>(import.meta.env.SSR ? breakPoint.value[0] : window.innerWidth);
+  const width = ref<number>(!isBrowser() ? breakPoint.value[0] : window.innerWidth);
   const update = () => {
-    if (import.meta.env.SSR) return;
+    if (!isBrowser()) return;
     width.value = window.innerWidth;
   };
   const response = computed<IndexResponse>(() => {
@@ -80,10 +80,13 @@ function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeC
   const { response, update } = createResponsive(toRef(ctx, "breakPoint"));
   const actions = createThemeAction(ctx);
 
-  if (!import.meta.env.SSR) {
-    window.addEventListener("resize", update, { passive: true });
-    app.onUnmount(() => {
-      window.removeEventListener("resize", update);
+  if (isBrowser()) {
+    nextTick(() => {
+      update();
+      window.addEventListener("resize", update, { passive: true });
+      app.onUnmount(() => {
+        window.removeEventListener("resize", update);
+      });
     });
   }
 

@@ -1,4 +1,4 @@
-import { computed, defineComponent, vShow, withDirectives } from "vue";
+import { computed, defineComponent } from "vue";
 import { flatArrayWithRoute, useBem, useSidebar, useTheme } from "../composables";
 import { renderMenuItems, VtiDrawer, VtiMenu } from "./public";
 
@@ -28,28 +28,26 @@ const VtiSidebar = defineComponent({
       const contents = renderMenuItems(sidebar.value, "sidebar");
 
       if (isDrawer) {
-        return withDirectives(
+        return (
           <VtiDrawer
             modelValue={trigger.value}
             onUpdate:modelValue={(v: boolean) => (trigger.value = v)}
+            resizable={true}
             placement={"left"}
             size={"medium"}
-            resizable
-            touchable
           >
             {/* drawer header slots */}
-            <VtiMenu size={"medium"} collapsed showActivate>
+            <VtiMenu onClick={() => (trigger.value = false)} size={"large"} collapsed showActivate>
               {contents}
             </VtiMenu>
             {/* drawer footer slots  */}
-          </VtiDrawer>,
-          [[vShow, trigger.value]]
+          </VtiDrawer>
         );
       }
       return (
         <div class={[ns.b(), ns.m(response.value)]}>
           {/* fixed header slots */}
-          <VtiMenu size={"large"} collapsed showActivate>
+          <VtiMenu size={"medium"} collapsed showActivate>
             {contents}
           </VtiMenu>
           {/* fixed header slots */}

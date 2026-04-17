@@ -1,22 +1,36 @@
-function colorMix(color: string, mixColor: string, percent: number): string {
-  const hex = color.replace("#", "");
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
+type RGB = [number, number, number];
 
-  const mixR = parseInt(mixColor.replace("#", "").slice(0, 2), 16);
-  const mixG = parseInt(mixColor.replace("#", "").slice(2, 4), 16);
-  const mixB = parseInt(mixColor.replace("#", "").slice(4, 6), 16);
+function hexToRgb(hex: string): RGB {
+  const clean = hex.startsWith("#") ? hex.slice(1) : hex;
+  return [
+    parseInt(clean.slice(0, 2), 16),
+    parseInt(clean.slice(2, 4), 16),
+    parseInt(clean.slice(4, 6), 16),
+  ];
+}
 
-  const mix = (base: number, mix: number) => Math.round(base * (1 - percent) + mix * percent);
-  return `#${mix(r, mixR).toString(16).padStart(2, "0")}${mix(g, mixG).toString(16).padStart(2, "0")}${mix(b, mixB).toString(16).padStart(2, "0")}`;
+function rgbToHex([r, g, b]: RGB): string {
+  const toHex = (c: number) => c.toString(16).padStart(2, "0");
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+function mixChannel(a: number, b: number, p: number) {
+  return Math.round(a * (1 - p) + b * p);
+}
+
+function colorMix(color: string, mixColor: string, percent: number) {
+  const c1 = hexToRgb(color);
+  const c2 = hexToRgb(mixColor);
+
+  return rgbToHex([
+    mixChannel(c1[0], c2[0], percent),
+    mixChannel(c1[1], c2[1], percent),
+    mixChannel(c1[2], c2[2], percent),
+  ]);
 }
 
 function getColorBrightness(color: string): number {
-  const hex = color.replace("#", "");
-  const r = parseInt(hex.slice(0, 2), 16);
-  const g = parseInt(hex.slice(2, 4), 16);
-  const b = parseInt(hex.slice(4, 6), 16);
+  const [r, g, b] = hexToRgb(color);
   return (r * 299 + g * 587 + b * 114) / 1000;
 }
 

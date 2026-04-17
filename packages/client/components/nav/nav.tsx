@@ -1,6 +1,16 @@
 import type { Component, VNode } from "vue";
-import { watch, watchEffect, ref, createVNode, defineComponent, vShow, withDirectives } from "vue";
-import { useBem, useNav, useSite, useTheme } from "../../composables";
+import {
+  onMounted,
+  computed,
+  watch,
+  watchEffect,
+  ref,
+  createVNode,
+  defineComponent,
+  vShow,
+  withDirectives,
+} from "vue";
+import { useBem, useLockScroll, useNav, useSite, useTheme } from "../../composables";
 import { isBoolean, isUndefined, omit } from "lodash-unified";
 import type {
   IndexResponse,
@@ -117,17 +127,9 @@ const VtiNav = defineComponent({
 
     const open = ref(false);
 
-    let originalOverflow = "";
-    watchEffect((onCleanup) => {
-      if (open.value && response.value === "mobile") {
-        originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = originalOverflow || "";
-      }
-      onCleanup(() => {
-        document.body.style.overflow = originalOverflow || "";
-      });
+    const isBodyLock = computed(() => open.value && response.value === "mobile");
+    onMounted(() => {
+      useLockScroll(isBodyLock, document.body);
     });
 
     const route = useRoute();

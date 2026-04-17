@@ -23,14 +23,13 @@
   @include e("sidebar") {
     position: relative;
     flex-shrink: 0;
+    width: $docs-sidebar-width;
     background-color: getCssVar("bg", "secondary");
 
-    width: 0;
-    @include useVisual(false);
-    @include m("pad", "desktop") {
-      width: $docs-sidebar-width;
-      @include useVisual();
-      @include useBorder(right);
+    @include useBorder(right);
+    @include m("mobile") {
+      width: 0;
+      border: none;
     }
   }
 

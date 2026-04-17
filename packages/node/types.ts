@@ -4,7 +4,7 @@ import type {
   I18NConfig,
   MaybeArray,
   DefineAble,
-  PostRawData,
+  PostInfo,
   ArchiveData,
   IndexErrorInterceptor,
 } from "@vitepress-theme-index/shared";
@@ -27,22 +27,37 @@ type IndexImportPluginConfig = {
 
 type DefaultLast = "now" | "mtime";
 
+interface PostCacheConfig {
+  enable: boolean;
+  dir: string;
+  concurrency: number;
+  defaultLast: DefaultLast;
+}
+
+interface PostLocaleConfig {
+  patterns: Array<{
+    locale: string;
+    pattern: string | RegExp;
+  }>;
+  default: string;
+}
+
+interface PostContentIndexConfig {
+  pageSize: number;
+}
+
 interface MetaConfig {
   include: MaybeArray<string>;
   exclude: MaybeArray<string>;
-  cache: {
-    enable: boolean;
-    dir: string;
-    pageSize: number;
-    concurrency: number;
-    defaultLast: DefaultLast;
-  };
+  cache: PostCacheConfig;
+  locale: PostLocaleConfig;
+  index: PostContentIndexConfig;
 }
 
 interface MetaCache {
   hashKey: string;
   generate: number;
-  posts: PostRawData[];
+  posts: PostInfo[];
 }
 
 type IndexPluginConfig = {
@@ -66,7 +81,7 @@ type ResolvedIndexPluginConfig = DeepRequired<Omit<IndexPluginConfig, "i18n">> &
 interface IndexPostPlugin {
   name: string;
   pageSize?: number;
-  extract: (post: PostRawData) => MaybeArray<string> | null | undefined;
+  extract: (post: PostInfo) => MaybeArray<string> | null | undefined;
   postProcess?: (map: ArchiveData) => ArchiveData;
 }
 

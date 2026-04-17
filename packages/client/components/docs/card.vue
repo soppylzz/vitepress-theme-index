@@ -61,7 +61,7 @@ const { shareToMail, copyLink } = useShare();
     </div>
     <div :class="kls.quick">
       <slot name="vti-docs-card-quick">
-        <VtiTag text="123" />
+        <VtiTag text="123" size="small" />
       </slot>
     </div>
     <div :class="kls.license">

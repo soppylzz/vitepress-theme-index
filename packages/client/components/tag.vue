@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { useBem, useRandomColor, useText } from "../composables";
-import type { IndexSize, IndexText } from "../types";
+import { useBem, useLink, useRandomColor, useText } from "../composables";
+import type { IndexSize, IndexText, IndexTextLink } from "../types";
 import { computed } from "vue";
 
-const props = withDefaults(defineProps<{ text: IndexText; size?: IndexSize }>(), {
+type TagProps = { size?: IndexSize } & IndexTextLink;
+const props = withDefaults(defineProps<TagProps>(), {
   size: "medium",
 });
 
 const { cssVar } = useRandomColor(() => useText(props.text));
+const { attr } = useLink(props);
 
 const ns = useBem("tag");
 const kls = computed(() => ({ wrap: [ns.b(), ns.m(props.size)] }));
 </script>
 
 <template>
-  <div :class="kls.wrap" :style="cssVar">
+  <a :class="kls.wrap" :style="cssVar" v-bind="attr">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
       <!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
       <path
@@ -22,5 +24,5 @@ const kls = computed(() => ({ wrap: [ns.b(), ns.m(props.size)] }));
       />
     </svg>
     <span>{{ useText(props.text) }}</span>
-  </div>
+  </a>
 </template>

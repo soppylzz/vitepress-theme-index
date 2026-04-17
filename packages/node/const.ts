@@ -1,5 +1,5 @@
 import type { IndexImportPluginConfig, ResolvedIndexPluginConfig } from "./types";
-import type { PostRawData } from "@vitepress-theme-index/shared";
+import type { PostInfo } from "@vitepress-theme-index/shared";
 import { INDEX_ADDITION_NAME } from "@vitepress-theme-index/shared";
 
 const PLUGIN_PREFIX = "vitepress-theme-index";
@@ -22,27 +22,27 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
   },
   addition: { name: INDEX_ADDITION_NAME },
   meta: {
+    include: ["**/*.md"],
+    exclude: ["**/node_modules/**", ".vitepress/**"],
     cache: {
       enable: true,
-      pageSize: 1,
+      dir: "vti",
       concurrency: 32,
       defaultLast: "now",
-      dir: "vti",
     },
-    exclude: ["**/node_modules/**", ".vitepress/**"],
-    include: ["**/*.md"],
+    locale: {
+      default: "zh",
+      patterns: [{ locale: "en", pattern: /^en\// }],
+    },
+    index: {
+      pageSize: 3,
+    },
   },
   plugins: [
     {
-      name: "en:archive",
-      extract(post: PostRawData) {
-        return /^en\//.test(post.path) ? "post" : undefined;
-      },
-    },
-    {
-      name: "zh:archive",
-      extract(post: PostRawData) {
-        return !/^(en)\//.test(post.path) ? "post" : undefined;
+      name: "archive",
+      extract(post: PostInfo) {
+        return "post";
       },
     },
   ],

@@ -1,5 +1,6 @@
 import { useData } from "vitepress";
-import { computed } from "vue";
+import type { MaybeRefOrGetter } from "vue";
+import { computed, onMounted, onUnmounted, toValue, watchEffect } from "vue";
 import { flatArrayWithRoute, useSidebar } from "../use-index";
 
 function useLayout() {
@@ -12,4 +13,49 @@ function useLayout() {
   return { hasToc, hasSidebar };
 }
 
-export { useLayout };
+type LockStack = [count: number, overflow: string];
+const stackCache = new WeakMap<HTMLElement, LockStack>();
+
+function useLockScroll(
+  isLock: MaybeRefOrGetter<boolean>,
+  element: HTMLElement,
+  onCleanup?: () => void
+) {
+  const stopEffect = watchEffect((effectCleanup) => {
+    const lock = toValue(isLock);
+    const cache = stackCache.has(element)
+      ? stackCache.get(element)
+      : (() => {
+          const created: LockStack = [0, element.style.overflow];
+          stackCache.set(element, created);
+          return created;
+        })();
+
+    if (lock) {
+      cache[0]++;
+      element.style.overflow = "hidden";
+    } else {
+      cache[0]--;
+      if (cache[0] <= 0) {
+        element.style.overflow = cache[1] || "";
+        stackCache.delete(element);
+        onCleanup?.();
+      }
+    }
+
+    effectCleanup(() => {
+      const cache = stackCache.get(element);
+      if (cache) {
+        element.style.overflow = cache[1] || "";
+        stackCache.delete(element);
+      }
+      onCleanup?.();
+    });
+  });
+
+  onUnmounted(() => {
+    stopEffect();
+  });
+}
+
+export { useLayout, useLockScroll };

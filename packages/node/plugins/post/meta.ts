@@ -6,7 +6,7 @@ import pLimit from "p-limit";
 import { simpleGit } from "simple-git";
 import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
-import type { GitInfo, PostRawData } from "@vitepress-theme-index/shared";
+import type { GitInfo, PostInfo } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger } from "@vitepress-theme-index/shared";
 import { readFile, stat } from "fs/promises";
 import * as os from "node:os";
@@ -67,27 +67,46 @@ async function getGitInfo(
 async function generateMetaCache(
   files: string[],
   config: MetaConfig,
-  cacheFile: string
-): Promise<MetaCache> {
-  const { cache } = config;
-  const limit = pLimit(Math.min(cache.concurrency, os.cpus().length * 2));
+  cacheFile: string,
+  prevCache?: MetaCache
+): Promise<{ cache: MetaCache; changedHashes: Set<string> }> {
+  const {
+    cache,
+    cache: { concurrency, defaultLast },
+  } = config;
+  const limit = pLimit(Math.min(concurrency, os.cpus().length * 2));
   const gitLimit = pLimit(4);
 
   const fileStats = await Promise.all(files.map((f) => utils.stat(f)));
   const hashKey = utils.generateQuickHashKey(fileStats);
 
+  const prevPostMap = new Map<string, PostInfo>();
+  if (prevCache) {
+    prevCache.posts.forEach((post) => {
+      prevPostMap.set(post.hash, post);
+    });
+  }
+
+  const changedHashes = new Set<string>();
   const metas = await Promise.all(
     fileStats.map((fileStat) =>
-      limit(async (): Promise<PostRawData> => {
+      limit(async (): Promise<PostInfo> => {
         const content = await readFile(fileStat.path, "utf8");
         const { data: frontmatter } = matter(content);
-        const gitInfo = await getGitInfo(fileStat.path, cache.defaultLast, gitLimit, fileStat);
+        const hash = utils.md5(content + fileStat.path);
+
+        // Check if this post has changed by comparing hash with previous cache
+        const prevPost = prevPostMap.get(hash);
+        if (!prevPost || prevPost.hash !== hash) {
+          changedHashes.add(hash);
+        }
+
+        const gitInfo = await getGitInfo(fileStat.path, defaultLast, gitLimit, fileStat);
 
         return {
           path: fileStat.path,
-          content,
           frontmatter,
-          hash: utils.md5(content),
+          hash,
           ...gitInfo,
         };
       })
@@ -107,16 +126,21 @@ async function generateMetaCache(
     await fs.writeJSON(cacheFile, cached, { spaces: 2 });
   }
 
-  return cached;
+  return { cache: cached, changedHashes };
 }
 
-export async function loadMetaCache(config: MetaConfig): Promise<MetaCache> {
+export async function loadMetaCache(config: MetaConfig): Promise<{
+  posts: PostInfo[];
+  changedHashes: Set<string>;
+}> {
   const files = await glob(ensureArray(config.include), {
     absolute: true,
     cwd: process.cwd(),
     ignore: ensureArray(config.exclude),
   });
   const cacheFile = resolve(process.cwd(), ".vitepress", "cache", config.cache.dir, "vti-raw.json");
+
+  let prevCache: MetaCache | undefined;
 
   if (config.cache.enable && (await fs.pathExists(cacheFile))) {
     try {
@@ -127,12 +151,16 @@ export async function loadMetaCache(config: MetaConfig): Promise<MetaCache> {
 
       if (cached.hashKey === currentHash) {
         pluginLogger.info("cache hit: fast hash matched");
-        return cached;
+        return { posts: cached.posts, changedHashes: new Set() };
       }
-    } catch {
-      /* ignore */
+
+      prevCache = cached;
+    } catch (error) {
+      pluginLogger.warn(`failed to load meta cache: ${error}`);
     }
   }
+
   pluginLogger.warn("cache check failed, re-generating...");
-  return await generateMetaCache(files, config, cacheFile);
+  const { cache, changedHashes } = await generateMetaCache(files, config, cacheFile, prevCache);
+  return { posts: cache.posts, changedHashes };
 }

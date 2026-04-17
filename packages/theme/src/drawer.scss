@@ -1,124 +1,80 @@
+@use "sass:map";
+@use "sass:list";
+@use "sass:string";
 @use "abstract" as *;
 @use "public" as *;
 
-@include b("drawer") {
-  position: fixed;
-  inset: 0;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+$wrap-placements: (
+  "left": "row",
+  "top": "col",
+  "right": "row-reverse",
+  "bottom": "col-reverse",
+);
 
-  z-index: 10000;
-  background-color: red;
-  backdrop-filter: blur(2px);
-  @include useScrollHidden();
+$wrap-size: (
+  // min, initial, max, dragger
+  "small":  (20%, 30%, 50%, 4px),
+  "medium": (30%, 45%, 70%, 4px),
+  "large":  (40%, 60%, 90%, 4px),
+);
+
+@include b("drawer") {
+  inset: 0;
+  position: fixed;
+  display: flex;
+  z-index: getCssVar("z-index", "overlay");
+
+  @each $size, $vals in $wrap-size {
+    #{getCssVarName("drawer-content-min-size")}: list.nth($vals, 1);
+    #{getCssVarName("drawer-content-initial-size")}: list.nth($vals, 2);
+    #{getCssVarName("drawer-content-max-size")}: list.nth($vals, 3);
+    #{getCssVarName("drawer-dragger-size")}: list.nth($vals, 4);
+  }
+
+  @each $place, $direction in $wrap-placements {
+    @include m($place) {
+      flex-direction: $direction;
+    }
+  }
+
+  @include when("resize") {
+    cursor: col-resize;
+  }
+
+  @include m("top", "bottom") {
+    @include when("resize") {
+      cursor: row-resize;
+    }
+  }
 
   @include e("content") {
-    position: absolute;
-    overflow: auto;
-    background-color: getCssVar("bg", "primary");
-    @include useScrollHidden();
+    background-color: getCssVar("bg", "secondary");
+    min-width: getCssVar("drawer-content-min-size");
+    width: getCssVar("drawer-content-initial-size");
+    max-width: getCssVar("drawer-content-max-size");
 
-    @include m("left") {
-      left: 0;
-      top: 0;
-      height: 100%;
-    }
-
-    @include m("right") {
-      right: 0;
-      top: 0;
-      height: 100%;
-    }
-
-    @include m("top") {
-      top: 0;
-      left: 0;
-      width: 100%;
-    }
-
-    @include m("bottom") {
-      bottom: 0;
-      left: 0;
-      width: 100%;
-    }
-
-    @include m("small") {
-      width: 250px;
-      height: 250px;
-    }
-
-    @include m("medium") {
-      width: 350px;
-      height: 350px;
-    }
-
-    @include m("large") {
-      width: 450px;
-      height: 450px;
+    @include m("top", "bottom") {
+      min-height: getCssVar("drawer-content-min-size");
+      height: getCssVar("drawer-content-initial-size");
+      max-height: getCssVar("drawer-content-max-size");
     }
   }
 
   @include e("dragger") {
-    position: absolute;
-    background-color: transparent;
-    @include useUnselect();
-    cursor: grab;
-
-    @include when("resizable") {
-      background-color: getCssVar("bg", "secondary");
-
-      &:hover {
-        background-color: getCssVar("bg", "tertiary");
-      }
+    width: getCssVar("drawer-dragger-size");
+    @include m("top", "bottom") {
+      height: getCssVar("drawer-dragger-size");
     }
 
-    @include m("left") {
-      right: 0;
-      top: 0;
-      width: getCssVar("padding", "xs");
-      height: 100%;
-      cursor: ew-resize;
+    background-color: getCssVar("border", "primary");
+    @include when("resize") {
+      background-color: getCssVar("accent", "active");
     }
+  }
 
-    @include m("right") {
-      left: 0;
-      top: 0;
-      width: getCssVar("padding", "xs");
-      height: 100%;
-      cursor: ew-resize;
-    }
-
-    @include m("top") {
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: getCssVar("padding", "xs");
-      cursor: ns-resize;
-    }
-
-    @include m("bottom") {
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: getCssVar("padding", "xs");
-      cursor: ns-resize;
-    }
-
-    @include m("small") {
-      width: 6px;
-      height: 6px;
-    }
-
-    @include m(medium) {
-      width: 8px;
-      height: 8px;
-    }
-
-    @include m(large) {
-      width: 10px;
-      height: 10px;
-    }
+  @include e("overlay") {
+    flex: 1;
+    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.5);
   }
 }

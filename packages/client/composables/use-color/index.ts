@@ -28,14 +28,15 @@ function hashStringToIndex(str: string, max: number): number {
 
 function generateColorSet(mainColor: string) {
   const isLight = getColorBrightness(mainColor) > 160;
-  const mix = (w: number, b: number) =>
-    colorMix(mainColor, isLight ? "#000" : "#fff", isLight ? b : w);
+  const mixTarget = isLight ? "#000000" : "#ffffff";
+
+  const mix = (p: number) => colorMix(mainColor, mixTarget, p);
 
   return {
     text: mainColor,
-    textHover: mix(0.4, 0.25),
-    bg: mix(0.85, 0.08),
-    bgHover: mix(0.8, 0.12),
+    textHover: mix(0.1),
+    bg: mix(0.45),
+    bgHover: mix(0.35),
   };
 }
 

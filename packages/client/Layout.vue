@@ -10,10 +10,12 @@ const ns = useBem("layout");
 
 <template>
   <div v-if="frontmatter.layout !== false" :class="[ns.b()]">
-    <VtiNav />
-    <VtiHome v-if="frontmatter.layout === 'home'" />
-    <VtiArchive v-else-if="frontmatter.layout === 'archive'" />
-    <VtiDocs v-else />
+    <ClientOnly>
+      <VtiNav />
+      <VtiHome v-if="frontmatter.layout === 'home'" />
+      <VtiArchive v-else-if="frontmatter.layout === 'archive'" />
+      <VtiDocs v-else />
+    </ClientOnly>
   </div>
   <Content v-else />
 </template>

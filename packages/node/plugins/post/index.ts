@@ -1,5 +1,6 @@
 import type { IndexPluginContext, MetaConfig } from "../../types";
 import type { Plugin } from "vite";
+import type { BuildResult } from "@vitepress-theme-index/shared";
 import { PLUGIN_PREFIX } from "../../const";
 import {
   INDEX_ARCHIVE_PKG,
@@ -13,7 +14,7 @@ import { resolve } from "node:path";
 function createMetaPlugin(ctx: IndexPluginContext): Plugin {
   let config: MetaConfig | undefined;
   let builder: IndexPostBuilder | null = null;
-  let datas: Awaited<ReturnType<IndexPostBuilder["build"]>> | null = null;
+  let datas: BuildResult | null = null;
 
   return {
     name: `${PLUGIN_PREFIX}/post`,
@@ -22,20 +23,17 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
       async handler() {
         if (!ctx?.ctx) return;
         config = ctx.ctx.meta;
-        const cache = await loadMetaCache(config);
-        builder = await new IndexPostBuilder(config).use(ctx.ctx.plugins);
+        const { posts, changedHashes } = await loadMetaCache(config);
 
         const workDir = ctx.viteConfig.isProduction
-          ? resolve(ctx.viteConfig.publicDir, config.cache.dir)
+          ? resolve(process.cwd(), ".vitepress", "dist", config.cache.dir)
           : resolve(process.cwd(), ".vitepress", "cache", config.cache.dir);
+        const baseUrl = ctx.viteConfig.isProduction
+          ? `/${config.cache.dir}`
+          : `/.vitepress/cache/${config.cache.dir}`;
 
-        datas = await builder.build(
-          cache.posts,
-          workDir,
-          ctx.viteConfig.isProduction
-            ? `/${config.cache.dir}`
-            : `/.vitepress/cache/${config.cache.dir}`
-        );
+        builder = await new IndexPostBuilder(config, workDir).use(ctx.ctx.plugins);
+        datas = await builder.build(posts, baseUrl, changedHashes);
       },
     },
     resolveId(id) {

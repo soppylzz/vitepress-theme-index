@@ -13,11 +13,12 @@
     "play:cli": "pnpm run build:cli && pnpm run -C packages/cli cli:dev",
     "play:dev": "pnpm run build:full && pnpm run -C packages/play docs:dev",
     "play:build": "pnpm run build:full && pnpm run -C packages/play docs:build",
-    "play:preview": "pnpm run -C packages/play docs:preview",
+    "play:preview": "pnpm run play:build && pnpm run -C packages/play docs:preview",
     "prepare": "husky"
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0",
+    "@intlify/unplugin-vue-i18n": "^11.0.7",
     "@types/cross-spawn": "^6.0.6",
     "@types/ejs": "^3.1.5",
     "@types/lodash": "^4.17.23",
@@ -50,7 +51,6 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.0.3",
     "@vitepress-theme-index/eslint": "workspace:*",
-    "vitepress-theme-index": "workspace:*",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
     "lightningcss": "1.21.0",
@@ -59,6 +59,7 @@
     "sass": "^1.97.1",
     "typescript": "5.8.2",
     "vitepress": "^1.6.0",
+    "vitepress-theme-index": "workspace:*",
     "vue": "^3.5.0",
     "vue-tsc": "^3.1.0"
   },

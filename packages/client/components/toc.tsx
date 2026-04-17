@@ -154,17 +154,16 @@ const VtiToc = defineComponent({
       updateSlider();
     });
 
-    watch(
-      () => headers.value,
-      async () => {
-        await nextTick();
-        initObserver();
-        updateSlider();
-      },
-      { immediate: true, flush: "post" }
-    );
-
     onMounted(() => {
+      watch(
+        () => headers.value,
+        async () => {
+          await nextTick();
+          initObserver();
+          updateSlider();
+        },
+        { immediate: true, flush: "post" }
+      );
       window.addEventListener("resize", handleResize);
     });
 

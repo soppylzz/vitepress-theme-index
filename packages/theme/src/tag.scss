@@ -1,0 +1,39 @@
+@use "sass:map";
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+$tag-sizes: (
+  // padding, gap, font, weight, radius
+  "small": ("xs", "xs","xs", "normal", "sm"),
+  "medium": ("sm", "xs","sm", "normal", "md"),
+  "large": ("sm", "sm","md", "semibold", "md"),
+);
+
+@include b("tag") {
+  @include useLink();
+  @include useIcon();
+  @include useNLine();
+  @include useUnselect();
+  @include useFlex(row, null, center);
+
+  color: getCssVar("text-random");
+  background-color: getCssVar("bg-random");
+  border: getCssVar("border-width", "thin") solid getCssVar("text-random");
+
+  &:hover {
+    color: getCssVar("text-random-hover");
+    background-color: getCssVar("bg-random-hover");
+    border-color: getCssVar("text-random-hover");
+  }
+
+  @each $size, $vals in $tag-sizes {
+    @include m($size) {
+      padding: getCssVar("padding", list.nth($vals, 1));
+      gap: getCssVar("gap", list.nth($vals, 2));
+      font-size: getCssVar("font-size", list.nth($vals, 3));
+      font-weight: getCssVar("font-weight", list.nth($vals, 4));
+      border-radius: getCssVar("border-radius", list.nth($vals, 5));
+    }
+  }
+}

@@ -6,7 +6,7 @@
 $size-gaps: (
   "small": "sm",
   "medium": "md",
-  "large": "md",
+  "large": "lg",
 );
 
 @mixin useMenuGap() {
@@ -27,8 +27,8 @@ $size-gaps: (
   @each $size, $types in (
     /* font, line, padding, min-width */
     "small": ("md", "normal", "md", 100px),
-    "medium": ("md", "normal", "lg", 180px),
-    "large": ("lg", "relaxed", "xl", 200px),
+    "medium": ("lg", "normal", "lg", 180px),
+    "large": ("xl", "relaxed", "xl", 200px),
   ) {
     @include m($size) {
       font-size: getCssVar("font-size", list.nth($types, 1));

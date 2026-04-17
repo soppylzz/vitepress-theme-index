@@ -13,10 +13,6 @@
   font-size: getCssVar("font-size", "md");
   margin: getCssVar("margin", $docs-space);
 
-  & a {
-    @include useLink();
-  }
-
   @include e("times") {
     font-size: 0.8em;
     color: getCssVar("text", "primary");
@@ -46,6 +42,7 @@
       @include useUnselect();
       font-weight: getCssVar("font-weight", "semibold");
       a {
+        @include useLink();
         font-weight: getCssVar("font-weight", "normal");
       }
       &:hover {

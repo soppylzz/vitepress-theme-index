@@ -18,7 +18,7 @@
 @use "menu";
 @use "tag";
 
-@include createFontFace("Monaco", "./assets/Monaco.ttf");
+//@include createFontFace("Monaco", "./assets/Monaco.ttf");
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
 

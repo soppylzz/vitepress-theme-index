@@ -75,6 +75,7 @@ const rightMenuLogger = createLogger("right-menu");
 const renderLogger = createLogger("render");
 const runtimeLogger = createLogger("runtime");
 const cliLogger = createLogger("cli");
+const searchLogger = createLogger("search");
 
 export {
   buildLogger,
@@ -84,5 +85,6 @@ export {
   renderLogger,
   runtimeLogger,
   cliLogger,
+  searchLogger,
   IndexError,
 };

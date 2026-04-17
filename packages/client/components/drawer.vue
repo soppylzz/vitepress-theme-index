@@ -1,48 +1,55 @@
 <script setup lang="ts">
-import type { DrawerEmits, DrawerProps } from "../types";
-import { useBem } from "../composables";
-import { computed, ref, onUnmounted } from "vue";
+import { computed, ref, reactive, watch } from "vue";
+import type { DrawerProps } from "../types";
+import { useBem, useLockScroll } from "../composables";
 
-const emits = defineEmits<DrawerEmits>();
 const model = defineModel<boolean>({ default: false });
 const props = withDefaults(defineProps<DrawerProps>(), {
   placement: "left",
-  resizable: false,
+  resizable: true,
   size: "medium",
 });
 
-// DOM refs
 const content = ref<HTMLElement | null>(null);
+const state = reactive({
+  isResizing: false,
+  startPos: 0,
+  startSize: 0,
+});
+const sizeLimit = reactive({
+  min: 200,
+  max: 800,
+});
 
-// Resize state
-const resizeState = ref({ isResizing: false, startPos: 0, startSize: 0 });
-
-// Layout flags
 const isVertical = computed(() => ["top", "bottom"].includes(props.placement));
-const posKey = computed<"clientX" | "clientY">(() => (isVertical.value ? "clientY" : "clientX"));
-const sizeKey = computed<"width" | "height">(() => (isVertical.value ? "height" : "width"));
+const isReversed = computed(() => !["top", "left"].includes(props.placement));
 
-// Get position from mouse/touch event
-const getPos = (e: MouseEvent | TouchEvent): number => {
-  const target = e instanceof TouchEvent ? e.touches[0] : (e as MouseEvent);
-  return target[posKey.value];
-};
-
-// Get current drawer dimension
-const getSize = (): number => {
-  if (!content.value) return 350;
-  return isVertical.value ? content.value.offsetHeight : content.value.offsetWidth;
-};
-
-// Close on overlay click
-const handleOverlayClick = (e: MouseEvent) => {
-  if (!content.value?.contains(e.target as Node)) {
-    emits("close");
-    model.value = false;
+watch(model, (val) => {
+  if (val && content.value) {
+    readSizeFromStyle();
   }
+});
+
+function readSizeFromStyle() {
+  if (!content.value) return;
+  const style = getComputedStyle(content.value);
+
+  if (isVertical.value) {
+    sizeLimit.min = parseInt(style.minHeight) || 200;
+    sizeLimit.max = parseInt(style.maxHeight) || 800;
+  } else {
+    sizeLimit.min = parseInt(style.minWidth) || 200;
+    sizeLimit.max = parseInt(style.maxWidth) || 800;
+  }
+}
+
+const attachListeners = () => {
+  document.addEventListener("mousemove", handleMove);
+  document.addEventListener("mouseup", stopResize);
+  document.addEventListener("touchmove", handleMove, { passive: false });
+  document.addEventListener("touchend", stopResize, { passive: false });
 };
 
-// Cleanup resize listeners
 const detachListeners = () => {
   document.removeEventListener("mousemove", handleMove);
   document.removeEventListener("mouseup", stopResize);
@@ -50,74 +57,75 @@ const detachListeners = () => {
   document.removeEventListener("touchend", stopResize);
 };
 
-// End resize and cleanup
-const stopResize = () => {
-  if (!resizeState.value.isResizing) return;
-  resizeState.value.isResizing = false;
-  detachListeners();
-};
+function getPosition(e: MouseEvent | TouchEvent) {
+  const target = e instanceof TouchEvent ? e.touches[0] : e;
+  return target[isVertical.value ? "clientY" : "clientX"];
+}
 
-// Move handler during resize
-const handleMove = (e: MouseEvent | TouchEvent) => {
-  const { isResizing, startPos, startSize } = resizeState.value;
-  if (!isResizing || !content.value) return;
-
-  const delta = getPos(e) - startPos;
-  const isReversed = ["right", "bottom"].includes(props.placement);
-  const newSize = Math.max(200, Math.min(800, startSize + (isReversed ? -delta : delta)));
-
-  content.value.style[sizeKey.value] = `${newSize}px`;
-};
-
-// Start resize
-const startResize = (e: MouseEvent | TouchEvent) => {
+function startResize(e: MouseEvent | TouchEvent) {
   if (!props.resizable) return;
 
-  resizeState.value = {
+  const startSize = isVertical.value ? content.value.offsetHeight : content.value.offsetWidth;
+
+  Object.assign(state, {
     isResizing: true,
-    startPos: getPos(e),
-    startSize: getSize(),
-  };
+    startPos: getPosition(e),
+    startSize,
+  });
 
-  document.addEventListener("mousemove", handleMove);
-  document.addEventListener("mouseup", stopResize);
-  document.addEventListener("touchmove", handleMove);
-  document.addEventListener("touchend", stopResize);
+  attachListeners();
+}
 
+function stopResize() {
+  if (!state.isResizing) return;
+  state.isResizing = false;
+  detachListeners();
+}
+
+function handleMove(e: MouseEvent | TouchEvent) {
+  if (!state.isResizing || !content.value) return;
+
+  const delta = getPosition(e) - state.startPos;
+  const newSize = Math.max(
+    sizeLimit.min,
+    Math.min(sizeLimit.max, state.startSize + (isReversed.value ? -delta : delta))
+  );
+
+  const sizeKey = isVertical.value ? "height" : "width";
+  content.value.style[sizeKey] = `${newSize}px`;
   e.preventDefault();
-};
+}
 
-// Cleanup on unmount
-onUnmounted(() => {
-  if (resizeState.value.isResizing) {
-    stopResize();
-  }
-});
+useLockScroll(model, document.body, stopResize);
 
-// Class generation
 const ns = useBem("drawer");
-const classes = computed(() => ({
-  root: [ns.b(), ns.when("active", model.value)],
+const kls = computed(() => ({
+  wrap: [ns.b(), ns.m(props.placement), ns.m(props.size), ns.when("resize", state.isResizing)],
+  content: [ns.e("content"), ns.em("content", props.placement)],
   dragger: [
     ns.e("dragger"),
     ns.em("dragger", props.placement),
-    ns.em("dragger", props.size),
-    ns.when("resizable", props.resizable),
+    ns.when("resize", state.isResizing),
   ],
-  content: [ns.e("content"), ns.em("content", props.placement), ns.em("content", props.size)],
+  overlay: ns.e("overlay"),
 }));
 </script>
 
 <template>
-  <div v-show="model" :class="classes.root" @click="handleOverlayClick">
-    <div
-      v-if="resizable"
-      :class="classes.dragger"
-      @mousedown="startResize"
-      @touchstart="startResize"
-    />
-    <div ref="content" :class="classes.content">
+  <div v-if="model" :class="kls.wrap">
+    <div ref="content" :class="kls.content">
       <slot />
+    </div>
+    <div
+      v-if="props.resizable"
+      :class="kls.dragger"
+      @mousedown.prevent="startResize"
+      @touchstart.prevent="startResize"
+    >
+      <!--  drawer  -->
+    </div>
+    <div :class="kls.overlay" @click="model = false">
+      <!--  overlay  -->
     </div>
   </div>
 </template>

@@ -13,11 +13,11 @@ function useI18n() {
   const { routes } = useInject(indexI18nKey);
   const { t, d } = useVueI18n();
 
-  const { site, localeIndex, hash, page } = useData();
   const translate = (key: string | number, plural?: number) => t(key, plural as any);
   const datetime = (value: number | Date, format: I18nDatetimeFormatKey = "short") =>
     d(value, format);
 
+  const { site, localeIndex, hash, page } = useData();
   const currentRoutes: ComputedRef<ResolvedLocaleRoutes["routes"]> = computed(() => {
     // realize refer to vitepress defaultTheme
     const computedRoutes: ResolvedLocaleRoutes["routes"] = {};

@@ -151,6 +151,7 @@
     @include m("screen") {
       gap: getCssVar("lg");
       margin-bottom: 0;
+      padding-inline: getCssVar("padding", "lg");
       line-height: getCssVar("line-height", "relaxed");
       svg:nth-of-type(1) {
         display: none;

@@ -12,7 +12,7 @@ import { computed, ref } from "vue";
 import { useBem, useLayout, useTheme } from "../composables";
 import type { IndexSize } from "../types";
 
-const menu = ref(true);
+const menu = ref(false);
 const { response } = useTheme();
 const { hasToc, hasSidebar } = useLayout();
 const tocSize = computed<IndexSize>(() => (response.value === "mobile" ? "small" : "medium"));
