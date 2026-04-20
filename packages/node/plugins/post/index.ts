@@ -23,7 +23,7 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
       async handler() {
         if (!ctx?.ctx) return;
         config = ctx.ctx.meta;
-        const { posts, changedHashes } = await loadMetaCache(config);
+        const { posts, changedPostPath, allPostPath } = await loadMetaCache(config);
 
         const workDir = ctx.viteConfig.isProduction
           ? resolve(process.cwd(), ".vitepress", "dist", config.cache.dir)
@@ -33,7 +33,7 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
           : `/.vitepress/cache/${config.cache.dir}`;
 
         builder = await new IndexPostBuilder(config, workDir).use(ctx.ctx.plugins);
-        datas = await builder.build(posts, baseUrl, changedHashes);
+        datas = await builder.build(posts, baseUrl, changedPostPath, allPostPath);
       },
     },
     resolveId(id) {
@@ -41,7 +41,7 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
     },
     load(id) {
       const virtualMap = {
-        [INDEX_ARCHIVE_PKG]: datas?.statRecord,
+        [INDEX_ARCHIVE_PKG]: datas?.archiveRecord,
         [INDEX_OVERALL_PKG]: datas?.allPostInfo,
         [INDEX_SEARCH_PKG]: datas?.searchIndex,
       };

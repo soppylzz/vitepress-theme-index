@@ -31,7 +31,7 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
       defaultLast: "now",
     },
     locale: {
-      default: "zh",
+      root: "root",
       patterns: [{ locale: "en", pattern: /^en\// }],
     },
     index: {

@@ -130,5 +130,16 @@ function useSplitRefs<T extends object>(val: MaybeRefOrGetter<T | undefined>) {
   return result;
 }
 
+/* ==================== vue validators ==================== */
+function createNumValidator(mode: "positive" | "negative" | "non-positive" | "non-negative") {
+  const map = {
+    positive: (v: number) => v > 0,
+    negative: (v: number) => v < 0,
+    "non-positive": (v: number) => v <= 0,
+    "non-negative": (v: number) => v >= 0,
+  };
+  return map[mode];
+}
+
 export type { CachedComputedRef };
-export { useReactiveProxy, useCachedComputed, useSplitRefs };
+export { useReactiveProxy, useCachedComputed, useSplitRefs, createNumValidator };

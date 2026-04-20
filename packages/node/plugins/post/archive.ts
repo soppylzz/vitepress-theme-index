@@ -11,27 +11,20 @@ import type {
   SearchIndexItem,
 } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger, resolveDefineAble } from "@vitepress-theme-index/shared";
-import type { IndexPostPlugin, MetaConfig } from "../../types";
 import { dirname, join, resolve } from "node:path";
 import fs from "fs-extra";
 import { rimraf } from "rimraf";
-import { createHash } from "node:crypto";
 import { readFile } from "fs/promises";
-
-interface TitleParagraph {
-  titles: string[];
-  content: string;
-}
-
-interface SearchIndexCacheItem {
-  post: string;
-  hash: string;
-  items: SearchIndexItem[];
-}
-
-interface SearchIndexCache {
-  [locale: string]: SearchIndexCacheItem[];
-}
+import matter from "gray-matter";
+import type {
+  SearchIndexCache,
+  SearchIndexCacheItem,
+  TitleParagraph,
+  IndexPostPlugin,
+  MetaConfig,
+} from "../../types";
+import { generateSearchItemId } from "../../utils";
+import removeMd from "remove-markdown";
 
 class IndexPostBuilder {
   private plugins: IndexPostPlugin[] = [];
@@ -76,12 +69,15 @@ class IndexPostBuilder {
       }
     }
 
-    return this.config.locale?.default || "default";
+    return this.config.locale?.root || "root";
   }
 
   private extractTitleParagraphs(content: string): TitleParagraph[] {
     const result: TitleParagraph[] = [];
-    const lines = content.split("\n");
+
+    const { content: mdContent } = matter(content);
+    const lines = mdContent.split("\n");
+
     let titleHierarchy: string[] = [];
     let currentParagraph: string[] = [];
 
@@ -90,13 +86,23 @@ class IndexPostBuilder {
 
       if (headingMatch) {
         const level = headingMatch[1].length;
-        const title = headingMatch[2].trim();
+        const title = removeMd(headingMatch[2].trim(), {
+          stripListLeaders: false,
+          useImgAltText: false,
+          gfm: true,
+        });
 
-        if (currentParagraph.length > 0 && titleHierarchy.length > 0) {
-          result.push({
-            titles: [...titleHierarchy],
-            content: currentParagraph.join("\n").trim(),
+        if (currentParagraph.length > 0) {
+          const cleanContent = removeMd(currentParagraph.join("\n").trim(), {
+            gfm: true,
+            useImgAltText: false,
           });
+          if (cleanContent) {
+            result.push({
+              titles: [...titleHierarchy],
+              content: cleanContent,
+            });
+          }
           currentParagraph = [];
         }
 
@@ -110,11 +116,17 @@ class IndexPostBuilder {
       }
     }
 
-    if (currentParagraph.length > 0 && titleHierarchy.length > 0) {
-      result.push({
-        titles: [...titleHierarchy],
-        content: currentParagraph.join("\n").trim(),
+    if (currentParagraph.length > 0) {
+      const cleanContent = removeMd(currentParagraph.join("\n").trim(), {
+        gfm: true,
+        useImgAltText: false,
       });
+      if (cleanContent) {
+        result.push({
+          titles: [...titleHierarchy],
+          content: cleanContent,
+        });
+      }
     }
 
     return result;
@@ -130,12 +142,11 @@ class IndexPostBuilder {
       const titleParagraphs = this.extractTitleParagraphs(content);
 
       return titleParagraphs.map((tp, paragraphIndex) => {
-        const idBase = `${post.hash}|${paragraphIndex}|${postOrder}`;
-        const id = createHash("md5").update(idBase).digest("hex");
+        const id = generateSearchItemId(post.hash, paragraphIndex, postOrder);
 
         return {
           id,
-          post: post.hash,
+          path: post.path,
           titles: tp.titles,
           content: tp.content,
         };
@@ -154,7 +165,7 @@ class IndexPostBuilder {
     }
 
     const patterns = this.config.locale?.patterns || [];
-    const locales = [this.config.locale?.default || "default", ...patterns.map((p) => p.locale)];
+    const locales = [this.config.locale?.root || "root", ...patterns.map((p) => p.locale)];
     const uniqueLocales = [...new Set(locales)];
 
     for (const locale of uniqueLocales) {
@@ -191,42 +202,46 @@ class IndexPostBuilder {
   private async buildLocaleSearchIndex(
     posts: PostInfo[],
     locale: string,
-    changedHashes: Set<string>
+    changedPostPath: Set<string>,
+    allPostPath: Set<string>
   ): Promise<SearchIndex> {
     const searchIndex: SearchIndex = [];
 
     if (!this.searchIndexCache[locale]) {
       this.searchIndexCache[locale] = [];
     }
-    const localeCache = this.searchIndexCache[locale];
+
+    this.searchIndexCache[locale] = this.searchIndexCache[locale].filter((item) =>
+      allPostPath.has(item.post)
+    );
 
     const cacheMap = new Map<string, SearchIndexCacheItem>();
-    for (const item of localeCache) {
+    for (const item of this.searchIndexCache[locale]) {
       cacheMap.set(item.post, item);
     }
 
     for (let i = 0; i < posts.length; i++) {
       const post = posts[i];
-      const postHash = post.hash;
+      const postPath = post.path;
 
-      const cachedItem = cacheMap.get(postHash);
-      if (cachedItem && !changedHashes.has(postHash)) {
+      const cachedItem = cacheMap.get(postPath);
+      if (cachedItem && !changedPostPath.has(postPath)) {
         searchIndex.push(...cachedItem.items);
       } else {
         const items = await this.generateSearchIndexItems(post, i);
         const newCacheItem: SearchIndexCacheItem = {
-          post: postHash,
+          post: postPath,
           items,
-          hash: postHash,
+          hash: post.hash,
         };
 
         if (cachedItem) {
-          const idx = localeCache.indexOf(cachedItem);
-          localeCache[idx] = newCacheItem;
-          cacheMap.set(postHash, newCacheItem);
+          const idx = this.searchIndexCache[locale].indexOf(cachedItem);
+          this.searchIndexCache[locale][idx] = newCacheItem;
+          cacheMap.set(postPath, newCacheItem);
         } else {
-          localeCache.push(newCacheItem);
-          cacheMap.set(postHash, newCacheItem);
+          this.searchIndexCache[locale].push(newCacheItem);
+          cacheMap.set(postPath, newCacheItem);
         }
 
         searchIndex.push(...items);
@@ -239,7 +254,8 @@ class IndexPostBuilder {
   public async build(
     posts: PostInfo[],
     baseUrl: string,
-    changedHashes: Set<string>
+    changedPostPath: Set<string>,
+    allPostPath: Set<string>
   ): Promise<BuildResult> {
     pluginLogger.info(`🌘 start building index with ${posts.length} posts`);
 
@@ -264,10 +280,9 @@ class IndexPostBuilder {
       localeSearchIndexRecord[locale] = await this.buildLocaleSearchIndex(
         localePosts,
         locale,
-        changedHashes
+        changedPostPath,
+        allPostPath
       );
-
-      // Build archive stats for each plugin
       const localeStatRecord: ArchiveAllStats = {};
       for (const plugin of this.plugins) {
         try {
@@ -296,7 +311,7 @@ class IndexPostBuilder {
 
     return {
       searchIndex: localeSearchIndexRecord,
-      statRecord: localeArchiveStatsRecord,
+      archiveRecord: localeArchiveStatsRecord,
       allPostInfo,
     };
   }
@@ -324,7 +339,6 @@ class IndexPostBuilder {
       }
     }
 
-    // Apply postProcess if defined
     return plugin.postProcess ? plugin.postProcess(data) : data;
   }
 

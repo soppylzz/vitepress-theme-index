@@ -50,6 +50,7 @@ interface IndexClientThemeContext extends ResolvedIndexClientThemeConfig {
   };
   setPreset: (preset: IndexPreset) => void;
   setMode: (mode: IndexThemeMode) => void;
+  update: () => void;
 }
 
 type AdditionType = keyof IndexClientAdditionConfig;

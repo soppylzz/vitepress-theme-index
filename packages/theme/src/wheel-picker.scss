@@ -1,0 +1,90 @@
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+$picker-sizes: (
+  "small": ("md", "normal"),
+  "medium": ("lg", "relaxed"),
+  "large": ("lg", "relaxed"),
+);
+
+$item-sizes: (
+  // min-width, norm, max
+  "small": ("sm", 50px, 70px),
+  "medium": ("md", 70px, 100px),
+  "large": ("lg", 100px, 150px),
+);
+
+@include b("wheel-picker") {
+  position: relative;
+  overflow: hidden;
+  @include useUnselect();
+
+  @each $size, $vals in $picker-sizes {
+    @include m($size) {
+      font-size: getCssVar("font-size", list.nth($vals, 1));
+      line-height: getCssVar("line-height", list.nth($vals, 2));
+    }
+  }
+
+  @include e("content") {
+    position: absolute;
+    will-change: transform;
+
+    inset: auto 0;
+    @include useFlex(column, center);
+
+    &>div {
+
+    }
+
+    @include m("row") {
+      inset: 0 auto;
+      @include useFlex(row, null, center);
+
+      &>div {
+
+      }
+    }
+  }
+
+  @include e("indicator") {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    @include useBorder(null, "primary", "base");
+    border-radius: getCssVar("border-radius", "md");
+
+    background-color: color-mix(
+        in srgb,
+        var(--vti-bg-tertiary) 50%,
+        transparent
+    );
+    pointer-events: none;
+
+    @each $size, $vals in $item-sizes {
+      @include m($size) {
+        padding: getCssVar("padding", list.nth($vals, 1));
+      }
+    }
+  }
+
+  @include e("item") {
+    @include useNLine();
+    @include useFlex(row, center, center);
+
+    @include m("row") {
+      height: 100%;
+    }
+
+    @each $size, $vals in $item-sizes {
+      @include m($size) {
+        padding: getCssVar("padding", list.nth($vals, 1));
+        min-width: list.nth($vals, 2);
+        max-width: list.nth($vals, 3);
+      }
+    }
+  }
+}

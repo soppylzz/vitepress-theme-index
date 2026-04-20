@@ -1,9 +1,9 @@
 import type { BuildI18nViewConfig, IndexIcon, IndexLink, IndexSiteConfig } from "../../types";
 import { indexClientThemeKey, indexNavKey, indexSidebarKey, indexSiteKey } from "../../types";
 import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
-import { isObject, isString } from "lodash-unified";
+import { isFunction, isObject, isString } from "lodash-unified";
 import type { ComputedRef, MaybeRefOrGetter } from "vue";
-import { computed, toValue } from "vue";
+import { computed, onMounted, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -41,8 +41,8 @@ function useLink<T extends IndexLink>(
   return { attr, isExternal };
 }
 
-function useMaybeI18nData<T, D = undefined>(raw: BuildI18nViewConfig<T>, defaultVal?: D) {
-  const { localeIndex } = useI18n(); // 你的国际化 hook
+function useMaybeI18nData<T, D extends T = undefined>(raw: BuildI18nViewConfig<T>, defaultVal?: D) {
+  const { localeIndex } = useI18n();
 
   return computed(() => {
     if (!isObject(raw) || !hasOwnProperty(raw, "i18n") || !raw.i18n) {
@@ -72,7 +72,17 @@ function flatArrayWithRoute<T>(raw: Record<string, T[]>) {
   return Object.values(raw).flat() as T[];
 }
 
-const useTheme = () => useInject(indexClientThemeKey);
+const useTheme = () => {
+  const theme = useInject(indexClientThemeKey);
+  if (isFunction(theme.update)) {
+    // resolve hydration mismatch problem
+    onMounted(() => {
+      theme.update();
+    });
+  }
+  return theme;
+};
+
 const useNav = () => {
   const raw = useInject(indexNavKey);
   return useMaybeI18nData(raw, []);

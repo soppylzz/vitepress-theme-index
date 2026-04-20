@@ -163,6 +163,7 @@ async function buildNode() {
     },
     output: generateOutputs(pkgRoot),
     plugins: [
+      commonjs(),
       nodeResolve({ extensions: [".mjs", ".js", ".ts"] }),
       esbuild({
         tsconfig: tsconfigPath,

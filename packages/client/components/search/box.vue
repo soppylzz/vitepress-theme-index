@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { useBem, useI18n, useTheme } from "../../composables";
+import { useBem, useI18n, useTheme, useSiteSearch } from "../../composables";
 import { computed, ref } from "vue";
+import VtiSearchItem from "./item.vue";
 
 const { t } = useI18n();
-const { response } = useTheme();
+// const { response } = useTheme();
 const searchText = ref("");
 
-function handleSearch() {}
+const { search, loading, results } = useSiteSearch();
+
+function handleSearch() {
+  search(searchText.value);
+}
 
 const ns = useBem("search");
 const kls = computed(() => ({
@@ -24,6 +29,12 @@ const kls = computed(() => ({
       :class="kls.input"
       @input="handleSearch"
     />
-    <div />
+    <div :class="kls.result">
+      <div v-if="loading" role="status">{{ t("search.loading") }}</div>
+      <div v-else-if="searchText && results.length === 0" role="status">
+        {{ t("search.no-results") }}
+      </div>
+      <VtiSearchItem v-for="result in results" :key="result.id" :result="result" />
+    </div>
   </div>
 </template>

@@ -1,6 +1,9 @@
 import type { Alias, ViteDevServer } from "vite";
 import { normalizePath } from "vite";
 import { isArray } from "lodash-unified";
+import { relative } from "node:path";
+import { createHash } from "node:crypto";
+import { stat } from "fs/promises";
 
 function normalizeAlias(alias?: Readonly<Alias[] | Record<string, string>>): Alias[] {
   if (!alias) return [];
@@ -51,4 +54,50 @@ async function ssrRewriteLoadModules(
   }
 }
 
-export { ssrRewriteLoadModules, normalizeAlias };
+/* ==================== post utilities ==================== */
+function createMD5Hash(str: string): string {
+  return createHash("md5").update(str).digest("hex");
+}
+
+function generateCacheKeyFromStats(
+  fileStats: Array<{
+    path: string;
+    mtime: number;
+    size: number;
+  }>
+): string {
+  const fingerprint = fileStats
+    .sort((a, b) => a.path.localeCompare(b.path))
+    .map((s) => `${s.path}:${s.mtime}:${s.size}`)
+    .join("|");
+  return createMD5Hash(fingerprint);
+}
+
+async function getFileStat(file: string): Promise<{
+  path: string;
+  mtime: number;
+  size: number;
+  ctime: number;
+}> {
+  const s = await stat(file);
+  return {
+    path: relative(process.cwd(), file),
+    mtime: s.mtimeMs,
+    size: s.size,
+    ctime: s.ctimeMs,
+  };
+}
+
+function generateSearchItemId(postHash: string, paragraphIndex: number, postOrder: number): string {
+  const idBase = `${postHash}|${paragraphIndex}|${postOrder}`;
+  return createMD5Hash(idBase);
+}
+
+export {
+  ssrRewriteLoadModules,
+  normalizeAlias,
+  createMD5Hash,
+  generateCacheKeyFromStats,
+  getFileStat,
+  generateSearchItemId,
+};

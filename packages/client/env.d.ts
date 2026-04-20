@@ -11,19 +11,26 @@ declare module "virtual:index-addition" {
 }
 
 declare module "virtual:index-archive" {
-  import type { ArchiveAllStats } from "@vitepress-theme-index/shared";
-  const stats: ArchiveAllStats;
-  export default stats;
+  import type { LocaleArchiveStatsRecord } from "@vitepress-theme-index/shared";
+  const localeStats: LocaleArchiveStatsRecord;
+  export default localeStats;
 }
 
 declare module "virtual:index-search" {
-  import type { SearchIndex } from "@vitepress-theme-index/shared";
-  const search: SearchIndex;
-  export default search;
+  import type { LocaleSearchIndexRecord } from "@vitepress-theme-index/shared";
+  const localeSearch: LocaleSearchIndexRecord;
+  export default localeSearch;
 }
 
 declare module "virtual:index-overall" {
   import type { PostInfo } from "@vitepress-theme-index/shared";
   const infos: PostInfo[];
   export default infos;
+}
+
+declare module "*?worker" {
+  const workerConstructor: {
+    new (): Worker;
+  };
+  export default workerConstructor;
 }

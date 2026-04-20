@@ -7,6 +7,7 @@ import type {
   PostInfo,
   ArchiveData,
   IndexErrorInterceptor,
+  SearchIndexItem,
 } from "@vitepress-theme-index/shared";
 import type { Alias, ResolvedConfig, ViteDevServer } from "vite";
 
@@ -35,11 +36,11 @@ interface PostCacheConfig {
 }
 
 interface PostLocaleConfig {
+  root: string;
   patterns: Array<{
     locale: string;
     pattern: string | RegExp;
   }>;
-  default: string;
 }
 
 interface PostContentIndexConfig {
@@ -77,13 +78,26 @@ type ResolvedIndexPluginConfig = DeepRequired<Omit<IndexPluginConfig, "i18n">> &
   i18n: Required<IndexPluginConfig["i18n"]>;
 };
 
-/* ==================== plugin ==================== */
+/* ==================== post plugin ==================== */
 interface IndexPostPlugin {
   name: string;
   pageSize?: number;
   extract: (post: PostInfo) => MaybeArray<string> | null | undefined;
   postProcess?: (map: ArchiveData) => ArchiveData;
 }
+
+interface TitleParagraph {
+  titles: string[];
+  content: string;
+}
+
+interface SearchIndexCacheItem {
+  post: string; // post path
+  hash: string; // post hash
+  items: SearchIndexItem[];
+}
+
+type SearchIndexCache = Record<string, SearchIndexCacheItem[]>;
 
 /* ==================== context ==================== */
 type IndexPluginContext = Partial<{
@@ -106,4 +120,7 @@ export type {
   IndexPluginContext,
   UserIndexPluginConfig,
   ResolvedIndexPluginConfig,
+  TitleParagraph,
+  SearchIndexCacheItem,
+  SearchIndexCache,
 };

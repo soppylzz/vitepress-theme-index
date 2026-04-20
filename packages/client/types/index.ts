@@ -6,5 +6,6 @@ export * from "./comps";
 export * from "./nav";
 export * from "./brand";
 export * from "./theme-index";
+export * from "./search";
 // special
 export * from "./right-menu";

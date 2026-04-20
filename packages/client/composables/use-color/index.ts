@@ -41,10 +41,7 @@ function generateColorSet(mainColor: string) {
 }
 
 function useRandomColor(text: MaybeRefOrGetter<string>) {
-  const uid = getCurrentInstance()!.uid;
-  const mainColor = computed(
-    () => COLORS[hashStringToIndex(`${uid}_${toValue(text)}`, COLORS.length)]
-  );
+  const mainColor = computed(() => COLORS[hashStringToIndex(toValue(text), COLORS.length)]);
 
   const cssVar = computed(() => {
     const colorSet = generateColorSet(mainColor.value);

@@ -9,7 +9,8 @@ import { indexToPrefix } from "../../utils";
 import type { I18nDatetimeFormatKey } from "@vitepress-theme-index/shared";
 import { useInject } from "../use-inject";
 
-function useI18n() {
+let i18nInstance: ReturnType<typeof createI18n> | null = null;
+function createI18n() {
   const { routes } = useInject(indexI18nKey);
   const { t, d } = useVueI18n();
 
@@ -46,6 +47,13 @@ function useI18n() {
     t: translate,
     d: datetime,
   };
+}
+
+function useI18n() {
+  if (!i18nInstance) {
+    i18nInstance = createI18n();
+  }
+  return i18nInstance;
 }
 
 function useText(text?: IndexText) {

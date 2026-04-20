@@ -1,8 +1,8 @@
-import { withIndex, Index } from "vitepress-theme-index";
+import { withIndex, IndexLayout } from "vitepress-theme-index";
 import "vitepress-theme-index/theme/index.css";
 
 export default withIndex({
-  Layout: Index,
+  Layout: IndexLayout,
   async enhanceApp() {},
   setup() {},
   index: {

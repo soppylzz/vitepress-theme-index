@@ -1,9 +1,10 @@
 import type { Ref } from "vue";
-import { nextTick, computed, reactive, ref, toRef } from "vue";
+import { computed, reactive, ref, toRef } from "vue";
 import { isArray, isNumber, merge, omit } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
   IndexClientThemeConfig,
+  IndexClientThemeContext,
   IndexPreset,
   IndexResponse,
   IndexThemeMode,
@@ -21,12 +22,17 @@ const defaultThemeConfig = {
 } as const satisfies ResolvedIndexClientThemeConfig;
 
 function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>) {
-  const width = ref<number>(!isBrowser() ? breakPoint.value[0] : window.innerWidth);
+  const width = ref<number | null>(null);
+
   const update = () => {
     if (!isBrowser()) return;
     width.value = window.innerWidth;
   };
+
   const response = computed<IndexResponse>(() => {
+    if (width.value === null) {
+      return "desktop";
+    }
     const w = width.value;
     return w < breakPoint.value[0] ? "mobile" : w > breakPoint.value[1] ? "desktop" : "pad";
   });
@@ -73,29 +79,37 @@ function resolveIndexClientThemeConfig(
   return merged as ResolvedIndexClientThemeConfig;
 }
 
+let globalThemeContext: Record<string, any> | null = null;
 function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeConfig) {
+  if (globalThemeContext) {
+    app.provide(indexClientThemeKey, globalThemeContext as IndexClientThemeContext);
+    return;
+  }
+
   const resolved = resolveIndexClientThemeConfig(config);
   const ctx = reactive(resolved);
 
   const { response, update } = createResponsive(toRef(ctx, "breakPoint"));
   const actions = createThemeAction(ctx);
 
+  const themeContextValue = {
+    ...resolved,
+    ctx,
+    response,
+    update,
+    ...actions,
+  } as IndexClientThemeContext;
+
+  globalThemeContext = themeContextValue;
+
   if (isBrowser()) {
-    nextTick(() => {
-      update();
-      window.addEventListener("resize", update, { passive: true });
-      app.onUnmount(() => {
-        window.removeEventListener("resize", update);
-      });
+    window.addEventListener("resize", update, { passive: true });
+    app.onUnmount(() => {
+      window.removeEventListener("resize", update);
     });
   }
 
-  app.provide(indexClientThemeKey, {
-    ctx,
-    response,
-    ...resolved,
-    ...actions,
-  });
+  app.provide(indexClientThemeKey, themeContextValue);
 }
 
 export { installTheme };

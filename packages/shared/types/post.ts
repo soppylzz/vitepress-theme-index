@@ -1,20 +1,11 @@
-// Search index item for new design - split by titles
 interface SearchIndexItem {
-  post: string; // hash of PostInfo
-  id: string; // combination of post hash + title order hash
-  titles: string[]; // title path
-  content: string; // paragraph content
-}
-
-type SearchIndex = SearchIndexItem[];
-
-interface SearchItem {
   id: string;
   path: string;
-  locale: string;
   titles: string[];
   content: string;
 }
+
+type SearchIndex = SearchIndexItem[];
 
 interface GitInfo {
   firstCommit: number;
@@ -42,20 +33,18 @@ type ArchiveStat = {
 
 type ArchiveAllStats = Record<string, ArchiveStat>;
 
-// Locale-aware build results
 type LocaleSearchIndexRecord = Record<string, SearchIndex>;
 type LocaleArchiveStatsRecord = Record<string, ArchiveAllStats>;
 
 interface BuildResult {
   searchIndex: LocaleSearchIndexRecord;
-  statRecord: LocaleArchiveStatsRecord;
+  archiveRecord: LocaleArchiveStatsRecord;
   allPostInfo: PostInfo[];
 }
 
 export type {
   SearchIndex,
   SearchIndexItem,
-  SearchItem,
   GitInfo,
   PostInfo,
   ArchiveData,

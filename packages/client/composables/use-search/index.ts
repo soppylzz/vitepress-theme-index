@@ -1,24 +1,19 @@
 import { ref } from "vue";
 import { searchLogger } from "@vitepress-theme-index/shared";
 import { debounce } from "lodash-unified";
-
-type SearchMode = "mini-search";
-interface SearchResult {
-  id: string;
-  path: string;
-  content: string;
-  score?: number;
-}
-
-interface UseSiteSearchOptions {
-  mode?: SearchMode;
-  delay?: number;
-}
+import { useI18n } from "../use-i18n";
+import type {
+  SearchMode,
+  SearchResult,
+  WorkerRequestMessage,
+  WorkerInitedResponse,
+  WorkerSearchResponse,
+} from "../../types";
 
 function createWorker(mode: SearchMode) {
   switch (mode) {
     case "mini-search": {
-      return new Worker(new URL("./mini-search.ts", import.meta.url), { type: "module" });
+      return new Worker(new URL("./mini-search.mjs", import.meta.url), { type: "module" });
     }
     default: {
       searchLogger.error(`unsupported search mode: ${mode}`);
@@ -26,29 +21,42 @@ function createWorker(mode: SearchMode) {
   }
 }
 
-function useSiteSearch(options: UseSiteSearchOptions = {}) {
-  const { mode = "mini-search", delay = 300 } = options;
+function useSiteSearch(options?: { mode?: SearchMode; delay?: number }) {
+  const { mode = "mini-search", delay = 300 } = options ?? {};
 
   const results = ref<SearchResult[]>([]);
   const loading = ref<boolean>(false);
 
+  const { localeIndex } = useI18n();
+
   let worker: Worker | null = null;
   let initialized = false;
   let initPromise: Promise<void> | null = null;
+  let lastInitializedLocale: string | null = null;
 
   async function init() {
-    if (!initialized) return;
+    const locale = localeIndex.value;
+
+    if (initialized && lastInitializedLocale === locale) return;
     if (!worker) worker = createWorker(mode);
 
     await new Promise<void>((resolve) => {
-      const handler = (_) => {
-        worker!.removeEventListener("message", handler);
-        initialized = true;
-        resolve();
+      const handler = (e: MessageEvent<WorkerInitedResponse>) => {
+        if (e.data.type === "inited") {
+          worker!.removeEventListener("message", handler);
+          if (e.data.error) {
+            searchLogger.error(`search init failed: ${e.data.error}`);
+          }
+          if (e.data.success) {
+            initialized = true;
+            lastInitializedLocale = locale;
+          }
+          resolve();
+        }
       };
 
       worker!.addEventListener("message", handler);
-      worker!.postMessage({ type: "init" });
+      worker!.postMessage({ type: "init", locale } as WorkerRequestMessage);
     });
   }
 
@@ -57,7 +65,7 @@ function useSiteSearch(options: UseSiteSearchOptions = {}) {
   async function doSearch(query: string): Promise<SearchResult[]> {
     if (!query) {
       results.value = [];
-      return;
+      return [];
     }
     loading.value = true;
     if (!initPromise) initPromise = init();
@@ -65,23 +73,29 @@ function useSiteSearch(options: UseSiteSearchOptions = {}) {
 
     const id = requestId++;
 
-    results.value = await new Promise<any[]>((resolve) => {
-      const handler = (e: MessageEvent) => {
+    results.value = await new Promise<SearchResult[]>((resolve) => {
+      const handler = (e: MessageEvent<WorkerSearchResponse>) => {
         if (e.data.type === "result" && e.data.id === id) {
           worker!.removeEventListener("message", handler);
-          resolve(e.data.payload);
+          if (e.data.error) {
+            searchLogger.error(`search error: ${e.data.error}`);
+            resolve([]);
+          } else {
+            resolve(e.data.payload);
+          }
         }
       };
 
       worker!.addEventListener("message", handler);
-
       worker!.postMessage({
         type: "search",
+        queryMode: mode,
         payload: query,
         id,
-      });
+      } as WorkerRequestMessage);
     });
     loading.value = false;
+    return results.value;
   }
 
   const search = debounce(doSearch, delay);

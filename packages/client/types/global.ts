@@ -10,6 +10,7 @@ type IndexLinkMode = "_blank" | "_self";
 type IndexActivateEvent = "click" | "mouseenter";
 type IndexPlacement = "top" | "bottom" | "left" | "right";
 type IndexSize = "small" | "medium" | "large";
+type IndexDirection = "col" | "row";
 
 type IndexText = string | ((t?: ComposerTranslation) => string);
 type IndexIcon = string | Component;
@@ -24,6 +25,7 @@ export type {
   IndexText,
   IndexIcon,
   IndexLink,
+  IndexDirection,
   IndexActivateEvent,
   IndexResponse,
   IndexPlacement,
