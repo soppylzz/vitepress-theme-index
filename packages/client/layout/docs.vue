@@ -6,6 +6,7 @@ import {
   VtiDocsPage,
   VtiToc,
   VtiDocsFooter,
+  VtiComment,
 } from "../components";
 import { Content } from "vitepress";
 import { computed, ref } from "vue";
@@ -39,6 +40,7 @@ const kls = computed(() => ({
           <Content class="markdown-body" />
           <VtiDocsCard />
           <VtiDocsPage />
+          <VtiComment />
         </div>
         <div v-if="hasToc" id="vti-docs-aside">
           <VtiToc size="large" />

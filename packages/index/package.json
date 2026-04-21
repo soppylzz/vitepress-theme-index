@@ -65,6 +65,7 @@
     "cross-spawn": "^7.0.6",
     "ejs": "^5.0.2",
     "mri": "^1.2.0",
+    "@giscus/vue": "^3.1.1",
     "@clack/prompts": "^1.2.0"
   }
 }
