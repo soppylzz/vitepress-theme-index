@@ -177,3 +177,10 @@
     color: getCssVar("accent", "hover");
   }
 }
+
+@include b("nav-theme") {
+  @include useFlex(column, center, center);
+  @include useBorder(null, "secondary", "thin");
+  border-radius: getCssVar("border-radius", "md");
+  background-color: getCssVar("bg", "secondary");
+}

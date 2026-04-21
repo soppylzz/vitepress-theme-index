@@ -44,7 +44,7 @@ export default withAdditionIndex({
     {
       type: "button",
       icon: "github",
-      show: ["desktop", "pad"],
+      target: "both",
       href: "https://github.com/soppylzz/vitepress-theme-index",
       content: "vitepress-theme-index",
     },

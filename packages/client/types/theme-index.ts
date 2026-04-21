@@ -7,7 +7,7 @@ import type { BuildI18nViewConfig } from "./i18n";
 import type { MenuItemConfig } from "./comps";
 
 const indexPreset = ["default", "pixel-art"] as const;
-const indexThemeMode = ["auto", "light", "dark"] as const;
+const indexThemeMode = ["light", "auto", "dark"] as const;
 
 type IndexPreset = (typeof indexPreset)[number];
 type IndexThemeMode = (typeof indexThemeMode)[number];

@@ -15,10 +15,6 @@ type NavButtonProps = {
 } & IndexLink &
   Omit<PopperProps, "placement" | "size" | "mode" | "activateEvent" | "autoPlace">;
 
-interface NavThemeProps {
-  carousel?: "column" | "row";
-}
-
 interface NavMenuProps {
   text?: IndexText;
   icon?: IndexIcon;
@@ -58,7 +54,6 @@ export type {
   // props
   NavButtonProps,
   NavMenuProps,
-  NavThemeProps,
   // config
   IndexNavConfig,
   NavItemConfig,

@@ -8,7 +8,6 @@
     "build:full": "tsup && node ./dist/run.js --mode full"
   },
   "devDependencies": {
-    "rimraf": "^6.1.2",
     "tsup": "^8.5.1"
   },
   "dependencies": {

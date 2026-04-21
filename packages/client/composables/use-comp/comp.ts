@@ -1,6 +1,4 @@
-import { computed, getCurrentInstance, useAttrs } from "vue";
-import type { MaybeArray } from "@vitepress-theme-index/shared";
-import { ensureArray, hasOwnProperty } from "@vitepress-theme-index/shared";
+import { getCurrentInstance, useId } from "vue";
 import { pascalCase } from "../../utils";
 
 function hasEmitHook(event: string) {
@@ -9,4 +7,12 @@ function hasEmitHook(event: string) {
   return !!ins?.vnode.props?.[onName];
 }
 
-export { hasEmitHook };
+function useDecorator() {
+  const uid = useId();
+  function withId(str: string) {
+    return `${str}-${uid}`;
+  }
+  return { withId };
+}
+
+export { hasEmitHook, useDecorator };

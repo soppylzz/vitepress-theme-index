@@ -3,28 +3,48 @@
 @use "public" as *;
 
 $picker-sizes: (
-  "small": ("md", "normal"),
-  "medium": ("lg", "relaxed"),
-  "large": ("lg", "relaxed"),
+  // font, line, height, width, margin
+  "small": ("sm", "normal", 50px, 100px, "md"),
+  "medium": ("md", "normal", 70px, 140px, "lg"),
+  "large": ("md", "relaxed", 90px, 180px, "lg"),
 );
 
 $item-sizes: (
-  // min-width, norm, max
-  "small": ("sm", 50px, 70px),
-  "medium": ("md", 70px, 100px),
-  "large": ("lg", 100px, 150px),
+  // padding, widths
+  "small": ("sm", 50px, 100px),
+  "medium": ("md", 100px, 150px),
+  "large": ("lg", 150px, 200px),
 );
+
+@mixin useAbsCenter() {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 
 @include b("wheel-picker") {
   position: relative;
   overflow: hidden;
+  color: getCssVar("text", "primary");
+
   @include useUnselect();
 
   @each $size, $vals in $picker-sizes {
     @include m($size) {
       font-size: getCssVar("font-size", list.nth($vals, 1));
       line-height: getCssVar("line-height", list.nth($vals, 2));
+      #{getCssVarName("wheel-picker-height")}: list.nth($vals, 3);
+      #{getCssVarName("wheel-picker-width")}: list.nth($vals, 4);
+      margin: getCssVar("margin", list.nth($vals, 5));
     }
+  }
+
+  @include m("row") {
+    min-height: getCssVar("wheel-picker-height");
+  }
+  @include m("col") {
+    min-width: getCssVar("wheel-picker-width");
   }
 
   @include e("content") {
@@ -32,38 +52,25 @@ $item-sizes: (
     will-change: transform;
 
     inset: auto 0;
-    @include useFlex(column, center);
-
-    &>div {
-
-    }
+    @include useFlex(column, center, center);
 
     @include m("row") {
       inset: 0 auto;
-      @include useFlex(row, null, center);
-
-      &>div {
-
-      }
+      @include useFlex(row, center, center);
     }
   }
 
   @include e("indicator") {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    @include useBorder(null, "primary", "base");
+    pointer-events: none;
     border-radius: getCssVar("border-radius", "md");
-
     background-color: color-mix(
         in srgb,
         var(--vti-bg-tertiary) 50%,
         transparent
     );
-    pointer-events: none;
 
+    @include useAbsCenter();
+    @include useBorder(null, "primary", "base");
     @each $size, $vals in $item-sizes {
       @include m($size) {
         padding: getCssVar("padding", list.nth($vals, 1));
@@ -72,12 +79,12 @@ $item-sizes: (
   }
 
   @include e("item") {
-    @include useNLine();
-    @include useFlex(row, center, center);
+    width: auto;
+    flex-shrink: 0;
+    text-align: center;
 
-    @include m("row") {
-      height: 100%;
-    }
+    @include useNLine(2);
+    @include useFlex(row, center, center);
 
     @each $size, $vals in $item-sizes {
       @include m($size) {

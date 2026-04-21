@@ -5,8 +5,7 @@ import type { IndexClientThemeContext, IndexSidebarConfig, IndexSiteConfig } fro
 import type { LocaleArchiveStatsRecord, PostInfo } from "@vitepress-theme-index/shared";
 
 const indexI18nKey: InjectionKey<ResolvedLocaleRoutes> = Symbol("INDEX_I18N_CONTEXT");
-const indexClientThemeKey: InjectionKey<IndexClientThemeContext> =
-  Symbol("indexClientThemeContext");
+const indexThemeKey: InjectionKey<IndexClientThemeContext> = Symbol("indexThemeContext");
 
 const indexSiteKey: InjectionKey<IndexSiteConfig> = Symbol("indexSiteKey");
 const indexNavKey: InjectionKey<IndexNavConfig> = Symbol("indexNavContentKey");
@@ -15,12 +14,15 @@ const indexSidebarKey: InjectionKey<IndexSidebarConfig> = Symbol("indexSidebarKe
 const indexArchiveKey: InjectionKey<LocaleArchiveStatsRecord> = Symbol("indexArchiveKey");
 const indexOverallKey: InjectionKey<PostInfo[]> = Symbol("indexOverallKey");
 
+const indexThemeStoreKey = "indexThemeStoreKey";
+
 export {
   indexI18nKey,
-  indexClientThemeKey,
+  indexThemeKey,
   indexSiteKey,
   indexNavKey,
   indexSidebarKey,
   indexArchiveKey,
   indexOverallKey,
+  indexThemeStoreKey,
 };

@@ -3,3 +3,4 @@ export * from "./vue";
 export * from "./string";
 export * from "./theme";
 export * from "./color";
+export * from "./store";

@@ -1,0 +1,70 @@
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+$theme-fonts: (
+  "small": "sm",
+  "medium": "md",
+  "large": "lg",
+);
+
+$icon-ratio: 1.7em;
+
+@include b("theme") {
+  color: getCssVar("text", "secondary");
+
+  @include useFlex(row, null, null, "lg");
+
+  @include m("col") {
+    @include useFlex(column, null, null, "md");
+  }
+
+  @include e("divider") {
+    @include m("col") {
+      @include useBorder(bottom, "secondary", "thin");
+    }
+  }
+
+  @include e("switch") {
+    position: relative;
+    box-sizing: content-box;
+    width: 2.8 * $icon-ratio;
+    height: $icon-ratio;
+    margin: auto;
+
+    @include useBorder(null);
+    @include useFlex(row, center);
+    border-radius: getCssVar("border-radius", "full");
+    background-color: getCssVar("bg", "tertiary");
+
+    @each $size, $font in $theme-fonts {
+      @include m($size) {
+        font-size: getCssVar("font-size", $font);
+      }
+    }
+    &>div {
+      flex: 1;
+    }
+  }
+
+  @include e("slider") {
+    position: absolute;
+    pointer-events: none;
+
+    @include useIcon($icon-ratio * 0.85);
+    @include useBorder(null);
+    @include useFlex(row, center, center);
+    border-radius: getCssVar("border-radius", "full");
+    background-color: getCssVar("bg", "primary");
+    height: $icon-ratio;
+    width: $icon-ratio;
+
+    @include m("light") {
+      transform: translateX(- 0.9 * $icon-ratio);
+    }
+
+    @include m("dark") {
+      transform: translateX(0.9 * $icon-ratio);
+    }
+  }
+}

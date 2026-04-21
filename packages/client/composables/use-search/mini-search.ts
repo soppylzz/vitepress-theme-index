@@ -9,7 +9,7 @@ self.onmessage = async (e) => {
   switch (type) {
     case "init": {
       currentLocale = locale || "root";
-      const { default: indexRecord } = await import("virtual:index-search");
+      const indexRecord = payload;
 
       miniSearch = new MiniSearch({
         fields: ["content", "titles"],

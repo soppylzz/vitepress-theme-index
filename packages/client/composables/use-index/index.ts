@@ -1,9 +1,9 @@
-import type { BuildI18nViewConfig, IndexIcon, IndexLink, IndexSiteConfig } from "../../types";
-import { indexClientThemeKey, indexNavKey, indexSidebarKey, indexSiteKey } from "../../types";
+import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
+import { indexNavKey, indexSidebarKey, indexSiteKey, indexThemeKey } from "../../types";
 import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
-import { isFunction, isObject, isString } from "lodash-unified";
+import { isObject, isString } from "lodash-unified";
 import type { ComputedRef, MaybeRefOrGetter } from "vue";
-import { computed, onMounted, toValue } from "vue";
+import { computed, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -73,14 +73,7 @@ function flatArrayWithRoute<T>(raw: Record<string, T[]>) {
 }
 
 const useTheme = () => {
-  const theme = useInject(indexClientThemeKey);
-  if (isFunction(theme.update)) {
-    // resolve hydration mismatch problem
-    onMounted(() => {
-      theme.update();
-    });
-  }
-  return theme;
+  return useInject(indexThemeKey);
 };
 
 const useNav = () => {

@@ -1,5 +1,5 @@
 @use "abstract" as *;
-@use "theme" as *;
+@use "themes" as *;
 @use "markdown";
 
 @use "layout";
@@ -17,6 +17,7 @@
 @use "drawer";
 @use "menu";
 @use "tag";
+@use "theme";
 @use "wheel-picker";
 
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");

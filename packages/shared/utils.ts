@@ -1,5 +1,6 @@
 import type { DefineAble } from "./types";
 import { isFunction } from "lodash-unified";
+import CryptoJS from "crypto-js";
 
 /* ==================== shared utils ==================== */
 function ensureArray<T>(obj: T | readonly T[] | T[]): T[] {
@@ -34,8 +35,11 @@ function isNode() {
   return typeof process !== "undefined" && process.release?.name === "node";
 }
 
+function createMD5Hash(str: string): string {
+  return CryptoJS.MD5(str).toString();
+}
+
 /* ==================== shared const ==================== */
-// just serve for build&node, can't be use `await import(VIRTUAL_INDEX_CONFIG_PKG)` in client side
 const INDEX_I18N_PKG = "virtual:index-i18n";
 const INDEX_ADDITION_PKG = "virtual:index-addition";
 const INDEX_SEARCH_PKG = "virtual:index-search";
@@ -53,6 +57,7 @@ export {
   clearObject,
   isBrowser,
   isNode,
+  createMD5Hash,
   INDEX_CONFIG_NAME,
   INDEX_ADDITION_NAME,
   INDEX_I18N_PKG,

@@ -1,5 +1,14 @@
 import type { CSSProperties, PropType } from "vue";
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import {
+  nextTick,
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  watch,
+} from "vue";
 import { ensureArray } from "@vitepress-theme-index/shared";
 import type { IndexDirection, IndexSize } from "../types";
 import { useBem } from "../composables";
@@ -22,6 +31,7 @@ const ITEM_TRANSFORM = {
 };
 const EASE = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
+// TODO: fix offset bug
 const VtiWheelPicker = defineComponent({
   name: "VtiWheelPicker",
 
@@ -55,8 +65,7 @@ const VtiWheelPicker = defineComponent({
   emits: ["update:modelValue"],
   setup(props, { emit }) {
     const itemRefs = ref<(HTMLElement | null)[]>([]);
-    const itemSizes = shallowRef<Map<number, number>>(new Map());
-    const pickerRef = shallowRef<HTMLElement | null>(null);
+    const itemSizes = shallowRef<Map<number, [number, number]>>(new Map());
     const contentRef = shallowRef<HTMLElement | null>(null);
 
     const animationState = ref<WheelPickerAnimationState>("idle");
@@ -73,16 +82,8 @@ const VtiWheelPicker = defineComponent({
       return shouldLoop.value ? [...props.list, ...props.list, ...props.list] : props.list;
     });
 
-    const contentSize = computed(() => {
-      const el = contentRef.value;
-      if (!el) return 0;
-      return isVertical.value ? el.offsetHeight : el.offsetWidth;
-    });
-
-    const singleListSize = computed(() => {
-      const total = contentSize.value;
-      return shouldLoop.value ? total / 3 : total;
-    });
+    const renderSize = ref(0);
+    const realSize = ref(0);
 
     const wrapperSize = computed(() => {
       const len = props.list.length;
@@ -90,12 +91,12 @@ const VtiWheelPicker = defineComponent({
 
       const sizeList: number[] = [];
       for (let i = 0; i < len; i++) {
-        const size = itemSizes.value.get(i);
+        const size = itemSizes.value.get(i)[0];
         if (size === undefined) return 0;
         sizeList.push(size);
       }
 
-      const count = Math.min(props.show, len);
+      const count = Math.max(3, Math.min(props.show, len));
 
       let maxSum = sizeList.slice(0, count).reduce((a, b) => a + b, 0);
       let currentSum = maxSum;
@@ -110,11 +111,11 @@ const VtiWheelPicker = defineComponent({
     const normalizeOffset = (value: number): number => {
       if (!shouldLoop.value) {
         const min = -wrapperSize.value / 2;
-        const max = contentSize.value - wrapperSize.value / 2;
+        const max = renderSize.value - wrapperSize.value / 2;
         return Math.max(min, Math.min(max, value));
       }
 
-      const single = singleListSize.value;
+      const single = realSize.value;
       if (!single) return value;
 
       const lower = single;
@@ -226,34 +227,36 @@ const VtiWheelPicker = defineComponent({
 
     const handlePointerUp = () => {
       if (animationState.value !== "dragging") return;
-      resetAnimation();
-
-      if (Math.abs(velocity.value) > VELOCITY_THRESHOLD) {
-        animationState.value = "inertia";
-        const inertiaLoop = () => {
-          velocity.value *= 1 - DECELERATION;
-          setOffset(offset.value + velocity.value);
-
-          if (Math.abs(velocity.value) > VELOCITY_THRESHOLD) {
-            rafId.value = requestAnimationFrame(inertiaLoop);
-          } else {
-            snapToIndex(getNearestIndex());
-          }
-        };
-        rafId.value = requestAnimationFrame(inertiaLoop);
-      } else {
-        snapToIndex(getNearestIndex());
+      if (Math.abs(velocity.value) < VELOCITY_THRESHOLD) {
+        animationState.value = "idle";
+        return;
       }
+
+      resetAnimation();
+      animationState.value = "inertia";
+      const inertiaLoop = () => {
+        velocity.value *= 1 - DECELERATION;
+        setOffset(offset.value + velocity.value);
+
+        if (Math.abs(velocity.value) > VELOCITY_THRESHOLD) {
+          rafId.value = requestAnimationFrame(inertiaLoop);
+        } else {
+          snapToIndex(getNearestIndex());
+        }
+      };
+      rafId.value = requestAnimationFrame(inertiaLoop);
     };
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      resetAnimation();
-      animationState.value = "scroll";
+      if (animationState.value !== "scroll") {
+        resetAnimation();
+        animationState.value = "scroll";
+      }
 
       const delta = isVertical.value ? e.deltaY : e.deltaX;
       const windowDim = isVertical.value ? window.innerHeight : window.innerWidth;
-      const scale = (wrapperSize.value / windowDim) * 0.5;
+      const scale = wrapperSize.value / windowDim;
       wheelDeltaAccumulator.value += delta * scale;
 
       const smoothScroll = () => {
@@ -268,10 +271,7 @@ const VtiWheelPicker = defineComponent({
           snapToIndex(getNearestIndex());
         }
       };
-
-      if (rafId.value === null) {
-        rafId.value = requestAnimationFrame(smoothScroll);
-      }
+      rafId.value = requestAnimationFrame(smoothScroll);
     };
 
     const handleItemClick = (index: number) => {
@@ -280,54 +280,43 @@ const VtiWheelPicker = defineComponent({
       snapToIndex(index);
     };
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      const newSizes = new Map(itemSizes.value);
-      entries.forEach((entry) => {
-        const target = entry.target as HTMLElement;
-        const indexStr = target.dataset.index;
-        if (!indexStr) return;
-
-        const renderIndex = parseInt(indexStr, 10);
-        const originalIndex = renderIndex % props.list.length;
-        const box = ensureArray(entry.borderBoxSize)[0];
-        const size = isVertical.value ? box.blockSize : box.inlineSize;
-        newSizes.set(originalIndex, size);
-      });
-      itemSizes.value = newSizes;
-    });
-
-    const observeItems = () => {
-      resizeObserver.disconnect();
-      itemRefs.value.forEach((el) => el && resizeObserver.observe(el));
-    };
+    let resizeObserver: ResizeObserver | null = null;
 
     watch(
-      () => props.modelValue,
-      (val) => {
+      [() => props.modelValue, () => props.list],
+      ([val]) => {
         if (animationState.value !== "idle" || !wrapperSize.value) return;
-        const target = shouldLoop.value ? val + props.list.length : val;
-        const targetOffset = calculateOffsetToCenter(target);
-        setOffset(targetOffset);
+        setOffset(calculateOffsetToCenter(val));
       },
       { flush: "post", immediate: true }
     );
 
-    watch(
-      () => props.list,
-      () => {
-        observeItems();
-        const target = shouldLoop.value ? props.modelValue + props.list.length : props.modelValue;
-        const targetOffset = calculateOffsetToCenter(target);
-        setOffset(targetOffset);
-      },
-      { flush: "post" }
-    );
-
     onMounted(() => {
-      observeItems();
-      const target = shouldLoop.value ? props.modelValue + props.list.length : props.modelValue;
-      const targetOffset = calculateOffsetToCenter(target);
-      setOffset(targetOffset);
+      resizeObserver = new ResizeObserver((entries) => {
+        const newSizes = new Map(itemSizes.value);
+        entries.forEach((entry) => {
+          const target = entry.target as HTMLElement;
+          const indexStr = target.dataset.index;
+          if (!indexStr) return;
+
+          const renderIndex = parseInt(indexStr, 10);
+          const originalIndex = renderIndex % props.list.length;
+          const box = ensureArray(entry.borderBoxSize)[0];
+          const primary = isVertical.value ? box.blockSize : box.inlineSize;
+          const secondary = isVertical.value ? box.inlineSize : box.blockSize;
+          newSizes.set(originalIndex, [primary, secondary]);
+        });
+        itemSizes.value = newSizes;
+
+        if (!contentRef.value) return;
+        renderSize.value = contentRef.value[isVertical.value ? "offsetHeight" : "offsetWidth"];
+        realSize.value = shouldLoop.value ? renderSize.value / 3 : renderSize.value;
+      });
+
+      itemRefs.value.forEach((el) => el && resizeObserver.observe(el));
+      resizeObserver.observe(contentRef.value);
+
+      snapToIndex(props.modelValue);
     });
 
     onBeforeUnmount(() => {
@@ -346,7 +335,7 @@ const VtiWheelPicker = defineComponent({
       const pickerCenter = offset.value + wrapperSize.value / 2;
 
       if (shouldLoop.value) {
-        const single = singleListSize.value;
+        const single = realSize.value;
         if (single > 0) {
           const candidates = [itemCenter - single, itemCenter, itemCenter + single];
           let minDist = Infinity;
@@ -371,7 +360,6 @@ const VtiWheelPicker = defineComponent({
       const translate = diff * 0.1;
 
       return {
-        transition: "transform 0.1s ease-out",
         transform: isVertical.value
           ? `scale(${scale}) translate3d(0, ${translate}px, 0)`
           : `scale(${scale}) translate3d(${translate}px, 0, 0)`,
@@ -387,11 +375,10 @@ const VtiWheelPicker = defineComponent({
         indicator: [ns.e("indicator"), ns.em("indicator", props.size)],
         item: [ns.e("item"), ns.em("item", props.size)],
       };
-      const currentItemSize = itemSizes.value.get(props.modelValue) || 0;
+      const [primary, secondary] = itemSizes.value.get(props.modelValue) || [0, 0];
 
       const pickerStyle: CSSProperties = {
         [isVertical.value ? "height" : "width"]: `${wrapperSize.value}px`,
-        [isVertical.value ? "width" : "height"]: "100%",
       };
 
       const contentStyle: CSSProperties = {
@@ -401,13 +388,12 @@ const VtiWheelPicker = defineComponent({
       };
 
       const indicatorStyle: CSSProperties = {
-        [isVertical.value ? "height" : "width"]: `${currentItemSize}px`,
-        [isVertical.value ? "width" : "height"]: "100%",
+        [isVertical.value ? "height" : "width"]: `${primary}px`,
+        [isVertical.value ? "width" : "height"]: `${secondary}px`,
       };
 
       return (
         <div
-          ref={pickerRef}
           class={kls.wrap}
           style={pickerStyle}
           onMousedown={handlePointerDown}

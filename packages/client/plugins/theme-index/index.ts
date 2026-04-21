@@ -4,7 +4,7 @@ import { indexOverallKey, indexArchiveKey } from "../../types";
 import { installI18n, setupI18n } from "../i18n";
 import { installRightMenu } from "../right-menu";
 import { installIcons } from "../icon";
-import { installTheme } from "./theme";
+import { installTheme, setupTheme } from "./theme";
 import { installAdditions } from "../views";
 import { installGsap } from "./gsap";
 import { isBrowser } from "@vitepress-theme-index/shared";
@@ -31,6 +31,7 @@ async function installIndex(ctx: EnhanceAppContext, config: IndexClientConfig) {
 export function setupIndex() {
   if (isBrowser()) {
     setupI18n();
+    setupTheme();
   }
 }
 

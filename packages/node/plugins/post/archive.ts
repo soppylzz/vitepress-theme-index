@@ -185,7 +185,7 @@ class IndexPostBuilder {
     return cache;
   }
 
-  private async saveSearchIndexCacheForLocale(locale: string): Promise<void> {
+  private async saveSearchIndexCacheForLocale(locale: string): Promise<string> {
     if (!this.config.cache.enable) {
       return;
     }
@@ -197,6 +197,7 @@ class IndexPostBuilder {
     } catch (e) {
       pluginLogger.warn(`failed to save search index cache for locale ${locale}: ${e}`);
     }
+    return cacheFile;
   }
 
   private async buildLocaleSearchIndex(

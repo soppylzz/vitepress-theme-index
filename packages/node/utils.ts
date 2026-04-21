@@ -2,8 +2,9 @@ import type { Alias, ViteDevServer } from "vite";
 import { normalizePath } from "vite";
 import { isArray } from "lodash-unified";
 import { relative } from "node:path";
-import { createHash } from "node:crypto";
 import { stat } from "fs/promises";
+import type { MaybeArray } from "@vitepress-theme-index/shared";
+import { ensureArray, createMD5Hash } from "@vitepress-theme-index/shared";
 
 function normalizeAlias(alias?: Readonly<Alias[] | Record<string, string>>): Alias[] {
   if (!alias) return [];
@@ -55,18 +56,14 @@ async function ssrRewriteLoadModules(
 }
 
 /* ==================== post utilities ==================== */
-function createMD5Hash(str: string): string {
-  return createHash("md5").update(str).digest("hex");
-}
-
-function generateCacheKeyFromStats(
-  fileStats: Array<{
+function generateCacheKey(
+  fileStats: MaybeArray<{
     path: string;
     mtime: number;
     size: number;
   }>
 ): string {
-  const fingerprint = fileStats
+  const fingerprint = ensureArray(fileStats)
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((s) => `${s.path}:${s.mtime}:${s.size}`)
     .join("|");
@@ -97,7 +94,7 @@ export {
   ssrRewriteLoadModules,
   normalizeAlias,
   createMD5Hash,
-  generateCacheKeyFromStats,
+  generateCacheKey,
   getFileStat,
   generateSearchItemId,
 };

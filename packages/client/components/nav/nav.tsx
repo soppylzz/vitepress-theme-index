@@ -3,7 +3,6 @@ import {
   onMounted,
   computed,
   watch,
-  watchEffect,
   ref,
   createVNode,
   defineComponent,
@@ -24,7 +23,7 @@ import { ensureArray, hasOwnProperty, renderLogger } from "@vitepress-theme-inde
 import { renderMenuItems } from "../menu";
 import { useRoute } from "vitepress";
 
-import { VtiNavButton, VtiNavLocale, VtiNavMenu, VtiNavSwitch } from "./items";
+import { VtiNavButton, VtiNavLocale, VtiNavMenu, VtiNavSwitch, VtiNavTheme } from "./items";
 import VtiBrand from "../brand.vue";
 
 const ns = useBem("nav");
@@ -170,6 +169,11 @@ const VtiNav = defineComponent({
               .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
               .filter((item) => !!item)}
             {withDirectives(
+              renderNavItem("pre-theme", { type: "divider" }, { current, container: "header" })!,
+              [[vShow, current !== "mobile"]]
+            )}
+            {withDirectives(<VtiNavTheme />, [[vShow, current !== "mobile"]])}
+            {withDirectives(
               renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" })!,
               [[vShow, current === "mobile"]]
             )}
@@ -197,6 +201,7 @@ const VtiNav = defineComponent({
                       .filter((item) => !!item)}
                   </div>
                 )}
+                <VtiNavTheme container={"screen"} />
               </div>,
               [[vShow, response.value === "mobile" && open.value]]
             )

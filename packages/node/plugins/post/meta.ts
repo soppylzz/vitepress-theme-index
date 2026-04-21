@@ -10,7 +10,7 @@ import { ensureArray, pluginLogger } from "@vitepress-theme-index/shared";
 import { readFile } from "fs/promises";
 import * as os from "node:os";
 import type { DefaultLast, MetaCache, MetaConfig } from "../../types";
-import { createMD5Hash, generateCacheKeyFromStats, getFileStat } from "../../utils";
+import { generateCacheKey, getFileStat } from "../../utils";
 
 const cwd = process.cwd();
 const git = simpleGit({ baseDir: cwd, binary: "git" });
@@ -59,7 +59,7 @@ async function generateMetaCache(
   const gitLimit = pLimit(4);
 
   const fileStats = await Promise.all(files.map((f) => getFileStat(f)));
-  const hashKey = generateCacheKeyFromStats(fileStats);
+  const hashKey = generateCacheKey(fileStats);
 
   const prevPostMap = new Map<string, PostInfo>();
   if (prevCache) {
@@ -75,7 +75,7 @@ async function generateMetaCache(
       limit(async (): Promise<PostInfo> => {
         const content = await readFile(fileStat.path, "utf8");
         const { data: frontmatter } = matter(content);
-        const hash = createMD5Hash(content + fileStat.path);
+        const hash = generateCacheKey(fileStats);
 
         // Record all existing post paths
         allPostPath.add(fileStat.path);
@@ -133,7 +133,7 @@ async function loadMetaCache(config: MetaConfig): Promise<{
       const cached: MetaCache = await fs.readJSON(cacheFile);
 
       const fileStats = await Promise.all(files.map((f) => getFileStat(f)));
-      const currentHash = generateCacheKeyFromStats(fileStats);
+      const currentHash = generateCacheKey(fileStats);
 
       if (cached.hashKey === currentHash) {
         pluginLogger.info("cache hit: fast hash matched");

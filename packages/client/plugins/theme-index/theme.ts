@@ -1,6 +1,6 @@
 import type { Ref } from "vue";
-import { computed, reactive, ref, toRef } from "vue";
-import { isArray, isNumber, merge, omit } from "lodash-unified";
+import { inject, onBeforeMount, onMounted, watch, computed, reactive, ref, toRef } from "vue";
+import { isArray, isNumber, merge, omit, pick } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
   IndexClientThemeConfig,
@@ -11,8 +11,9 @@ import type {
   ResolvedIndexClientThemeConfig,
   UserIndexClientThemeConfig,
 } from "../../types";
-import { indexClientThemeKey, indexThemeMode, indexPreset } from "../../types";
+import { indexThemeStoreKey, indexThemeKey, indexThemeMode, indexPreset } from "../../types";
 import { isBrowser, pluginLogger } from "@vitepress-theme-index/shared";
+import { getLocalStorage, setLocalStorage } from "../../utils";
 
 const defaultThemeConfig = {
   breakPoint: [768, 1280],
@@ -82,7 +83,7 @@ function resolveIndexClientThemeConfig(
 let globalThemeContext: Record<string, any> | null = null;
 function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeConfig) {
   if (globalThemeContext) {
-    app.provide(indexClientThemeKey, globalThemeContext as IndexClientThemeContext);
+    app.provide(indexThemeKey, globalThemeContext as IndexClientThemeContext);
     return;
   }
 
@@ -109,7 +110,47 @@ function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeC
     });
   }
 
-  app.provide(indexClientThemeKey, themeContextValue);
+  app.provide(indexThemeKey, themeContextValue);
 }
 
-export { installTheme };
+function setupTheme() {
+  const theme = inject(indexThemeKey);
+  if (!theme) {
+    pluginLogger.error("setupTheme failed");
+  }
+
+  const { update, ctx } = theme;
+  onBeforeMount(() => {
+    const cache =
+      getLocalStorage<Pick<IndexClientThemeConfig, "preset" | "mode">>(indexThemeStoreKey);
+    Object.assign(ctx, pick(cache, ["mode", "preset"]));
+
+    watch(
+      [() => ctx.mode, () => ctx.preset],
+      ([mode, preset]) => {
+        const root = document.documentElement;
+
+        root.setAttribute("data-preset", preset);
+
+        if (mode === "auto") {
+          const query = window.matchMedia("(prefers-color-scheme: dark)");
+          const autoMode = query.matches ? "dark" : "light";
+          root.setAttribute("data-mode", autoMode);
+        } else {
+          root.setAttribute("data-mode", mode);
+        }
+
+        setLocalStorage(indexThemeStoreKey, { mode, preset });
+      },
+      { immediate: true }
+    );
+  });
+
+  onMounted(() => {
+    // resolve hydration mismatch problem
+    // must resolve after first render
+    update();
+  });
+}
+
+export { installTheme, setupTheme };

@@ -21,6 +21,16 @@ function createWorker(mode: SearchMode) {
   }
 }
 
+let indexRecordCache: any = null;
+
+async function loadIndex() {
+  if (!indexRecordCache) {
+    const mod = await import("virtual:index-search");
+    indexRecordCache = mod.default;
+  }
+  return indexRecordCache;
+}
+
 function useSiteSearch(options?: { mode?: SearchMode; delay?: number }) {
   const { mode = "mini-search", delay = 300 } = options ?? {};
 
@@ -40,6 +50,8 @@ function useSiteSearch(options?: { mode?: SearchMode; delay?: number }) {
     if (initialized && lastInitializedLocale === locale) return;
     if (!worker) worker = createWorker(mode);
 
+    const indexRecord = await loadIndex();
+
     await new Promise<void>((resolve) => {
       const handler = (e: MessageEvent<WorkerInitedResponse>) => {
         if (e.data.type === "inited") {
@@ -56,7 +68,7 @@ function useSiteSearch(options?: { mode?: SearchMode; delay?: number }) {
       };
 
       worker!.addEventListener("message", handler);
-      worker!.postMessage({ type: "init", locale } as WorkerRequestMessage);
+      worker!.postMessage({ type: "init", locale, payload: indexRecord } as WorkerRequestMessage);
     });
   }
 

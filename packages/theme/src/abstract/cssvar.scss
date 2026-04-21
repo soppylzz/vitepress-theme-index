@@ -57,7 +57,7 @@
   @if $is-default {
     $root-selector: ":root"
   } @else {
-    $root-selector: ":root[data-theme=\"#{$name}\"]"
+    $root-selector: ":root[data-preset=\"#{$name}\"]"
   }
 
   @at-root {
@@ -66,7 +66,7 @@
       @include generateTokenVars($light);
       @content;
     }
-    #{$root-selector}[data-dark] {
+    #{$root-selector}[data-mode=dark] {
       @include generateTokenVars($dark);
     }
   }
