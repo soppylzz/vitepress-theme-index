@@ -63,11 +63,7 @@ $item-sizes: (
   @include e("indicator") {
     pointer-events: none;
     border-radius: getCssVar("border-radius", "md");
-    background-color: color-mix(
-        in srgb,
-        var(--vti-bg-tertiary) 50%,
-        transparent
-    );
+    background-color: hexRgba(getCssVar("bg", "tertiary"), 50%);
 
     @include useAbsCenter();
     @include useBorder(null, "primary", "base");

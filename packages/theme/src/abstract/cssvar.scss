@@ -19,6 +19,15 @@
   @return var(#{getCssVarName($keys...)});
 }
 
+@function hexRgba($hex, $alpha) {
+  @return color-mix(
+      in srgb,
+      string.unquote($hex),
+      transparent,
+      $alpha
+  );
+}
+
 @mixin setCssVar($keys, $value) {
   #{getCssVarName($keys...)}: #{$value};
 }

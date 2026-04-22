@@ -1,7 +1,7 @@
 import type { Theme } from "vitepress";
 import IndexLayout from "./layout.vue";
 import { installIndex, setupIndex } from "./plugins";
-import type { IndexClientConfig, IndexClientAdditionConfig } from "./types";
+import type { IndexClientConfig, IndexAdditionConfig } from "./types";
 import type { DefineAble } from "@vitepress-theme-index/shared";
 
 /* ==================== public ==================== */
@@ -22,7 +22,7 @@ function withIndex(theme: WithIndexConfig = {}): Theme {
   };
 }
 
-function withAdditionIndex(config: DefineAble<IndexClientAdditionConfig>): typeof config {
+function withAdditionIndex(config: DefineAble<IndexAdditionConfig>): typeof config {
   return config;
 }
 

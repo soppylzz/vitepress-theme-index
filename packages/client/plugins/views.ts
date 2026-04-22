@@ -1,5 +1,5 @@
 import type { EnhanceAppContext, SiteData } from "vitepress";
-import type { IndexClientConfig, IndexClientAdditionConfig, AdditionType } from "../types";
+import type { IndexClientConfig, IndexAdditionConfig, AdditionType } from "../types";
 import { indexSiteKey, indexSidebarKey, indexNavKey } from "../types";
 import { isEmpty, isFunction } from "lodash-unified";
 import { configs } from "virtual:index-addition";
@@ -19,7 +19,7 @@ async function collectLocalConfigs(site: SiteData) {
   if (exts.length > 1) {
     pluginLogger.error(`only accept ont ext in addition config files, found ${exts.join(", ")}`);
   }
-  const result: Record<string, IndexClientAdditionConfig> = {};
+  const result: Record<string, IndexAdditionConfig> = {};
 
   // iter modules, don't polyfill none addition config;
   for (const [localePath, modFn] of Object.entries(configs)) {
@@ -42,7 +42,7 @@ async function installAdditions(
     return Object.fromEntries(
       configEntries.map(([locale, config]) => [
         locale,
-        config?.[field] ?? ((arrKeys.includes(field) ? [] : {}) as IndexClientAdditionConfig[T]),
+        config?.[field] ?? ((arrKeys.includes(field) ? [] : {}) as IndexAdditionConfig[T]),
       ])
     );
   };

@@ -6,8 +6,8 @@ declare module "virtual:index-i18n" {
 
 declare module "virtual:index-addition" {
   import type { DefineAble } from "@vitepress-theme-index/shared";
-  import type { IndexClientAdditionConfig } from "./types";
-  export const configs: Record<string, DefineAble<IndexClientAdditionConfig>>;
+  import type { IndexAdditionConfig } from "./types";
+  export const configs: Record<string, DefineAble<IndexAdditionConfig>>;
 }
 
 declare module "virtual:index-archive" {

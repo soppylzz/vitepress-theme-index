@@ -1,17 +1,18 @@
 import type { Ref } from "vue";
-import { inject, onBeforeMount, onMounted, watch, computed, reactive, ref, toRef } from "vue";
+import { computed, inject, onBeforeMount, onMounted, reactive, ref, toRef, watch } from "vue";
 import { isArray, isNumber, merge, omit, pick } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
 import type {
-  IndexClientThemeConfig,
-  IndexClientThemeContext,
   IndexPreset,
   IndexResponse,
+  IndexThemeConfig,
+  IndexThemeContext,
+  IndexThemeDataset,
   IndexThemeMode,
-  ResolvedIndexClientThemeConfig,
-  UserIndexClientThemeConfig,
+  ResolvedIndexThemeConfig,
+  UserIndexThemeConfig,
 } from "../../types";
-import { indexThemeStoreKey, indexThemeKey, indexThemeMode, indexPreset } from "../../types";
+import { indexPreset, indexThemeKey, indexThemeMode, indexThemeStoreKey } from "../../types";
 import { isBrowser, pluginLogger } from "@vitepress-theme-index/shared";
 import { getLocalStorage, setLocalStorage } from "../../utils";
 
@@ -20,9 +21,9 @@ const defaultThemeConfig = {
   fontSize: 16,
   preset: "default",
   mode: "auto",
-} as const satisfies ResolvedIndexClientThemeConfig;
+} as const satisfies ResolvedIndexThemeConfig;
 
-function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>) {
+function createResponsive(breakPoint: Ref<IndexThemeConfig["breakPoint"]>) {
   const width = ref<number | null>(null);
 
   const update = () => {
@@ -40,7 +41,7 @@ function createResponsive(breakPoint: Ref<IndexClientThemeConfig["breakPoint"]>)
   return { response, update };
 }
 
-function createThemeAction(theme: IndexClientThemeConfig) {
+function createThemeAction(theme: IndexThemeConfig) {
   const available = {
     preset: indexPreset,
     mode: indexThemeMode,
@@ -54,7 +55,7 @@ function createThemeAction(theme: IndexClientThemeConfig) {
   return { available, setPreset, setMode };
 }
 
-function isValidBreakPoint(breakPoint: IndexClientThemeConfig["breakPoint"]) {
+function isValidBreakPoint(breakPoint: IndexThemeConfig["breakPoint"]) {
   if (!isArray(breakPoint)) return true;
   if (breakPoint.length !== 2) return true;
   return !(
@@ -65,9 +66,7 @@ function isValidBreakPoint(breakPoint: IndexClientThemeConfig["breakPoint"]) {
   );
 }
 
-function resolveIndexClientThemeConfig(
-  config?: UserIndexClientThemeConfig
-): ResolvedIndexClientThemeConfig {
+function resolveIndexClientThemeConfig(config?: UserIndexThemeConfig): ResolvedIndexThemeConfig {
   const merged = merge({}, defaultThemeConfig, omit(config, "breakPoint"));
   const breakPoint = isArray(config?.breakPoint)
     ? config.breakPoint
@@ -77,16 +76,12 @@ function resolveIndexClientThemeConfig(
     pluginLogger.error("breakPoint must be a [number, number] increasingly");
   }
   Object.assign(merged, { breakPoint });
-  return merged as ResolvedIndexClientThemeConfig;
+  return merged as ResolvedIndexThemeConfig;
 }
 
-let globalThemeContext: Record<string, any> | null = null;
-function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeConfig) {
-  if (globalThemeContext) {
-    app.provide(indexThemeKey, globalThemeContext as IndexClientThemeContext);
-    return;
-  }
+let updateFn: ReturnType<typeof createResponsive>["update"] | null = null;
 
+function installTheme({ app }: EnhanceAppContext, config?: UserIndexThemeConfig) {
   const resolved = resolveIndexClientThemeConfig(config);
   const ctx = reactive(resolved);
 
@@ -97,19 +92,16 @@ function installTheme({ app }: EnhanceAppContext, config?: UserIndexClientThemeC
     ...resolved,
     ctx,
     response,
-    update,
     ...actions,
-  } as IndexClientThemeContext;
+  } as IndexThemeContext;
 
-  globalThemeContext = themeContextValue;
-
+  updateFn = update;
   if (isBrowser()) {
     window.addEventListener("resize", update, { passive: true });
     app.onUnmount(() => {
       window.removeEventListener("resize", update);
     });
   }
-
   app.provide(indexThemeKey, themeContextValue);
 }
 
@@ -119,27 +111,13 @@ function setupTheme() {
     pluginLogger.error("setupTheme failed");
   }
 
-  const { update, ctx } = theme;
+  const { ctx } = theme;
   onBeforeMount(() => {
-    const cache =
-      getLocalStorage<Pick<IndexClientThemeConfig, "preset" | "mode">>(indexThemeStoreKey);
+    const cache = getLocalStorage<IndexThemeDataset>(indexThemeStoreKey);
     Object.assign(ctx, pick(cache, ["mode", "preset"]));
-
     watch(
       [() => ctx.mode, () => ctx.preset],
       ([mode, preset]) => {
-        const root = document.documentElement;
-
-        root.setAttribute("data-preset", preset);
-
-        if (mode === "auto") {
-          const query = window.matchMedia("(prefers-color-scheme: dark)");
-          const autoMode = query.matches ? "dark" : "light";
-          root.setAttribute("data-mode", autoMode);
-        } else {
-          root.setAttribute("data-mode", mode);
-        }
-
         setLocalStorage(indexThemeStoreKey, { mode, preset });
       },
       { immediate: true }
@@ -147,9 +125,7 @@ function setupTheme() {
   });
 
   onMounted(() => {
-    // resolve hydration mismatch problem
-    // must resolve after first render
-    update();
+    updateFn?.();
   });
 }
 

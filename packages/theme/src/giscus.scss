@@ -1,150 +1,305 @@
-@use "sass:map";
-@use "sass:list";
+@use "sass:string";
 @use "abstract" as *;
 @use "public" as *;
 
-@use "sass:map" as *;
+$PREFIX: null;
+@mixin setVar($key, $value) {
+  $name: "";
+  @if $PREFIX != null {
+    $name: '--#{$PREFIX}-#{$key}';
+  } @else {
+    $name: '--#{$key}';
+  }
+  #{string.unquote($name)}: #{$value};
+}
 
-/*!
- * Modified from GitHub's Dark Dimmed theme, licensed under the MIT License
- * Copyright (c) 2018 GitHub Inc.
- * https://github.com/primer/primitives/blob/main/LICENSE
- */
+@mixin batchSetVars($prefix, $varsMap) {
+  $PREFIX: $prefix !global;
+  @each $key, $value in $varsMap {
+    @include setVar($key, $value);
+  }
+}
+
+@function radius($level: "md") {
+  @return getCssVar("border-radius", $level);
+}
+
+@function bw($level: "base") {
+  @return getCssVar("border-width", $level);
+}
+
+@mixin halfRadius($direction, $level: "md") {
+  $r: radius($level);
+  @if $direction == top {
+    border-radius: $r $r 0 0;
+  } @else if $direction == bottom {
+    border-radius: 0 0 $r $r;
+  }
+}
+
+$syntaxVars: (
+  "comment": getCssVar("text", "tertiary"),
+  "constant": getCssVar("accent", "base"),
+  "entity": getCssVar("accent", "hover"),
+  "storage-modifier-import": getCssVar("text", "primary"),
+  "entity-tag": getCssVar("success", "base"),
+  "keyword": getCssVar("danger", "base"),
+  "string": getCssVar("accent", "active"),
+  "variable": getCssVar("warning", "base"),
+  "brackethighlighter-unmatched": getCssVar("danger", "active"),
+  "invalid-illegal-text": getCssVar("text", "inverse"),
+  "invalid-illegal-bg": getCssVar("danger", "bg-active"),
+  "carriage-return-text": getCssVar("text", "inverse"),
+  "carriage-return-bg": getCssVar("danger", "bg-hover"),
+  "string-regexp": getCssVar("success", "base"),
+  "markup-list": getCssVar("warning", "base"),
+  "markup-heading": getCssVar("accent", "hover"),
+  "markup-italic": getCssVar("text", "primary"),
+  "markup-bold": getCssVar("text", "primary"),
+  "markup-deleted-text": getCssVar("danger", "bg-disabled"),
+  "markup-deleted-bg": getCssVar("danger", "bg-active"),
+  "markup-inserted-text": getCssVar("success", "disabled"),
+  "markup-inserted-bg": getCssVar("success", "active"),
+  "markup-changed-text": getCssVar("warning", "disabled"),
+  "markup-changed-bg": getCssVar("warning", "bg-active"),
+  "markup-ignored-text": getCssVar("text", "primary"),
+  "markup-ignored-bg": getCssVar("accent", "hover"),
+  "meta-diff-range": getCssVar("accent", "hover"),
+  "brackethighlighter-angle": getCssVar("text", "tertiary"),
+  "sublimelinter-gutter-mark": getCssVar("text", "secondary"),
+  "constant-other-reference-link": getCssVar("accent", "active")
+);
+
+$btnVars: (
+  "text": getCssVar("text", "primary"),
+  "bg": getCssVar("bg", "secondary"),
+  "border": getCssVar("border", "primary"),
+  "hover-bg": getCssVar("bg", "tertiary"),
+  "hover-border": getCssVar("border", "secondary"),
+  "active-bg": getCssVar("bg", "tertiary"),
+  "active-border": getCssVar("border", "secondary"),
+  "selected-bg": getCssVar("bg", "secondary"),
+  "primary-text": getCssVar("text", "inverse"),
+  "primary-disabled-text": getCssVar("text", "disabled"),
+  "primary-bg": getCssVar("success", "base"),
+  "primary-hover-bg": getCssVar("success", "hover"),
+  "primary-disabled-bg": getCssVar("success", "disabled"),
+  "primary-selected-bg": getCssVar("success", "active"),
+  "primary-border": getCssVar("border", "primary"),
+  "primary-hover-border": getCssVar("success", "base"),
+  "primary-disabled-border": getCssVar("border", "tertiary"),
+  "shadow": 0 0 transparent,
+  "inset-shadow": 0 0 transparent,
+  "primary-shadow": 0 0 transparent,
+  "primary-inset-shadow": 0 0 transparent,
+  "primary-selected-shadow": 0 0 transparent,
+);
+
+$baseVars: (
+  "action-list-item-default-hover-bg": hexRgba(getCssVar("text", "secondary"), 0.12),
+  "segmented-control-bg": hexRgba(getCssVar("text", "tertiary"), 0.1),
+  "segmented-control-button-bg": getCssVar("bg", "primary"),
+  "segmented-control-button-selected-border": getCssVar("border", "secondary"),
+  "fg-default": getCssVar("text", "primary"),
+  "fg-muted": getCssVar("text", "secondary"),
+  "fg-subtle": getCssVar("text", "tertiary"),
+  "canvas-default": getCssVar("bg", "primary"),
+  "canvas-overlay": getCssVar("bg", "secondary"),
+  "canvas-inset": getCssVar("bg", "secondary"),
+  "canvas-subtle": getCssVar("bg", "secondary"),
+  "border-default": getCssVar("border", "primary"),
+  "border-muted": getCssVar("border", "secondary"),
+  "neutral-muted": hexRgba(getCssVar("text", "tertiary"), 0.4),
+  "accent-fg": getCssVar("accent", "base"),
+  "accent-emphasis": getCssVar("accent", "hover"),
+  "accent-muted": hexRgba(getCssVar("accent", "bg"), 0.4),
+  "accent-subtle": hexRgba(getCssVar("accent", "bg-disabled"), 0.1),
+  "success-fg": getCssVar("success", "base"),
+  "attention-fg": getCssVar("warning", "base"),
+  "attention-muted": hexRgba(getCssVar("warning", "bg"), 0.4),
+  "attention-subtle": hexRgba(getCssVar("warning", "bg-disabled"), 0.15),
+  "danger-fg": getCssVar("danger", "base"),
+  "danger-muted": hexRgba(getCssVar("danger", "bg"), 0.4),
+  "danger-subtle": hexRgba(getCssVar("danger", "bg-disabled"), 0.1),
+  "primer-shadow-inset": 0 0 transparent,
+  "scale-gray-7": getCssVar("text", "secondary"),
+  "scale-blue-8": getCssVar("accent", "hover"),
+  "social-reaction-bg-hover": getCssVar("bg", "primary"),
+  "social-reaction-bg-reacted-hover": getCssVar("bg", "primary"),
+);
+
 main {
-  // 语法高亮颜色
-  --color-prettylights-syntax-comment: getCssVar("text", "tertiary");
-  --color-prettylights-syntax-constant: getCssVar("accent", "base");
-  --color-prettylights-syntax-entity: getCssVar("accent", "hover");
-  --color-prettylights-syntax-storage-modifier-import: getCssVar("text", "primary");
-  --color-prettylights-syntax-entity-tag: getCssVar("success", "base");
-  --color-prettylights-syntax-keyword: getCssVar("danger", "base");
-  --color-prettylights-syntax-string: getCssVar("accent", "active");
-  --color-prettylights-syntax-variable: getCssVar("warning", "base");
-  --color-prettylights-syntax-brackethighlighter-unmatched: getCssVar("danger", "active");
-  --color-prettylights-syntax-invalid-illegal-text: getCssVar("text", "inverse");
-  --color-prettylights-syntax-invalid-illegal-bg: getCssVar("danger", "bg-active");
-  --color-prettylights-syntax-carriage-return-text: getCssVar("text", "inverse");
-  --color-prettylights-syntax-carriage-return-bg: getCssVar("danger", "bg-hover");
-  --color-prettylights-syntax-string-regexp: getCssVar("success", "base");
-  --color-prettylights-syntax-markup-list: getCssVar("warning", "base");
-  --color-prettylights-syntax-markup-heading: getCssVar("accent", "hover");
-  --color-prettylights-syntax-markup-italic: getCssVar("text", "primary");
-  --color-prettylights-syntax-markup-bold: getCssVar("text", "primary");
-  --color-prettylights-syntax-markup-deleted-text: getCssVar("danger", "bg-disabled");
-  --color-prettylights-syntax-markup-deleted-bg: getCssVar("danger", "bg-active");
-  --color-prettylights-syntax-markup-inserted-text: getCssVar("success", "bg-disabled");
-  --color-prettylights-syntax-markup-inserted-bg: getCssVar("success", "bg-active");
-  --color-prettylights-syntax-markup-changed-text: getCssVar("warning", "bg-disabled");
-  --color-prettylights-syntax-markup-changed-bg: getCssVar("warning", "bg-active");
-  --color-prettylights-syntax-markup-ignored-text: getCssVar("text", "primary");
-  --color-prettylights-syntax-markup-ignored-bg: getCssVar("accent", "hover");
-  --color-prettylights-syntax-meta-diff-range: getCssVar("accent", "hover");
-  --color-prettylights-syntax-brackethighlighter-angle: getCssVar("text", "tertiary");
-  --color-prettylights-syntax-sublimelinter-gutter-mark: getCssVar("text", "secondary");
-  --color-prettylights-syntax-constant-other-reference-link: getCssVar("accent", "active");
+  @include batchSetVars("color-prettylights-syntax", $syntaxVars);
+  @include batchSetVars("color-btn", $btnVars);
+  @include batchSetVars("color", $baseVars);
 
-  // 按钮颜色
-  --color-btn-text: getCssVar("text", "primary");
-  --color-btn-bg: getCssVar("bg", "secondary");
-  --color-btn-border: getCssVar("border", "primary");
-  --color-btn-shadow: 0 0 transparent;
-  --color-btn-inset-shadow: 0 0 transparent;
-  --color-btn-hover-bg: getCssVar("bg", "tertiary");
-  --color-btn-hover-border: getCssVar("border", "secondary");
-  --color-btn-active-bg: getCssVar("bg", "tertiary");
-  --color-btn-active-border: getCssVar("border", "secondary");
-  --color-btn-selected-bg: getCssVar("bg", "secondary");
-  --color-btn-primary-text: getCssVar("text", "inverse");
-  --color-btn-primary-bg: getCssVar("success", "base");
-  --color-btn-primary-border: getCssVar("success", "active");
-  --color-btn-primary-shadow: 0 0 transparent;
-  --color-btn-primary-inset-shadow: 0 0 transparent;
-  --color-btn-primary-hover-bg: getCssVar("success", "hover");
-  --color-btn-primary-hover-border: getCssVar("success", "base");
-  --color-btn-primary-selected-bg: getCssVar("success", "base");
-  --color-btn-primary-selected-shadow: 0 0 transparent;
-  --color-btn-primary-disabled-text: getCssVar("text", "disabled");
-  --color-btn-primary-disabled-bg: getCssVar("success", "bg-disabled");
-  --color-btn-primary-disabled-border: getCssVar("success", "bg");
+  .gsc-loading-image {
+    background-image: url("https://github.githubassets.com/images/mona-loading-dimmed.gif");
+  }
 
-  // 交互组件颜色
-  --color-action-list-item-default-hover-bg: rgba(getCssVar("text", "secondary"), 0.12);
-  --color-segmented-control-bg: rgba(getCssVar("text", "tertiary"), 0.1);
-  --color-segmented-control-button-bg: getCssVar("bg", "primary");
-  --color-segmented-control-button-selected-border: getCssVar("border", "secondary");
-
-  // 基础颜色
-  --color-fg-default: getCssVar("text", "primary");
-  --color-fg-muted: getCssVar("text", "secondary");
-  --color-fg-subtle: getCssVar("text", "tertiary");
-  --color-canvas-default: getCssVar("bg", "primary");
-  --color-canvas-overlay: getCssVar("bg", "tertiary");
-  --color-canvas-inset: getCssVar("bg", "tertiary");
-  --color-canvas-subtle: getCssVar("bg", "secondary");
-  --color-border-default: getCssVar("border", "primary");
-  --color-border-muted: getCssVar("border", "secondary");
-  --color-neutral-muted: rgba(getCssVar("text", "tertiary"), 0.4);
-
-  // 强调色
-  --color-accent-fg: getCssVar("link", "base");
-  --color-accent-emphasis: getCssVar("link", "hover");
-  --color-accent-muted: rgba(getCssVar("accent", "bg"), 0.4);
-  --color-accent-subtle: rgba(getCssVar("accent", "bg-disabled"), 0.1);
-
-  // 状态色
-  --color-success-fg: getCssVar("success", "base");
-  --color-attention-fg: getCssVar("warning", "base");
-  --color-attention-muted: rgba(getCssVar("warning", "bg"), 0.4);
-  --color-attention-subtle: rgba(getCssVar("warning", "bg-disabled"), 0.15);
-  --color-danger-fg: getCssVar("danger", "base");
-  --color-danger-muted: rgba(getCssVar("danger", "bg"), 0.4);
-  --color-danger-subtle: rgba(getCssVar("danger", "bg-disabled"), 0.1);
-
-  // 其他
-  --color-primer-shadow-inset: 0 0 transparent;
-  --color-scale-gray-7: getCssVar("text", "secondary");
-  --color-scale-blue-8: getCssVar("accent", "hover");
-
-  /*! Extensions from @primer/css/alerts/flash.scss */
-  --color-social-reaction-bg-hover: var(--color-scale-gray-7);
-  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-8);
+  .pagination-loader-container {
+    background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line-dark.svg");
+  }
 }
 
-main .pagination-loader-container {
-  background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line-dark.svg");
+body {
+  font-size: getCssVar("font-size", "md");
+  font-weight: getCssVar("font-weight", "normal");
+  font-family: getCssVar("giscus-text-family"), sans-serif;
 }
 
-/*! Custom CSS */
-
-.gsc-reactions-count {
-  display: none;
+pre, code {
+  font-family: getCssVar("giscus-code-family"), monospace;
 }
 
-.gsc-timeline {
-  flex-direction: column-reverse;
-}
+#__next {
+  .rounded-full {
+    border-radius: radius("full");
+  }
 
-.gsc-header {
-  padding-bottom: getCssVar("padding", "xl");
-}
+  button.btn {
+    border-radius: radius("md");
+    border-width: bw("thin");
+  }
 
-.gsc-comments > .gsc-header {
-  order: 1;
-}
+  .BtnGroup-item {
+    @include useBorder(null, "primary", "thin");
+    border-color: transparent;
 
-.gsc-comments > .gsc-comment-box {
-  order: 2;
-  margin-bottom: getCssVar("margin", "xl");
-}
+    &.BtnGroup-item--selected {
+      border-color: getCssVar("border", "primary");
+    }
+  }
 
-.gsc-comments > .gsc-timeline {
-  order: 3;
-}
+  .gsc-timeline {
+    flex-direction: column-reverse;
+  }
 
-.gsc-homepage-bg {
-  background-color: getCssVar("bg", "tertiary");
-}
+  .gsc-header {
+    padding-bottom: getCssVar("padding", "xl");
+  }
 
-main .gsc-loading-image {
-  background-image: url("https://github.githubassets.com/images/mona-loading-dimmed.gif");
+  .gsc-comment-author .color-box-border-info {
+    @include useBorder(null, "primary", "thin");
+    border-radius: radius("full");
+  }
+
+  .gsc-comments {
+    .gsc-header {
+      order: 1;
+    }
+
+    .gsc-comment-box {
+      order: 2;
+      overflow: hidden;
+      margin-bottom: getCssVar("margin", "xl");
+      border-radius: radius($docs-radius);
+      @include useBorder(null, "primary");
+
+      .gsc-comment-box-tabs {
+        @include useBorder(bottom, "secondary", "thin");
+
+        &>div:first-child button {
+          @include halfRadius(top, "md");
+          @include useBorder(null, "secondary", "thin");
+          border-bottom-color: transparent;
+          margin-bottom: calc(-0.5 * #{bw("thin")});
+
+          &.border-transparent {
+            border: none;
+          }
+        }
+      }
+
+      .gsc-comment-box-main {
+        div.markdown {
+          @include useBorder(bottom, "secondary", "base");
+        }
+
+        div.gsc-comment-box-write {
+          textarea {
+            @include halfRadius(top, "md");
+            @include useBorder(null, "secondary", "thin");
+            border-bottom-style: dashed;
+          }
+          div {
+            @include halfRadius(bottom, "md");
+            @include useBorder(null, "secondary", "thin");
+            border-top: none;
+          }
+        }
+      }
+    }
+
+    .gsc-timeline {
+      order: 3;
+    }
+
+    .gsc-comment {
+      &>div {
+        border-radius: radius($docs-radius);
+        @include useBorder(null, "primary", "base");
+      }
+
+      .gsc-comment-box {
+        border: none;
+        overflow: visible;
+        .gsc-comment-box-tabs {
+          @include useBorder(top, "primary", "base");
+        }
+      }
+    }
+
+    .gsc-reply-box {
+      @include halfRadius(bottom, $docs-radius);
+      border-top: bw("base") solid getCssVar("border", "primary");
+      padding: getCssVar("padding", "md");
+
+      &>button {
+        @include useBorder(null, "secondary", "thin");
+        border-radius: radius("md");
+      }
+    }
+  }
+
+  .gsc-reactions-button {
+    border-radius: radius("full");
+    @include useBorder(null, "secondary", "thin");
+  }
+
+  .gsc-direct-reaction-button {
+    border-radius: radius("full");
+    @include useBorder(null, "secondary", "thin");
+    background-color: getCssVar("accent", "bg");
+  }
+
+  .gsc-reactions-popover {
+    border-radius: radius("md");
+    @include useBorder(null, "secondary", "thin");
+
+    .gsc-emoji-button.has-reacted {
+      @include useBorder(null, "secondary", "thin");
+    }
+
+    div.border-t {
+      @include useBorder("top", "secondary", "thin");
+    }
+
+    &:after, &:before {
+      display: none;
+    }
+  }
+
+  .gsc-reactions-count {
+    display: none;
+  }
+
+  .gsc-homepage-bg {
+    background-color: getCssVar("bg", "tertiary");
+  }
+
+  .gsc-replies {
+    border-radius: 0;
+    border-top: bw("base") solid getCssVar("border", "primary");
+  }
 }

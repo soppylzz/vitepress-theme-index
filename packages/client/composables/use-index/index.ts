@@ -1,9 +1,21 @@
-import type { BuildI18nViewConfig, IndexIcon, IndexLink } from "../../types";
-import { indexNavKey, indexSidebarKey, indexSiteKey, indexThemeKey } from "../../types";
+import type {
+  BuildI18nViewConfig,
+  IndexIcon,
+  IndexLink,
+  IndexThemeDataset,
+  IndexThemeMode,
+} from "../../types";
+import {
+  indexNavKey,
+  indexSidebarKey,
+  indexSiteKey,
+  indexThemeKey,
+  indexGlobalKey,
+} from "../../types";
 import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
 import { isObject, isString } from "lodash-unified";
-import type { ComputedRef, MaybeRefOrGetter } from "vue";
-import { computed, toValue } from "vue";
+import type { ComputedRef, MaybeRef, MaybeRefOrGetter } from "vue";
+import { unref, watchEffect, computed, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
 import { hasOwnProperty } from "@vitepress-theme-index/shared";
@@ -72,10 +84,6 @@ function flatArrayWithRoute<T>(raw: Record<string, T[]>) {
   return Object.values(raw).flat() as T[];
 }
 
-const useTheme = () => {
-  return useInject(indexThemeKey);
-};
-
 const useNav = () => {
   const raw = useInject(indexNavKey);
   return useMaybeI18nData(raw, []);
@@ -90,4 +98,50 @@ const useSite = () => {
   return useSplitRefs(res);
 };
 
-export { useIcon, useLink, useNav, useTheme, useSite, useSidebar, flatArrayWithRoute };
+const useTheme = () => useInject(indexThemeKey);
+const useGlobal = () => useInject(indexGlobalKey);
+
+function getComputedMode(mode: IndexThemeMode): Exclude<IndexThemeMode, "auto"> {
+  if (mode !== "auto") return mode;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+let datasetCache: ComputedRef<IndexThemeDataset> | null = null;
+function createComputedDataset() {
+  if (datasetCache) return datasetCache;
+
+  const { ctx } = useTheme();
+  datasetCache = computed(() => {
+    const { mode, preset } = ctx;
+    return {
+      mode: getComputedMode(mode),
+      preset,
+    };
+  });
+  return datasetCache;
+}
+
+function useThemeDataset(elRef: MaybeRef<HTMLElement | HTMLIFrameElement | null>) {
+  const datasetRef = createComputedDataset();
+
+  watchEffect(() => {
+    const el = unref(elRef);
+    if (!el) return;
+
+    const { mode, preset } = datasetRef.value;
+    el.setAttribute("data-preset", preset);
+    el.setAttribute("data-mode", mode);
+  });
+}
+
+export {
+  useIcon,
+  useLink,
+  useNav,
+  useTheme,
+  useSite,
+  useSidebar,
+  flatArrayWithRoute,
+  useThemeDataset,
+  useGlobal,
+};

@@ -2,7 +2,9 @@
 import { Content, useData } from "vitepress";
 import { VtiDocs, VtiHome, VtiArchive } from "./layout";
 import { VtiNav } from "./components";
-import { useBem } from "./composables";
+import { useBem, useThemeDataset } from "./composables";
+
+useThemeDataset(document.documentElement);
 
 const { frontmatter } = useData();
 const ns = useBem("layout");

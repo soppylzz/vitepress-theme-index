@@ -182,7 +182,7 @@ async function buildClient() {
     input: {
       input: inputs,
       // Be careful not to import any other packages related to “virtual”.
-      external: generateExternals(["virtual"]),
+      external: generateExternals(["virtual", "vitepress-theme-index"]),
       treeshake,
     },
     output: generateOutputs(pkgRoot, ["esm"]),

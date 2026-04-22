@@ -10,6 +10,7 @@
   z-index: getCssVar("z-index", "sub-nav");
   background-color: getCssVar("bg", "secondary");
   font-size: getCssVar("font-size", "sm");
+  color: getCssVar("text", "primary");
 
   // default:mobile
   @include useUnselect();
