@@ -15,7 +15,7 @@
   @include useFlex(row);
   background-color: getCssVar("bg", "tertiary");
 
-  #vti-docs-main {
+  @include e("column") {
     flex: 1;
     @include useFlex(column);
   }
@@ -38,34 +38,28 @@
     position: relative;
     padding-inline: getCssVar("padding", "2xl");
     padding-block: getCssVar("padding", "3xl");
-
     @include useFlex(row, null, start);
+  }
 
-    #vti-docs-content {
-      flex: 1;
-    }
-    #vti-docs-aside {
-      flex-shrink: 0;
-      width: $docs-aside-width;
-      @include useFlex(column);
-      @include useScrollHidden();
+  @include e("aside") {
+    flex-shrink: 0;
+    width: $docs-aside-width;
+    @include useFlex(column);
+    @include useScrollHidden();
 
-      $asideToTop: calc($header-height + getCssVar("padding", "3xl"));
+    $asideToTop: calc($header-height + getCssVar("padding", "3xl"));
 
-      padding-left: getCssVar("padding", "2xl");
-      position: sticky;
-      top: $asideToTop;
-      overflow-y: auto;
-      max-height: calc(100vh - 2 * $asideToTop);
-    }
+    padding-left: getCssVar("padding", "2xl");
+    position: sticky;
+    top: $asideToTop;
+    overflow-y: auto;
+    max-height: calc(100vh - 2 * $asideToTop);
 
     @include useVisual();
     @include m("pad", "mobile") {
-      #vti-docs-aside {
-        @include useVisual(false);
-        width: 0;
-        padding-left: 0;
-      }
+      @include useVisual(false);
+      width: 0;
+      padding-left: 0;
     }
   }
 }

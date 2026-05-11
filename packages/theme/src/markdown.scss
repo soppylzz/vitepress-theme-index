@@ -157,7 +157,6 @@
     @include useScrollHidden();
     margin-top: 0;
     margin-bottom: getCssVar("margin", "xl");
-    line-height: 1.5;
 
     code {
       font-size: 0.875em;

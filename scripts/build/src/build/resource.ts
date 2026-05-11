@@ -1,7 +1,7 @@
 import { run } from "../utils";
-import { mkdir, readFile, writeFile } from "fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import glob from "fast-glob";
-import { indexRoot, projDist, projRoot, themeRoot, typeDist } from "../const";
+import { iconDist, iconRoot, indexRoot, projDist, projRoot, themeRoot, typeDist } from "../const";
 import { copy } from "fs-extra";
 import { dirname, relative, resolve } from "node:path";
 import * as sass from "sass";
@@ -60,6 +60,7 @@ async function buildResources() {
   await buildTypes();
   await buildStyles();
 
+  await copy(iconRoot, iconDist);
   await copy(resolve(projRoot, "README.md"), resolve(indexRoot, "README.md"));
   await copy(resolve(projRoot, "LICENSE"), resolve(indexRoot, "LICENSE"));
 }

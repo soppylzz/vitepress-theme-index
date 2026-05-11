@@ -7,3 +7,5 @@ export * from "./use-inject";
 export * from "./use-layout";
 export * from "./use-color";
 export * from "./use-search";
+export * from "./use-os";
+export * from "./use-context";

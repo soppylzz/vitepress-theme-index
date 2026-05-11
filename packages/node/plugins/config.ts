@@ -14,28 +14,26 @@ import {
   PLUGIN_PREFIX,
   VITE_EXTENSIONS,
 } from "../const";
-import { type Alias, type Plugin, type ViteDevServer } from "vite";
+import type { Alias, Plugin, ViteDevServer } from "vite";
 import { normalizeAlias, ssrRewriteLoadModules } from "../utils";
 import { isAbsolute, relative, resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { pathToFileURL } from "node:url";
 import type { DeepPartial } from "@vitepress-theme-index/shared";
 import {
+  nodeRoot,
+  clientRoot,
   INDEX_ADDITION_PKG,
   INDEX_ARCHIVE_PKG,
   INDEX_I18N_PKG,
   INDEX_OVERALL_PKG,
   INDEX_SEARCH_PKG,
   INDEX_CONFIG_NAME,
-  setupIndexErrorInterceptor,
   pluginLogger,
   resolveDefineAble,
+  setupIndexErrorInterceptor,
 } from "@vitepress-theme-index/shared";
 import fs from "fs-extra";
 import { concat, merge } from "lodash-unified";
-
-const PKG_ROOT = resolve(fileURLToPath(import.meta.url), "..", "..", "..");
-const CLIENT_MOD = resolve(PKG_ROOT, "client");
-const NODE_MOD = resolve(PKG_ROOT, "node");
 
 const alias: ImportAlias = {};
 function setAlias(key: keyof ImportAlias, value: Alias[] = []) {
@@ -118,8 +116,8 @@ export function createConfigPlugin(
   // resolve "vitepress-theme-index" as "vitepress-theme-index/client" default
   switch (resolved.mode) {
     case "unify": {
-      setAlias("client", [{ find: /^vitepress-theme-index$/, replacement: CLIENT_MOD }]);
-      setAlias("node", [{ find: /^vitepress-theme-index$/, replacement: NODE_MOD }]);
+      setAlias("client", [{ find: /^vitepress-theme-index$/, replacement: clientRoot }]);
+      setAlias("node", [{ find: /^vitepress-theme-index$/, replacement: nodeRoot }]);
       break;
     }
     case "normal":

@@ -1,7 +1,10 @@
+import type { debounce } from "lodash-unified";
+
 /* =============== common helpers =============== */
 type MaybeArray<T> = T[] | readonly T[] | T;
 type MaybeRecord<T> = T | Record<string, T>;
 type MaybePromise<T> = T | Promise<T>;
+type MaybeDebounce<T extends (...args: any) => any> = T | ReturnType<typeof debounce<T>>;
 
 /* =============== recursion helpers =============== */
 type PrimitiveLike =
@@ -58,5 +61,6 @@ export type {
   DeepRequired,
   DeepReadonly,
   WithDefault,
+  MaybeDebounce,
   UnionToIntersection,
 };

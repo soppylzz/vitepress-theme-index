@@ -7,8 +7,14 @@ $docs-item-space: "md";
 $docs-sidebar-width: 260px;
 $docs-aside-width: 200px;
 
-$sub-nav-height: 3rem;
-$sub-nav-toc-width: $docs-aside-width;
-$sub-nav-toc-height: 400px;
+$local-nav-height: 3rem;
+$local-nav-toc-width: $docs-aside-width;
+$local-nav-toc-height: 400px;
+
+$search-box-margin-block: 100px;
+$search-box-height-range: (400px, 800px);
 
 $index-sizes: ("small", "medium", "large");
+$index-aligns: ("flex-start", "center", "flex-end");
+
+$shadow-color: getCssVarName("shadow", "color");

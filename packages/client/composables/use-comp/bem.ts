@@ -1,37 +1,28 @@
 import type { MaybeArray } from "@vitepress-theme-index/shared";
 import { ensureArray } from "@vitepress-theme-index/shared";
 
-interface UseBemOptions {
-  namespace?: string;
-  commonSeparator?: string;
-  elementSeparator?: string;
-  modifierSeparator?: string;
-  statePrefix?: string;
-}
-
-const defaultUseBemOptions: UseBemOptions = {
-  namespace: "vti",
-  commonSeparator: "-",
-  elementSeparator: "__",
-  modifierSeparator: "--",
-  statePrefix: "is-",
+const namespace = "vti";
+const statePrefix = "is-";
+const varPrefix = `--${namespace}`;
+const sep = {
+  common: "-",
+  element: "__",
+  modifier: "--",
 };
 
-function useBem(block: string, options?: UseBemOptions) {
-  const {
-    namespace,
-    commonSeparator: cSep,
-    elementSeparator: eSep,
-    modifierSeparator: mSep,
-    statePrefix,
-  } = { ...defaultUseBemOptions, ...options };
+function cssVarName(name: MaybeArray<string>) {
+  return (ensureArray(name) as string[]).reduce((acc, cur) => {
+    return cur ? `${acc}${sep.common}${cur}` : acc;
+  }, varPrefix);
+}
 
-  const base = `${namespace}${cSep}${block}`;
+function useBem(block: string) {
+  const base = `${namespace}${sep.common}${block}`;
 
   const _bem = (e: string, m: string) => {
     let selector = base;
-    if (e) selector += `${eSep}${e}`;
-    if (m) selector += `${mSep}${m}`;
+    if (e) selector += `${sep.element}${e}`;
+    if (m) selector += `${sep.modifier}${m}`;
     return selector;
   };
 
@@ -41,13 +32,11 @@ function useBem(block: string, options?: UseBemOptions) {
   const em = (element: string, modifier: string) => _bem(element, modifier);
   const when = (state: string, flag: boolean = true) => (flag ? `${statePrefix}${state}` : "");
 
-  const cssVarName = (name: MaybeArray<string>) => {
-    return (ensureArray(name) as string[]).reduce((acc, cur) => {
-      return cur ? `${acc}${cSep}${cur}` : acc;
-    }, base);
-  };
-
-  return { b, e, m, em, when, cssVarName };
+  return { b, e, m, em, when };
 }
 
-export { useBem };
+function isVar(name: string) {
+  return name.startsWith(varPrefix);
+}
+
+export { useBem, isVar, cssVarName };

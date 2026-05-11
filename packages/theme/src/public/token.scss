@@ -1,4 +1,6 @@
 @use "sass:map";
+@use "./const" as *;
+@use "../abstract" as *;
 
 $base-light-palette: (
   gray-0: #ffffff,
@@ -133,10 +135,10 @@ $base-foundation: (
     bold: 700,
   ),
   line-height: (
-    tight: 1.2,
-    normal: 1.5,
-    relaxed: 1.75,
-    loose: 2,
+    tight: 1,
+    normal: 1.25,
+    relaxed: 1.5,
+    loose: 1.75,
   ),
   letter-spacing: (
     tight: -0.025em,
@@ -163,17 +165,13 @@ $base-foundation: (
     full: 9999px,
   ),
   z-index: (
-    hide: -1,
+    hide: -1000,
     normal: 0,
-    dropdown: 100,
-    sticky: 1000,
-    fixed: 2000,
-    sub-nav: 2100,
-    sidebar: 2200,
-    nav: 2300,
+    base: 1000,
+    float: 2000,
     overlay: 3000,
-    popper: 4000,
-    top: 5000,
+    modal: 4000,
+    popper: 5000
   ),
   opacity: (
     0: 0,
@@ -194,4 +192,18 @@ $base-foundation: (
     out: ease-out,
     in-out: ease-in-out,
   ),
+  time: (
+    slow: 250ms,
+    normal: 200ms,
+    quick: 150ms,
+    fast: 100ms,
+  ),
+  shadow: (
+    none: none,
+    xs: 0 1px 2px hexRgba(getCssVar($shadow-color), 0.05),
+    sm: 0 1px 3px hexRgba(getCssVar($shadow-color), 0.1),
+    md: 0 4px 6px hexRgba(getCssVar($shadow-color), 0.1),
+    lg: 0 10px 15px hexRgba(getCssVar($shadow-color), 0.1),
+    xl: 0 20px 25px hexRgba(getCssVar($shadow-color), 0.15)
+  )
 );

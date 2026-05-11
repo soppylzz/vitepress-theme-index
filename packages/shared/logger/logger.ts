@@ -70,7 +70,6 @@ function createLogger(scoped: string) {
 
 const buildLogger = createLogger("build");
 const pluginLogger = createLogger("plugin");
-const injectLogger = createLogger("inject");
 const rightMenuLogger = createLogger("right-menu");
 const renderLogger = createLogger("render");
 const runtimeLogger = createLogger("runtime");
@@ -80,7 +79,6 @@ const searchLogger = createLogger("search");
 export {
   buildLogger,
   pluginLogger,
-  injectLogger,
   rightMenuLogger,
   renderLogger,
   runtimeLogger,

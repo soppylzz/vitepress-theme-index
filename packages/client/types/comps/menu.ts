@@ -1,4 +1,5 @@
 import type { IndexIcon, IndexLink, IndexSize, IndexText, IndexTextLink } from "../global";
+import type { MaybeRef } from "vue";
 
 interface MenuProps {
   size?: IndexSize;
@@ -18,6 +19,17 @@ type MenuItemType = MenuItemConfig["type"];
 
 type MenuLinkItem = Extract<MenuItemConfig, IndexLink>;
 
+interface MenuState extends Required<MenuProps> {
+  level: number;
+  parentKey: string;
+  activeKey: string;
+}
+
+type MenuContext = {
+  ctx: MaybeRef<MenuState>;
+  setActive(key: string): void;
+};
+
 export type {
   MenuItemType,
   MenuItemConfig,
@@ -25,4 +37,6 @@ export type {
   MenuButtonProps,
   MenuGroupProps,
   MenuLinkItem,
+  MenuState,
+  MenuContext,
 };

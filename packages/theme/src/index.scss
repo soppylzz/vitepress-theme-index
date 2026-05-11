@@ -1,4 +1,5 @@
 @use "abstract" as *;
+@use "public" as *;
 @use "themes" as *;
 @use "markdown";
 
@@ -6,12 +7,13 @@
 @use "brand";
 @use "nav";
 @use "sidebar";
-@use "sub-nav";
+@use "local-nav";
 @use "toc";
 @use "right-menu";
 @use "card";
 @use "page";
 @use "footer";
+@use "search";
 
 @use "popper";
 @use "drawer";
@@ -19,6 +21,7 @@
 @use "tag";
 @use "theme";
 @use "wheel-picker";
+@use "key";
 
 @include createFontFace("LXGW", "./assets/LXGWWenKaiScreen.ttf");
 @include createFontFace("ArkPixel", "./assets/ark-pixel-12px-monospaced-zh_cn.ttf.woff2");
@@ -55,14 +58,18 @@ body {
   font-family: getCssVar("text", "font-group"), sans-serif;
   line-height: getCssVar("line-height", "normal");
   letter-spacing: getCssVar("letter-spacing", "normal");
+
+  // initial shadow color
+  #{$shadow-color}: getCssVar("border", "primary");
 }
 
-pre, code { font-family: getCssVar("code", "font-group"), monospace; }
+input, textarea { font-family: getCssVar("text", "font-group"), sans-serif; }
+pre, code, kbd { font-family: getCssVar("code", "font-group"), monospace; }
 
 html .shiki span {
   color: var(--shiki-light, inherit)
 }
 
-html[md-theme="dark"] .shiki span {
+html[data-mode="dark"] .shiki span {
   color: var(--shiki-dark, inherit)
 }

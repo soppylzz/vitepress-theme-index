@@ -14,6 +14,7 @@ export default withAdditionIndex({
   },
   nav: [
     { type: "space" },
+    { type: "search" },
     { type: "button", text: "ARCH", target: "both", href: "/en/archive" },
     { type: "button", text: "API", target: "both", baseUrl: "/en/api", href: "/en/api/theme" },
     {

@@ -1,0 +1,225 @@
+import type { Component, VNode } from "vue";
+import {
+  onMounted,
+  computed,
+  watch,
+  ref,
+  createVNode,
+  defineComponent,
+  vShow,
+  withDirectives,
+} from "vue";
+import { useBem, useLockScroll, useNav, useSite, useTheme } from "../../composables";
+import { isBoolean, isUndefined, omit } from "lodash-unified";
+import type {
+  IndexResponse,
+  MenuItemConfig,
+  NavContainer,
+  NavCustomConfig,
+  NavItemConfig,
+  NavItemType,
+} from "../../types";
+import { ensureArray, hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
+import { renderMenuItems } from "../../components";
+import { useRoute } from "vitepress";
+
+import {
+  VtiNavButton,
+  VtiNavLocale,
+  VtiNavMenu,
+  VtiNavSearch,
+  VtiNavSwitch,
+  VtiNavTheme,
+} from "./items";
+import { VtiBrand } from "../brand";
+
+const ns = useBem("nav");
+const bems = {
+  divider: useBem("nav-divider"),
+  space: useBem("nav-space"),
+};
+
+interface NavRenderContext {
+  current: IndexResponse;
+  container: NavContainer;
+}
+const navItemMap: Record<NavItemType, Component | undefined> = {
+  button: VtiNavButton,
+  menu: VtiNavMenu,
+  locale: VtiNavLocale,
+  search: VtiNavSearch,
+  divider: undefined,
+  space: undefined,
+  custom: undefined,
+};
+
+function computeVisible(config: NavItemConfig, ctx: NavRenderContext) {
+  const { container, current } = ctx;
+  const target = config?.target || "header";
+
+  if (container === "header") {
+    if (target === "both" && current === "mobile") return false;
+    if (hasOwnProperty(config, "show") && !isUndefined(config?.show)) {
+      const show = config?.show ?? true;
+      return isBoolean(show) ? show : ensureArray(show).includes(current);
+    }
+  }
+  return true;
+}
+
+function checkRender(config: NavItemConfig, container: NavContainer) {
+  const target = config?.target || "header";
+  return target === container || target === "both";
+}
+
+function checkIconButton(config: NavItemConfig) {
+  if (config.type !== "button") return false;
+  const buttonConfig = config as NavItemConfig & { text?: any };
+  return !hasOwnProperty(buttonConfig, "text") || !buttonConfig.text;
+}
+
+function renderContentByType(
+  key: number | string,
+  config: NavItemConfig,
+  ctx: NavRenderContext
+): VNode | null {
+  const { container } = ctx;
+  const { type, ...res } = config;
+
+  switch (type) {
+    case "custom":
+      return createVNode((config as NavCustomConfig).component, { key, container });
+    case "divider":
+    case "space": {
+      const itemNs = bems[type];
+      return createVNode("div", { key, class: [itemNs.b(), itemNs.m(container)], container });
+    }
+    default: {
+      const comp = navItemMap[type];
+      if (!comp) {
+        renderLogger.error(`unknown nav item type: ${type}`);
+        return null;
+      }
+      const cleanProps = omit(res, ["children", "show"]);
+      if (type === "menu") {
+        return createVNode(comp, { key, ...cleanProps, container }, () =>
+          renderMenuItems((config?.children ?? []) as MenuItemConfig[], "vti-nav")
+        );
+      }
+      return createVNode(comp, { key, ...cleanProps, container });
+    }
+  }
+}
+
+function renderNavItem(
+  key: number | string,
+  config: NavItemConfig,
+  ctx: NavRenderContext
+): VNode | null {
+  if (!checkRender(config, ctx.container)) return null;
+  const vnode = renderContentByType(key, config, ctx);
+  if (!vnode) return null;
+  if (ctx.container === "screen") return vnode;
+
+  const visible = computeVisible(config, ctx);
+  return withDirectives(vnode, [[vShow, visible]]);
+}
+
+const VtiNav = defineComponent({
+  name: "VtiNav",
+  setup() {
+    const nav = useNav();
+    const { response } = useTheme();
+    const { brand, siteName } = useSite();
+
+    const open = ref(false);
+
+    const isBodyLock = computed(() => open.value && response.value === "mobile");
+    onMounted(() => {
+      useLockScroll(isBodyLock, document.body);
+    });
+
+    const route = useRoute();
+    watch(
+      route,
+      () => {
+        open.value = false;
+      },
+      { immediate: true }
+    );
+
+    return () => {
+      const current = response.value;
+
+      const kls = {
+        wrapper: [ns.b(), ns.m(current)],
+        header: [ns.e("header"), ns.em("header", current)],
+        screen: [ns.e("screen")],
+        items: ns.e("screen-items"),
+        icons: ns.e("screen-icons"),
+      };
+
+      const screenItems = nav.value
+        .filter((item) => checkRender(item, "screen"))
+        .filter((item) => !checkIconButton(item));
+      const screenIcons = nav.value
+        .filter((item) => checkRender(item, "screen"))
+        .filter((item) => checkIconButton(item));
+
+      const brandComp = () =>
+        siteName && siteName.value ? (
+          <VtiBrand text={siteName.value} brand={brand?.value} size={"medium"} />
+        ) : null;
+
+      return (
+        <div class={kls.wrapper}>
+          <div class={kls.header}>
+            {brandComp()}
+            {nav.value
+              .map((item, index) => renderNavItem(index, item, { current, container: "header" }))
+              .filter((item) => !!item)}
+            {withDirectives(
+              renderNavItem("pre-theme", { type: "divider" }, { current, container: "header" })!,
+              [[vShow, current !== "mobile"]]
+            )}
+            {withDirectives(<VtiNavTheme />, [[vShow, current !== "mobile"]])}
+            {withDirectives(
+              renderNavItem("pre-switch", { type: "divider" }, { current, container: "header" })!,
+              [[vShow, current === "mobile"]]
+            )}
+            {withDirectives(<VtiNavSwitch v-model={open.value} />, [[vShow, current === "mobile"]])}
+          </div>
+          {
+            /* screen container */
+            withDirectives(
+              <div class={kls.screen}>
+                {/* Normal items (with text buttons, menus, etc.) */}
+                <div class={kls.items}>
+                  {screenItems
+                    .map((item, index) =>
+                      renderNavItem(index, item, { current, container: "screen" })
+                    )
+                    .filter((item) => !!item)}
+                </div>
+                {/* Icon only buttons */}
+                {screenIcons.length > 0 && (
+                  <div class={kls.icons}>
+                    {screenIcons
+                      .map((item, index) =>
+                        renderNavItem(index, item, { current, container: "screen" })
+                      )
+                      .filter((item) => !!item)}
+                  </div>
+                )}
+                <VtiNavTheme container={"screen"} />
+              </div>,
+              [[vShow, response.value === "mobile" && open.value]]
+            )
+          }
+        </div>
+      );
+    };
+  },
+});
+
+export { VtiNav };

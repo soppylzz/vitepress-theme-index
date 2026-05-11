@@ -1,5 +1,5 @@
 import type { App } from "vue";
-import { computed, getCurrentInstance, inject, provide, toValue } from "vue";
+import { computed, getCurrentInstance, inject, toValue } from "vue";
 import { indexRightMenuProvideKey } from "../../types";
 import type {
   ToMaybeRefOrGetterState,
@@ -7,9 +7,9 @@ import type {
   IndexMenuProvideContext,
   IndexMenuProvideHooks,
 } from "../../types";
-import { rightMenuLogger } from "@vitepress-theme-index/shared";
+import { resolveProvideFn } from "../vue";
 
-const rootProvide: Partial<IndexMenuProvideContext> = {
+const rootProvide: IndexMenuProvideContext = {
   close() {},
 };
 
@@ -24,11 +24,7 @@ function provideRightMenuContext(
   app?: App
 ) {
   const inSetup = !!getCurrentInstance();
-  const provideFn = app?.provide ?? (inSetup ? provide : undefined);
-  if (!provideFn) {
-    rightMenuLogger.error("unable to find provideFn");
-    return;
-  }
+  const provideFn = resolveProvideFn(app);
 
   const parent = useRightMenuProvide();
   const ctx = computed<IndexMenuProvide>(() => {

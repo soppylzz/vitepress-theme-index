@@ -37,6 +37,7 @@ const activateFn = (evt?: MouseEvent) => {
   }
 };
 
+const Icon = useIcon(props.icon);
 const ns = useBem("r-menu-icon");
 const kls = computed(() => ({
   wrap: [ns.b(), ns.when(stage.value), ns.when(state.value), ns.m(size.value)],
@@ -45,6 +46,6 @@ const kls = computed(() => ({
 
 <template>
   <div v-show="render" :class="kls.wrap" @click.stop="activateFn">
-    <component :is="useIcon(props.icon)" v-if="props.icon" />
+    <Icon />
   </div>
 </template>

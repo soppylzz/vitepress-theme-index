@@ -2,6 +2,12 @@ import type { App, Directive } from "vue";
 import type { IndexMenuContextConfig, MenuDynamicContext, CachedComputedRef } from "../../types";
 import { createMenuContext } from "../../utils";
 
+declare global {
+  interface HTMLElement {
+    __indexMenuHandler?: ((e: MouseEvent) => void) | null;
+  }
+}
+
 function createDirective(
   dynamic: CachedComputedRef<HTMLElement, MenuDynamicContext>
 ): Directive<HTMLElement, Partial<IndexMenuContextConfig>> {

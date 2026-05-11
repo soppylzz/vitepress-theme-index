@@ -13,7 +13,6 @@ import {
 import type { BuildOptions } from "./misc";
 import { buildPackage, excludeFiles, generateExternals } from "./misc";
 import glob from "fast-glob";
-import type { RollupRewriteImportsOptions } from "../utils";
 import { rewriteImports } from "../utils";
 import fs from "fs-extra";
 
@@ -26,23 +25,21 @@ import postcss from "rollup-plugin-postcss";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 
+import { ensureArray } from "@vitepress-theme-index/shared";
+import type { MaybeArray } from "@vitepress-theme-index/shared";
+
 const cliEntry = "cli.mjs";
 const sourcemap: boolean = false;
 const treeshake: boolean = false;
 const tsconfigPath = resolve(projRoot, "tsconfig.lib.json");
-const sharedRewriteConfig: RollupRewriteImportsOptions = {
-  rewrites: [
-    {
-      source: "@vitepress-theme-index/shared",
-      target: "shared",
-      entryFileName: "index",
-    },
-  ],
-};
 
-async function multiGlob(roots: string[], pattern: string = "**/*.{vue,js,ts}"): Promise<string[]> {
+async function multiGlob(
+  roots: string[],
+  pattern: MaybeArray<string> = "**/*.{vue,js,ts}"
+): Promise<string[]> {
+  const patterns = [...ensureArray(pattern), "!**/*.d.ts"];
   const files = await Promise.all(
-    roots.map((root) => glob(pattern, { cwd: root, absolute: true, onlyFiles: true }))
+    roots.map((root) => glob(patterns, { cwd: root, absolute: true, onlyFiles: true }))
   );
   return files.flat();
 }
@@ -108,7 +105,7 @@ async function buildCli(isDev: boolean = false) {
               {
                 source: "@vitepress-theme-index/shared",
                 target: "../shared", // has different chunkDir
-                entryFileName: "index",
+                entryFileName: "node",
               },
             ],
       }),
@@ -169,7 +166,15 @@ async function buildNode() {
         tsconfig: tsconfigPath,
         platform: "node",
       }),
-      rewriteImports(sharedRewriteConfig),
+      rewriteImports({
+        rewrites: [
+          {
+            source: "@vitepress-theme-index/shared",
+            target: "shared",
+            entryFileName: "node",
+          },
+        ],
+      }),
     ],
   });
 }
@@ -195,7 +200,13 @@ async function buildClient() {
         jsx: "preserve",
       }),
       rewriteImports({
-        ...sharedRewriteConfig,
+        rewrites: [
+          {
+            source: "@vitepress-theme-index/shared",
+            target: "shared",
+            entryFileName: "client",
+          },
+        ],
         targets: ["esm"],
         sideRewrites: [
           {
@@ -215,4 +226,4 @@ async function buildClient() {
   });
 }
 
-export { buildCli, buildShared, buildClient, buildNode, buildPackage };
+export { buildCli, buildShared, buildClient, buildNode };

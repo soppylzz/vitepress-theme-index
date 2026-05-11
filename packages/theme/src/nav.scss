@@ -9,7 +9,7 @@
   width: 100%;
   position: relative;
   color: getCssVar("text", "primary");
-  z-index: getCssVar("z-index", "nav");
+  z-index: getCssVar("z-index", "float");
   font-weight: getCssVar("font-weight", "normal");
   font-size: getCssVar("font-size", "lg");
 
@@ -35,6 +35,7 @@
   @include e("screen") {
     position: fixed;
     overflow-y: auto;
+    z-index: getCssVar("z-index", "modal");
 
     @include useFlex(column, null, null, "xl");
     @include setCssVar(("nav-header-height"), $header-height);
@@ -49,11 +50,11 @@
     padding-block: getCssVar("padding", "2xl");
   }
 
-  #nav-screen-items {
+  @include e("screen-items") {
     @include useFlex(column);
   }
 
-  #nav-screen-icons {
+  @include e("screen-icons") {
     @include useFlex(row, center, null, "md", wrap, center);
     @include useBorder(null, "secondary", "thin");
     border-radius: getCssVar("border-radius", "md");
@@ -183,4 +184,60 @@
   @include useBorder(null, "secondary", "thin");
   border-radius: getCssVar("border-radius", "md");
   background-color: getCssVar("bg", "secondary");
+}
+
+@include b("nav-search") {
+  @include useIcon();
+  @include useFlex(row, null, center);
+  margin-inline: getCssVar("padding", "md");
+  color: getCssVar("text", "primary");
+  &:hover {
+    color: getCssVar("accent", "hover");
+  }
+
+  @include m("desktop") {
+    @include useBorder(null, "secondary", "thin");
+    background-color: getCssVar("bg", "secondary");
+    border-radius: getCssVar("border-radius", "md");
+    padding: getCssVar("padding", "sm");
+    gap: getCssVar("padding", "sm");
+    margin-block: auto;
+
+    font-size: getCssVar("font-size", "sm");
+    font-weight: getCssVar("font-weight", "light");
+
+    color: getCssVar("text", "secondary");
+    &:hover {
+      border-color: getCssVar("border", "primary");
+      background-color: getCssVar("bg", "tertiary");
+      kbd {
+        border-color: getCssVar("border", "primary");
+      }
+    }
+  }
+
+  @include e("text") {
+    width: 120px;
+    color: inherit;
+  }
+
+  @include e("shortcut") {
+    position: relative;
+    align-self: stretch;
+    vertical-align: middle;
+    @include useFlex(row, flex-end, stretch, "sm");
+
+    kbd {
+      @include useBorder(null, "secondary", "thin");
+
+      flex: none;
+      align-self: stretch;
+      aspect-ratio: 1 / 1;
+      border-radius: getCssVar("border-radius", "sm");
+      background-color: getCssVar("bg", "primary");
+
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
 }

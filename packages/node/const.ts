@@ -1,6 +1,6 @@
 import type { IndexImportPluginConfig, ResolvedIndexPluginConfig } from "./types";
 import type { PostInfo } from "@vitepress-theme-index/shared";
-import { INDEX_ADDITION_NAME } from "@vitepress-theme-index/shared";
+import { INDEX_ADDITION_NAME, iconRoot } from "@vitepress-theme-index/shared";
 
 const PLUGIN_PREFIX = "vitepress-theme-index";
 const NODE_EXTENSIONS = [".js", ".mjs", ".cjs"] as const;
@@ -38,6 +38,12 @@ const DEFAULT_PLUGIN_CONFIG: ResolvedIndexPluginConfig = {
       pageSize: 3,
     },
   },
+  icon: [
+    {
+      prefix: "VtiI",
+      inputs: iconRoot,
+    },
+  ],
   plugins: [
     {
       name: "archive",

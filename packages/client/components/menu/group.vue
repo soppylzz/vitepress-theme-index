@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { MenuGroupProps } from "../../types";
-import { useBem, useText } from "../../composables";
+import { provideMenuContext, useBem, useMenuItem, useText } from "../../composables";
 import { computed, ref } from "vue";
-import { provideMenuContext, useMenuItem } from "../context";
 
 provideMenuContext();
 const props = withDefaults(defineProps<MenuGroupProps>(), { collapsable: false });

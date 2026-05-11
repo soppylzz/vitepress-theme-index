@@ -61,9 +61,15 @@ interface MetaCache {
   posts: PostInfo[];
 }
 
+interface IconConfig {
+  prefix: string;
+  inputs: MaybeArray<string>;
+}
+
 type IndexPluginConfig = {
   i18n: I18NConfig;
   meta: MetaConfig;
+  icon: IconConfig[];
   addition: { name: string };
   plugins: DefineAble<IndexPostPlugin>[];
 };
@@ -113,6 +119,7 @@ export type {
   DefaultLast,
   MetaCache,
   MetaConfig,
+  IconConfig,
   ImportAlias,
   IndexPluginConfig,
   IndexPluginInitConfig,

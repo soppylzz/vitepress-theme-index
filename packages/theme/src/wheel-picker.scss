@@ -36,7 +36,7 @@ $item-sizes: (
       line-height: getCssVar("line-height", list.nth($vals, 2));
       #{getCssVarName("wheel-picker-height")}: list.nth($vals, 3);
       #{getCssVarName("wheel-picker-width")}: list.nth($vals, 4);
-      margin: getCssVar("margin", list.nth($vals, 5));
+       margin: getCssVar("margin", list.nth($vals, 5));
     }
   }
 
@@ -49,14 +49,12 @@ $item-sizes: (
 
   @include e("content") {
     position: absolute;
-    will-change: transform;
-
     inset: auto 0;
-    @include useFlex(column, center, center);
+    @include useFlex(column, null, center);
 
     @include m("row") {
       inset: 0 auto;
-      @include useFlex(row, center, center);
+      @include useFlex(row, null, center);
     }
   }
 

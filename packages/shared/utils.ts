@@ -1,5 +1,5 @@
 import type { DefineAble } from "./types";
-import { isFunction } from "lodash-unified";
+import { camelCase, isFunction, upperFirst } from "lodash-unified";
 import CryptoJS from "crypto-js";
 
 /* ==================== shared utils ==================== */
@@ -39,15 +39,9 @@ function createMD5Hash(str: string): string {
   return CryptoJS.MD5(str).toString();
 }
 
-/* ==================== shared const ==================== */
-const INDEX_I18N_PKG = "virtual:index-i18n";
-const INDEX_ADDITION_PKG = "virtual:index-addition";
-const INDEX_SEARCH_PKG = "virtual:index-search";
-const INDEX_ARCHIVE_PKG = "virtual:index-archive";
-const INDEX_OVERALL_PKG = "virtual:index-overall";
-
-const INDEX_CONFIG_NAME = "vti.config";
-const INDEX_ADDITION_NAME = "vti.add";
+function pascalCase(str: string) {
+  return upperFirst(camelCase(str));
+}
 
 export {
   ensureArray,
@@ -55,14 +49,8 @@ export {
   hasOwnProperty,
   resolveDefineAble,
   clearObject,
+  createMD5Hash,
+  pascalCase,
   isBrowser,
   isNode,
-  createMD5Hash,
-  INDEX_CONFIG_NAME,
-  INDEX_ADDITION_NAME,
-  INDEX_I18N_PKG,
-  INDEX_ADDITION_PKG,
-  INDEX_SEARCH_PKG,
-  INDEX_ARCHIVE_PKG,
-  INDEX_OVERALL_PKG,
 };

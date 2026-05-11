@@ -2,9 +2,9 @@ import type {
   RMenuItemRecord,
   ResolvedIndexRightMenuConfig,
   UserIndexRightMenuConfig,
-  WithDefaultMenuRecord,
 } from "../../types";
-import { defaultMenuConfig, defaultMenuItemRecord } from "../../types";
+import type { WithDefaultMenuRecord } from "./default";
+import { defaultMenuConfig, defaultMenuItemRecord } from "./default";
 import { merge } from "lodash-unified";
 
 function resolveIndexMenuConfig<Records extends RMenuItemRecord>(

@@ -14,7 +14,7 @@ import { ensureArray, pluginLogger, resolveDefineAble } from "@vitepress-theme-i
 import { dirname, join, resolve } from "node:path";
 import fs from "fs-extra";
 import { rimraf } from "rimraf";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import matter from "gray-matter";
 import type {
   SearchIndexCache,

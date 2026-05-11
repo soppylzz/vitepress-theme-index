@@ -2,9 +2,8 @@ import type { PropType } from "vue";
 import { computed, watch, defineComponent, nextTick, onUnmounted, ref, onMounted } from "vue";
 import type { Header } from "vitepress";
 import { useData } from "vitepress";
-import { useBem } from "../composables";
+import { useBem, useLNav } from "../composables";
 import type { IndexSize } from "../types";
-import { useSubNav } from "./context";
 
 const TOP_OFFSET = 80;
 
@@ -80,7 +79,7 @@ const VtiToc = defineComponent({
   },
   setup(props) {
     const { page } = useData();
-    const ctx = useSubNav();
+    const ctx = useLNav();
     const ns = useBem("toc");
 
     const headers = computed(() => flatHeaders(page.value.headers || []));
@@ -183,7 +182,9 @@ const VtiToc = defineComponent({
             }
             onClick={(e: MouseEvent) => {
               e.preventDefault();
-              ctx?.closeToc?.();
+              if (ctx && ctx.type === "docs") {
+                ctx.closeToc();
+              }
               scrollToId(h.slug);
             }}
             class={[

@@ -2,7 +2,7 @@
 @use "abstract" as *;
 @use "public" as *;
 
-@include b("docs-footer") {
+@include b("footer-docs") {
   @include useBorder(top, "primary");
   @include useFlex(row, space-between, null, $docs-item-space);
 

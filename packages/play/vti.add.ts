@@ -40,7 +40,7 @@ export default withAdditionIndex({
         },
       ],
     },
-    { type: "divider", show: ["desktop", "pad"] },
+    { type: "search" },
     {
       type: "button",
       icon: "github",

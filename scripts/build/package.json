@@ -4,8 +4,8 @@
   "author": "soppylzz",
   "packageManager": "pnpm@10.12.4",
   "scripts": {
-    "build:cli": "tsup && node ./dist/run.js --mode cli",
-    "build:full": "tsup && node ./dist/run.js --mode full"
+    "build:cli": "tsup && node ./dist/run.mjs --mode cli",
+    "build:full": "tsup && node ./dist/run.mjs --mode full"
   },
   "devDependencies": {
     "tsup": "^8.5.1"

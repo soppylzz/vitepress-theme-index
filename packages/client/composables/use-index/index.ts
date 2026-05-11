@@ -2,7 +2,7 @@ import type {
   BuildI18nViewConfig,
   IndexIcon,
   IndexLink,
-  IndexThemeDataset,
+  IndexThemeData,
   IndexThemeMode,
 } from "../../types";
 import {
@@ -12,21 +12,36 @@ import {
   indexThemeKey,
   indexGlobalKey,
 } from "../../types";
-import { checkExternal, normalizeLink, pascalCase, useSplitRefs } from "../../utils";
-import { isObject, isString } from "lodash-unified";
+import { checkExternal, normalizeLink, NullComponent, useSplitRefs } from "../../utils";
+import { isObject, isString, kebabCase, merge } from "lodash-unified";
 import type { ComputedRef, MaybeRef, MaybeRefOrGetter } from "vue";
-import { unref, watchEffect, computed, toValue } from "vue";
+import { resolveComponent, unref, watchEffect, computed, toValue } from "vue";
 import { useI18n } from "../use-i18n";
 import { useData, useRoute } from "vitepress";
-import { hasOwnProperty } from "@vitepress-theme-index/shared";
+import { hasOwnProperty, pascalCase } from "@vitepress-theme-index/shared";
 import { useInject } from "../use-inject";
 
-function useIcon(icon: IndexIcon) {
-  return !isString(icon)
-    ? icon
-    : icon.startsWith("VtiI") || icon.startsWith("vti-i-")
-      ? pascalCase(icon)
-      : `VtiI${pascalCase(icon)}`;
+interface IndexIconOptions {
+  prefix?: string;
+}
+
+function useIcon(icon?: IndexIcon, options?: IndexIconOptions) {
+  if (!icon) return NullComponent;
+
+  const resolved = merge({ prefix: "VtiI" }, options ?? {});
+  const prefix = pascalCase(resolved.prefix);
+
+  const hasPrefix = (raw: string) =>
+    [prefix, `${kebabCase(prefix)}-`].some((p) => raw.startsWith(p));
+  const formatName = (name: string) =>
+    hasPrefix(name) ? pascalCase(name) : `${prefix}${pascalCase(name)}`;
+
+  if (!isString(icon)) {
+    return icon;
+  } else {
+    const resolvedIcon = resolveComponent(formatName(icon));
+    return !isString(resolvedIcon) ? resolvedIcon : NullComponent;
+  }
 }
 
 function useLink<T extends IndexLink>(
@@ -106,8 +121,9 @@ function getComputedMode(mode: IndexThemeMode): Exclude<IndexThemeMode, "auto"> 
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-let datasetCache: ComputedRef<IndexThemeDataset> | null = null;
-function createComputedDataset() {
+let datasetCache: ComputedRef<IndexThemeData> | null = null;
+
+function createComputedData() {
   if (datasetCache) return datasetCache;
 
   const { ctx } = useTheme();
@@ -121,8 +137,8 @@ function createComputedDataset() {
   return datasetCache;
 }
 
-function useThemeDataset(elRef: MaybeRef<HTMLElement | HTMLIFrameElement | null>) {
-  const datasetRef = createComputedDataset();
+function useThemeData(elRef: MaybeRef<HTMLElement | HTMLIFrameElement | null>) {
+  const datasetRef = createComputedData();
 
   watchEffect(() => {
     const el = unref(elRef);
@@ -142,6 +158,6 @@ export {
   useSite,
   useSidebar,
   flatArrayWithRoute,
-  useThemeDataset,
+  useThemeData,
   useGlobal,
 };

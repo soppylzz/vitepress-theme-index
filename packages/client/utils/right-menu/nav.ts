@@ -1,9 +1,11 @@
 import type { App, WatchCallback } from "vue";
 import { computed, reactive, readonly, ref, watch } from "vue";
 import { isBoolean } from "lodash-unified";
-import { ensureArray, type HTMLElementTagName } from "@vitepress-theme-index/shared";
+import { ensureArray } from "@vitepress-theme-index/shared";
+import type { HTMLElementTagName } from "@vitepress-theme-index/shared";
 import type { MenuNavContext, MenuNavItem, MenuTrigger } from "../../types";
-import { navSeparator } from "../../types";
+import { rightMenuNavScope, navSeparator } from "../../types";
+import { useKeydown, useScope } from "../keyboad";
 
 /* =============== nav states =============== */
 let isNavInstalled = false;
@@ -143,31 +145,32 @@ function useNavMove() {
       enable(parent);
     }
   }
+
   return { moveSibling, enterChild, leaveParent };
 }
 
 /* =============== nav exposes =============== */
+function useBlockMouse() {
+  if (blockMouse.value) return;
+  blockMouse.value = true;
+  window.addEventListener(
+    "mousemove",
+    () => {
+      blockMouse.value = false;
+    },
+    { once: true }
+  );
+}
+
 function installMenuNav(app: App) {
   if (import.meta.env.SSR) return;
+  if (isNavInstalled) return;
+  isNavInstalled = true;
 
-  const triggerFn = (e: MouseEvent) => {
-    currentEventPath.value = e.composedPath();
-  };
+  const { moveSibling, enterChild, leaveParent } = useNavMove();
 
   const keyboardFn = async (e: KeyboardEvent) => {
-    if (!blockMouse.value) {
-      blockMouse.value = true;
-      window.addEventListener(
-        "mousemove",
-        () => {
-          blockMouse.value = false;
-        },
-        { once: true }
-      );
-    }
-    if (!isActive.value) return;
-
-    const { moveSibling, enterChild, leaveParent } = useNavMove();
+    useBlockMouse();
     switch (e.key) {
       case "ArrowDown": {
         e.preventDefault();
@@ -198,16 +201,27 @@ function installMenuNav(app: App) {
     }
   };
 
-  if (!isNavInstalled) {
-    isNavInstalled = true;
-    window.addEventListener("keydown", keyboardFn);
-    window.addEventListener("contextmenu", triggerFn, { capture: true });
-    app.onUnmount(() => {
-      window.removeEventListener("keydown", keyboardFn);
-      window.removeEventListener("contextmenu", triggerFn, { capture: true });
-      currentEventPath.value = null;
-    });
-  }
+  const { cleanup } = useScope(rightMenuNavScope, isActive);
+  const itemsCtx = ["ArrowDown", "ArrowUp", "ArrowRight", "ArrowLeft", "Enter"].map((key) =>
+    useKeydown({
+      key,
+      scope: rightMenuNavScope,
+      handler: keyboardFn,
+    })
+  );
+
+  const triggerFn = (e: MouseEvent) => {
+    currentEventPath.value = e.composedPath();
+  };
+  window.addEventListener("contextmenu", triggerFn, { capture: true });
+
+  app.onUnmount(() => {
+    cleanup();
+    itemsCtx.forEach((item) => item.cleanup());
+
+    currentEventPath.value = null;
+    window.removeEventListener("contextmenu", triggerFn, { capture: true });
+  });
 }
 
 function useTrigger<T extends { trigger?: MenuTrigger }>(

@@ -1,0 +1,188 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:string";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("search") {
+  @include useFlex(column, start, center);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: getCssVar("text", "primary");
+  z-index: getCssVar("z-index", "modal");
+
+  @include useOverlay();
+
+  @include e("box") {
+    @include useFlex(column);
+    @include m("desktop", "pad") {
+      overflow: hidden;
+      margin-block: $search-box-margin-block;
+      height: calc(100% - 2 * $search-box-margin-block);
+      min-height: list.nth($search-box-height-range, 1);
+      max-height: list.nth($search-box-height-range, 2);
+
+      background-color: getCssVar("bg", "primary");
+      border-radius: getCssVar("border-radius", "lg");
+      @include useBorder(null);
+    }
+
+    @include m("mobile") {
+      height: 100%;
+      width: 100%;
+      background-color: getCssVar("bg", "primary");
+    }
+  }
+
+  @include e("header") {
+    @include useIcon();
+    @include useFlex(row, null, null, "sm");
+    @include useBorder(bottom, "secondary", thin);
+    color: getCssVar("text", "secondary");
+    font-size: getCssVar("font-size", "lg");
+    padding: getCssVar("padding", "md") getCssVar("padding", "lg");
+
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: inherit;
+      background-color: transparent;
+      color: getCssVar("text", "primary");
+    }
+
+    button {
+      @include useFlex(row, center, center);
+      @include useBorder(null, "secondary", "thin");
+
+      color: inherit;
+      border-radius: getCssVar("border-radius", "md");
+      background-color: getCssVar("bg", "secondary");
+
+      &:hover {
+        color: getCssVar("accent", "base");
+        border-color: getCssVar("border", "primary");
+        background-color: getCssVar("accent", "bg-hover");
+      }
+    }
+  }
+
+  @include e("main") {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  @include e("bg") {
+    width: 40%;
+    height: fit-content;
+
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  @include e("footer") {
+    @include useBorder(top, "secondary", thin);
+    @include useFlex(row, space-between, flex-start);
+    color: getCssVar("accent", "base");
+    padding: getCssVar("padding", "md") getCssVar("padding", "lg");
+
+    a {
+      flex-shrink: 0;
+      @include useLink();
+      @include useFlex(row, null, center, "sm");
+    }
+  }
+}
+
+$helper-sizes: (
+  // font-size, gap-row, gap-col
+  "small":("sm", "sm", "lg"),
+  "medium":("md", "md", "xl"),
+  "large":("lg", "md", "2xl"),
+);
+
+$helper-item-gaps: (
+  "small": "sm",
+  "medium": "md",
+  "large": "md",
+);
+
+@include b("search-help") {
+  color: getCssVar("text", "secondary");
+
+  @include useFlex(column);
+  @include m("row") {
+    @include useFlex(row, null, null, null, wrap, flex-start);
+  }
+
+  @each $size, $configs in $helper-sizes {
+    @include m($size) {
+      font-size: getCssVar("font-size", list.nth($configs, 1));
+      gap: getCssVar("gap", list.nth($configs, 2)) getCssVar("gap", list.nth($configs, 3));
+    }
+  }
+
+  @each $align in $index-aligns {
+    @include m($align) {
+      align-items: string.unquote($align);
+    }
+  }
+
+  @include e("item") {
+    flex-shrink: 0;
+
+    @each $size, $gap in $helper-item-gaps {
+      @include m($size) {
+        gap: getCssVar("gap", $gap);
+      }
+    }
+
+    @include m("title") {
+      text-align: center;
+      font-size: 1.35em;
+      margin-bottom: 0.15em;
+    }
+
+    @include m("text") {
+      text-align: start;
+    }
+
+    @include m("key") {
+      @include useFlex(row, null, center);
+      > div:last-child {
+        flex: 1;
+        text-align: end;
+      }
+    }
+  }
+}
+
+@include b("search-loading") {
+  @include useFlex(column, null, center, "2xl");
+  font-size: getCssVar("font-size", "xl");
+  color: getCssVar("text", "secondary");
+
+  @include e("icon") {
+    @include useFlex(row, center, center);
+    @include useIcon();
+    flex-shrink: 0;
+  }
+
+  @include e("text") {
+    display: flex;
+    white-space: nowrap;
+    @include useFlex(row, null, center);
+    line-height: getCssVar("line-height", "tight");
+  }
+
+  @include e("char") {
+    display: inline-block;
+    will-change: transform;
+  }
+}

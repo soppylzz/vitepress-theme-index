@@ -7,7 +7,7 @@ import { simpleGit } from "simple-git";
 import { dirname, relative, resolve } from "node:path";
 import type { GitInfo, PostInfo } from "@vitepress-theme-index/shared";
 import { ensureArray, pluginLogger } from "@vitepress-theme-index/shared";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import type { DefaultLast, MetaCache, MetaConfig } from "../../types";
 import { generateCacheKey, getFileStat } from "../../utils";

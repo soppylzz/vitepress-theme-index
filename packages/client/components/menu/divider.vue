@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useBem } from "../../composables";
-import { useMenuItem } from "../context";
+import { useBem, useMenuItem } from "../../composables";
 import { computed } from "vue";
 
 const { ctx } = useMenuItem();

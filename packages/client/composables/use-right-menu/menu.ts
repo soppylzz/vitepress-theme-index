@@ -25,39 +25,32 @@ function defineDynamicMenu<Records extends RMenuItemRecord>(
 ) {
   const ctx = useIndexRightMenu();
   if (ctx.mode === "manual") {
-    rightMenuLogger.error("`defineDynamicMenu` can not use in mode 'manual'");
-    return; // why never dont work?
-  }
+    rightMenuLogger.error("`defineDynamicMenu` can not use in mode 'manual'"); // why never don't work?
+  } else {
+    const dyn = createMenuContext(record);
+    const ins = getCurrentInstance();
 
-  const dyn = createMenuContext(record);
-  const ins = getCurrentInstance();
+    if (!ins) rightMenuLogger.error("`defineDynamicMenu` must be used in setup script");
 
-  if (!ins) {
-    rightMenuLogger.error("`defineDynamicMenu` must be used in setup script");
-    return;
-  }
+    onMounted(() => {
+      const el = ins.proxy?.$el;
+      if (!(el instanceof HTMLElement)) {
+        rightMenuLogger.error("`defineDynamicMenu` require element to bound");
+      }
 
-  let el: HTMLElement | null = null;
-  const handler = () => {
-    ctx.dynamic.enable(ins);
-  };
+      const handler = () => {
+        ctx.dynamic.enable(ins);
+      };
 
-  onMounted(() => {
-    ctx.dynamic.set(ins, dyn);
-    const raw = ins.proxy?.$el;
-    if (raw instanceof HTMLElement) {
-      el = raw;
+      ctx.dynamic.set(ins, dyn);
       el.addEventListener("contextmenu", handler, { capture: true });
-    } else {
-      rightMenuLogger.error("`defineDynamicMenu` require element to bound");
-    }
-  });
-  onUnmounted(() => {
-    if (el) {
-      el.removeEventListener("contextmenu", handler, { capture: true });
-    }
-    ctx.dynamic.remove(ins);
-  });
+
+      onUnmounted(() => {
+        ctx.dynamic.remove(ins);
+        el.removeEventListener("contextmenu", handler, { capture: true });
+      });
+    });
+  }
 }
 
 export type { IndexMenuCustomRecords };

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBem, useLink, useRandomColor, useText } from "../composables";
-import type { IndexSize, IndexText, IndexTextLink } from "../types";
+import type { IndexSize, IndexTextLink } from "../types";
 import { computed } from "vue";
 
 type TagProps = { size?: IndexSize } & IndexTextLink;

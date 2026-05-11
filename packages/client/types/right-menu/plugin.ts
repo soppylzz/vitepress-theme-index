@@ -41,7 +41,9 @@ const baseMenuConfigKeys: readonly (keyof BaseMenuConfig)[] = ["order", "merge"]
 const provideMenuConfigKeys: readonly (keyof ProvideMenuConfig)[] = ["state", "size"] as const;
 
 type IndexMenuContextConfig<Records extends RMenuItemRecord = RMenuItemRecord> = BaseMenuConfig &
-  ProvideMenuConfig & { record: DeepReadonly<Records> };
+  ProvideMenuConfig & {
+    record: DeepReadonly<Records>;
+  };
 
 type UserIndexRightMenuConfig<Records extends RMenuItemRecord> = Partial<
   StaticMenuConfig & IndexMenuContextConfig<Records>
@@ -62,11 +64,8 @@ type IndexMenuProvide = Partial<ProvideMenuConfig> & {
   path: string[];
   rect: [number, number];
 };
-type IndexMenuProvideHooks = { onClose?: () => void };
-type IndexMenuProvideContext = {
-  close(): void;
-  ctx: ComputedRef<IndexMenuProvide>;
-};
+type IndexMenuProvideHooks = Partial<{ onClose: () => void }>;
+type IndexMenuProvideContext = Partial<{ close(): void; ctx: ComputedRef<IndexMenuProvide> }>;
 
 type MenuNavItem = Pick<RMenuEventProps, "selectable"> & {
   el: HTMLElement | null;

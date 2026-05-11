@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { debounce } from "lodash-unified";
 import type { RMenuSubMenuEmits, RMenuSubMenuProps } from "../../types";
-import { useBem, useIcon, useRMenuItem, useProvidePath, useText } from "../../composables";
+import { useBem, useRMenuItem, useProvidePath, useText, useIcon } from "../../composables";
 import { useNavMove } from "../../utils";
 import { VtiRightMenu } from "./menu";
 
@@ -94,6 +94,8 @@ watch(opened, async (val) => {
   }
 });
 
+const IconExpand = useIcon(props.expandIcon);
+const IconBase = useIcon(props.icon);
 const ns = useBem("r-menu-submenu");
 const kls = computed(() => ({
   wrap: [
@@ -116,12 +118,12 @@ const kls = computed(() => ({
     @mouseleave="closeFn"
     @click.stop="expandFn"
   >
-    <component :is="useIcon(props?.icon)" v-if="props?.icon" />
+    <IconBase />
     <span :class="kls.text" v-bind="{ [`align-${props.align}`]: true }">
       {{ useText(props.text) }}
     </span>
-    <component :is="useIcon(props?.expandIcon)" v-if="props?.expandIcon" />
-    <!--  out of dom-flow  -->
+    <IconExpand />
+    <!--  out of flow  -->
     <VtiRightMenu :trigger="props.trigger" :show="show" :coords="coords">
       <slot />
     </VtiRightMenu>

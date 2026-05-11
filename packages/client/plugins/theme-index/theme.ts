@@ -2,26 +2,20 @@ import type { Ref } from "vue";
 import { computed, inject, onBeforeMount, onMounted, reactive, ref, toRef, watch } from "vue";
 import { isArray, isNumber, merge, omit, pick } from "lodash-unified";
 import type { EnhanceAppContext } from "vitepress";
+import { indexPreset, indexThemeKey, indexThemeMode, indexThemeStoreKey } from "../../types";
 import type {
   IndexPreset,
   IndexResponse,
   IndexThemeConfig,
   IndexThemeContext,
-  IndexThemeDataset,
+  IndexThemeData,
   IndexThemeMode,
   ResolvedIndexThemeConfig,
   UserIndexThemeConfig,
 } from "../../types";
-import { indexPreset, indexThemeKey, indexThemeMode, indexThemeStoreKey } from "../../types";
 import { isBrowser, pluginLogger } from "@vitepress-theme-index/shared";
 import { getLocalStorage, setLocalStorage } from "../../utils";
-
-const defaultThemeConfig = {
-  breakPoint: [768, 1280],
-  fontSize: 16,
-  preset: "default",
-  mode: "auto",
-} as const satisfies ResolvedIndexThemeConfig;
+import { defaultThemeConfig } from "./default";
 
 function createResponsive(breakPoint: Ref<IndexThemeConfig["breakPoint"]>) {
   const width = ref<number | null>(null);
@@ -97,7 +91,7 @@ function installTheme({ app }: EnhanceAppContext, config?: UserIndexThemeConfig)
 
   updateFn = update;
   if (isBrowser()) {
-    window.addEventListener("resize", update, { passive: true });
+    window.addEventListener("resize", update);
     app.onUnmount(() => {
       window.removeEventListener("resize", update);
     });
@@ -113,7 +107,7 @@ function setupTheme() {
 
   const { ctx } = theme;
   onBeforeMount(() => {
-    const cache = getLocalStorage<IndexThemeDataset>(indexThemeStoreKey);
+    const cache = getLocalStorage<IndexThemeData>(indexThemeStoreKey);
     Object.assign(ctx, pick(cache, ["mode", "preset"]));
     watch(
       [() => ctx.mode, () => ctx.preset],

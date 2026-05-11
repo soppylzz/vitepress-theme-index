@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { MenuButtonProps } from "../../types";
-import { useBem, useText, useLink, useIcon, hasEmitHook } from "../../composables";
+import { useBem, useText, useLink, hasEmitHook, useIcon, useMenuItem } from "../../composables";
 import { computed } from "vue";
-import { useMenuItem } from "../context";
 
 const props = defineProps<MenuButtonProps>();
 const emit = defineEmits<{ (e: "activate"): void }>();
@@ -15,6 +14,7 @@ const handleClick = () => {
   emit("activate");
 };
 
+const Icon = useIcon(props.icon);
 const { attr } = useLink(props, hasHook);
 const ns = useBem("menu-button");
 const kls = computed(() => ({
@@ -24,7 +24,7 @@ const kls = computed(() => ({
 
 <template>
   <a v-bind="attr" :class="kls.wrap" @click="handleClick">
-    <component :is="useIcon(props?.icon)" v-if="props?.icon" />
+    <Icon />
     <span>{{ useText(props.text) }}</span>
   </a>
 </template>

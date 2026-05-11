@@ -9,9 +9,8 @@ import {
   VtiRMenuSubMenu,
   VtiRMenuText,
 } from "./items";
-import { hasOwnProperty, renderLogger } from "@vitepress-theme-index/shared";
+import { hasOwnProperty, pascalCase, renderLogger } from "@vitepress-theme-index/shared";
 import { isObject, omit } from "lodash-unified";
-import { pascalCase } from "../../utils";
 
 const rightMenuItemMap: Record<RMenuItemType, Component | undefined> = {
   "sub-menu": VtiRMenuSubMenu,

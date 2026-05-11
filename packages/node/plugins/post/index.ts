@@ -12,7 +12,6 @@ import { loadMetaCache } from "./meta";
 import { resolve } from "node:path";
 
 function createMetaPlugin(ctx: IndexPluginContext): Plugin {
-  let config: MetaConfig | undefined;
   let builder: IndexPostBuilder | null = null;
   let datas: BuildResult | null = null;
 
@@ -22,7 +21,7 @@ function createMetaPlugin(ctx: IndexPluginContext): Plugin {
       sequential: true,
       async handler() {
         if (!ctx?.ctx) return;
-        config = ctx.ctx.meta;
+        const config = ctx.ctx.meta;
         const { posts, changedPostPath, allPostPath } = await loadMetaCache(config);
 
         const workDir = ctx.viteConfig.isProduction

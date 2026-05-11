@@ -3,8 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   dts: false,
   clean: true,
-  format: ["cjs"],
-  external: ["rollup"],
+  format: ["esm"],
   entry: ["src/run.ts"],
-  sourceMap: true,
+  external: [/^(?!@vitepress-theme-index\/shared$)[^./]/],
 });

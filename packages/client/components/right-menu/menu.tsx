@@ -2,8 +2,7 @@ import type { PropType } from "vue";
 import { defineComponent, nextTick, reactive, ref, vShow, watch, withDirectives } from "vue";
 import type { MenuItemState, MenuTrigger } from "../../types";
 import { useRightMenuProvide } from "../../utils";
-import { useBem, useRMenuItem, useProvidePath } from "../../composables";
-import { useRightMenu } from "./use-menu";
+import { useBem, useRMenuItem, useProvidePath, useRightMenu } from "../../composables";
 
 const rightMenuProps = {
   coords: Array as unknown as PropType<[number, number]>,

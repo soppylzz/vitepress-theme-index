@@ -1,0 +1,70 @@
+@use "sass:map";
+@use "abstract" as *;
+@use "public" as *;
+
+@include b("l-nav-docs") {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: $local-nav-height;
+  z-index: getCssVar("z-index", "base");
+  background-color: getCssVar("bg", "secondary");
+  font-size: getCssVar("font-size", "sm");
+  color: getCssVar("text", "primary");
+
+  // default:mobile
+  @include useUnselect();
+  @include useBorder(bottom);
+  @include useFlex(row,space-between, center);
+
+  @include m("pad") {
+    font-size: getCssVar("font-size", "md");
+  }
+
+  & .vti-sub-nav__button:first-child {
+    flex-direction: row-reverse;
+  }
+
+  @include e("button") {
+    position: relative;
+    padding-inline: getCssVar("padding", "md");
+
+    // default:mobile
+    @include useIcon();
+    @include useFlex(row, null, center, "md");
+
+    @include m("pad") {
+      gap: getCssVar("gap", "lg");
+      padding-inline: getCssVar("padding", "lg");
+    }
+  }
+
+  @include e("toc") {
+    position: absolute;
+    top: calc(100% + 0.2em);
+    width: $local-nav-toc-width;
+    overflow: hidden;
+
+    background-color: getCssVar("bg", "primary");
+    border-radius: getCssVar("border-radius", "md");
+    @include useBorder();
+
+    & > div {
+      overflow: auto;
+      width: 100%;
+      height: fit-content;
+      max-height: $local-nav-toc-height;
+      padding-block: getCssVar("padding", "md");
+
+      @include useScrollHidden();
+    }
+
+    @include m("pad") {
+      left: 0.2em;
+    }
+
+    @include m("mobile") {
+      right: 0.2em;
+    }
+  }
+}

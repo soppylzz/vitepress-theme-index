@@ -21,7 +21,7 @@ function useLockScroll(
   element: HTMLElement,
   onCleanup?: () => void
 ) {
-  const stopEffect = watchEffect((effectCleanup) => {
+  watchEffect((effectCleanup) => {
     const lock = toValue(isLock);
     const cache = stackCache.has(element)
       ? stackCache.get(element)
@@ -51,10 +51,6 @@ function useLockScroll(
       }
       onCleanup?.();
     });
-  });
-
-  onUnmounted(() => {
-    stopEffect();
   });
 }
 

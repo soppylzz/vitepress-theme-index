@@ -8,8 +8,10 @@ import type {
   UserIndexRightMenuConfig,
   ResolvedIndexRightMenuConfig,
 } from "../../types";
+import type { App, Reactive } from "vue";
+import type { EnhanceAppContext } from "vitepress";
 import {
-  rightMenuPrivateKey,
+  localRightMenuKey,
   provideMenuConfigKeys,
   staticMenuConfigKeys,
   baseMenuConfigKeys,
@@ -26,10 +28,8 @@ import {
 import { renderRightMenuTree } from "./render";
 import { resolveIndexMenuConfig } from "./resolve";
 import { installDynamicMenuDirective } from "./directives";
-import type { App, Reactive } from "vue";
 import { toRefs, watchEffect } from "vue";
 import { omit, pick } from "lodash-unified";
-import type { EnhanceAppContext } from "vitepress";
 import { rightMenuLogger } from "@vitepress-theme-index/shared";
 
 /* =============== setup mode =============== */
@@ -39,7 +39,7 @@ function useBaseSetup(app: App) {
   const baseProps = { path: [], rect: [0, 0] as [number, number] };
   const baseHooks = { onClose: menuNav.close };
 
-  app.provide(rightMenuPrivateKey, null);
+  app.provide(localRightMenuKey, null);
 
   return { menuNav, baseProps, baseHooks };
 }

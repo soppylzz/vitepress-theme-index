@@ -1,0 +1,39 @@
+@use "sass:list";
+@use "abstract" as *;
+@use "public" as *;
+
+$key-sizes: (
+  // font-size, gap, padding, radius, border-width, margin
+  "small": ("xs", "xs", "xs", "sm", "thin", "sm"),
+  "medium": ("sm", "sm", "sm", "sm", "thin", "md"),
+  "large": ("md", "sm", "md", "md", "normal", "md"),
+);
+
+@include b("key") {
+  @include useFlex(row, center, null, "sm");
+  color: getCssVar("text", "secondary");
+
+  @include e("connector") {
+    @include useFlex(row, center, center);
+  }
+
+  kbd {
+    @include useFlex(row, center, center);
+    @include useBorder(null, "secondary");
+    background-color: getCssVar("bg", "secondary");
+  }
+
+  @each $size, $config in $key-sizes {
+    @include m($size) {
+      font-size: getCssVar("font-size", list.nth($config, 1));
+      gap: getCssVar("gap", list.nth($config, 2));
+
+      kbd {
+        $pad: getCssVar("padding", list.nth($config, 3));
+        padding: $pad calc(2 * $pad);
+        border-radius: getCssVar("border-radius", list.nth($config, 4));
+        border-width: getCssVar("border-width", list.nth($config, 5));
+      }
+    }
+  }
+}

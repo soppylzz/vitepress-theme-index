@@ -1,8 +1,6 @@
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import type { AdditionDataOptions, EjsDataOptions } from "./type";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { cliRoot, pkgRoot } from "@vitepress-theme-index/shared";
 
 const I18N_CONFIG = {
   zh: {
@@ -53,7 +51,7 @@ const I18N_ADDITION = {
 
 const PATHS = {
   get template() {
-    return resolve(__dirname, "template");
+    return resolve(cliRoot, "template");
   },
   get script() {
     return resolve(this.template, "scripts");
@@ -63,7 +61,7 @@ const PATHS = {
   },
   get themePackageJson() {
     // vitepress-theme-index/package.json
-    return resolve(__dirname, "../../package.json");
+    return resolve(pkgRoot, "..", "package.json");
   },
 } as const;
 

@@ -47,7 +47,7 @@ const attachListeners = () => {
   document.addEventListener("mousemove", handleMove);
   document.addEventListener("mouseup", stopResize);
   document.addEventListener("touchmove", handleMove, { passive: false });
-  document.addEventListener("touchend", stopResize, { passive: false });
+  document.addEventListener("touchend", stopResize);
 };
 
 const detachListeners = () => {

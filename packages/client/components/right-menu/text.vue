@@ -39,6 +39,7 @@ const activateFn = (evt?: MouseEvent) => {
   }
 };
 
+const Icon = useIcon(props.icon);
 const ns = useBem("r-menu-text");
 const kls = computed(() => ({
   wrap: [ns.b(), ns.m(size.value), ns.when(stage.value), ns.when(state.value)],
@@ -48,7 +49,7 @@ const kls = computed(() => ({
 
 <template>
   <div v-show="render" :class="kls.wrap" @click.stop="activateFn">
-    <component :is="useIcon(props.icon)" v-if="props.icon" />
+    <Icon />
     <span :class="kls.text" v-bind="{ [`align-${props.align}`]: true }">{{
       useText(props.text)
     }}</span>

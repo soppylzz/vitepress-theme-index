@@ -102,7 +102,11 @@ $github-dark: (
   accent:  s("accent", $github-nums),
 );
 
-$github-foundation: () !default;
+$github-foundation: (
+  special: (
+    overlay-filter: blur(4px),
+  )
+) !default;
 $github-foundation: deep-merge($base-foundation, $github-foundation);
 
 @mixin github($is-default: false) {

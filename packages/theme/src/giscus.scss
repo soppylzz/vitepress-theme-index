@@ -164,9 +164,15 @@ pre, code {
 
   .BtnGroup-item {
     @include useBorder(null, "primary", "thin");
+    border-radius: radius("md");
     border-color: transparent;
+    color: getCssVar("text", "secondary");
+    button {
+      color: inherit;
+    }
 
     &.BtnGroup-item--selected {
+      color: getCssVar("text", "primary");
       border-color: getCssVar("border", "primary");
     }
   }
@@ -179,7 +185,7 @@ pre, code {
     padding-bottom: getCssVar("padding", "xl");
   }
 
-  .gsc-comment-author .color-box-border-info {
+  .color-box-border-info {
     @include useBorder(null, "primary", "thin");
     border-radius: radius("full");
   }

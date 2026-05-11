@@ -2,7 +2,7 @@ import type { Alias, ViteDevServer } from "vite";
 import { normalizePath } from "vite";
 import { isArray } from "lodash-unified";
 import { relative } from "node:path";
-import { stat } from "fs/promises";
+import { stat } from "node:fs/promises";
 import type { MaybeArray } from "@vitepress-theme-index/shared";
 import { ensureArray, createMD5Hash } from "@vitepress-theme-index/shared";
 

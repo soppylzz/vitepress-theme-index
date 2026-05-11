@@ -22,7 +22,7 @@ $wrap-size: (
   inset: 0;
   position: fixed;
   display: flex;
-  z-index: getCssVar("z-index", "overlay");
+  z-index: getCssVar("z-index", "modal");
 
   @each $size, $vals in $wrap-size {
     #{getCssVarName("drawer-content-min-size")}: list.nth($vals, 1);
@@ -74,7 +74,6 @@ $wrap-size: (
 
   @include e("overlay") {
     flex: 1;
-    backdrop-filter: blur(2px);
-    background: rgba(0, 0, 0, 0.5);
+    @include useOverlay();
   }
 }

@@ -6,6 +6,7 @@ import { PLUGIN_PREFIX } from "../const";
 import { createI18nPlugin } from "./i18n";
 import { createAdditionPlugin } from "./addition";
 import { createMetaPlugin } from "./post";
+import { createIconPlugin } from "./icons";
 
 const ctx: IndexPluginContext = {};
 function createPluginContext(): Plugin {
@@ -27,6 +28,7 @@ function vitepressThemeIndex(config?: DeepPartial<IndexPluginInitConfig>): Plugi
   const additionPlugin = createAdditionPlugin(ctx);
   const i18nPlugin = createI18nPlugin(ctx);
   const metaPlugin = createMetaPlugin(ctx);
+  const iconPlugin = createIconPlugin(ctx);
   return [
     /**
      * ⚠️ Notes:
@@ -39,6 +41,7 @@ function vitepressThemeIndex(config?: DeepPartial<IndexPluginInitConfig>): Plugi
     additionPlugin,
     i18nPlugin,
     metaPlugin,
+    iconPlugin,
   ];
 }
 

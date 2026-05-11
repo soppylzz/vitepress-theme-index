@@ -3,6 +3,7 @@
   "private": true,
   "author": "soppylzz",
   "packageManager": "pnpm@10.12.4",
-  "main": "index.ts",
-  "module": "index.ts"
+  "main": "./node.ts",
+  "module": "./node.ts",
+  "types": "./index.ts"
 }

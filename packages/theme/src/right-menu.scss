@@ -72,7 +72,7 @@ $rm-sizes: (
 
 
 @include b("right-menu") {
-  z-index: getCssVar("z-index", top);
+  z-index: getCssVar("z-index", "modal");
   color: getCssVar("text", "primary");
   background-color: getCssVar("bg", "primary");
 
